@@ -15,12 +15,11 @@ namespace Booth.DockerClient
     {
         public VolumeResource Volumes { get; }
 
-        public DockerClient(string server)
+        public DockerClient()
         {
             var messageHandler = new SocketsHttpHandler();
             messageHandler.ConnectCallback = ConnectCallback;
             var httpClient = new HttpClient(messageHandler);
-            httpClient.BaseAddress = new Uri(server);
 
             Volumes = new VolumeResource(httpClient);
         }

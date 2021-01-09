@@ -18,7 +18,7 @@ namespace Booth.DockerTest
 
         static async Task TestClient()
         {
-            var dockerClient = new DockerClient.DockerClient("/var/run/docker.sock");
+            var dockerClient = new DockerClient.DockerClient();
 
             var volumes = await dockerClient.Volumes.List();
 
