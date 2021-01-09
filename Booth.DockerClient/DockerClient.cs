@@ -20,6 +20,7 @@ namespace Booth.DockerClient
             var messageHandler = new SocketsHttpHandler();
             messageHandler.ConnectCallback = ConnectCallback;
             var httpClient = new HttpClient(messageHandler);
+            httpClient.BaseAddress = new Uri("http://127.0.0.1");
 
             Volumes = new VolumeResource(httpClient);
         }
