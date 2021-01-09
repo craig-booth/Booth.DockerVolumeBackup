@@ -3,7 +3,7 @@ pipeline {
 	agent any
 
 	environment {
-		PROJECT      = './Booth.DockerVolumeBackup/Booth.DockerTest.csproj'
+		PROJECT      = './Booth.DockerTest/Booth.DockerTest.csproj'
     }
 
     stages {
