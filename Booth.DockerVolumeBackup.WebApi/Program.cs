@@ -32,7 +32,7 @@ namespace Booth.DockerVolumeBackup.WebApi
             builder.Services.AddSingleton<VolumeService>();
             builder.Services.AddSingleton<BackupService>();
 
-            //builder.Services.AddHostedService<BackupBackgroundService>();
+            builder.Services.AddHostedService<BackupBackgroundService>();
 
             var app = builder.Build();
 
@@ -44,10 +44,14 @@ namespace Booth.DockerVolumeBackup.WebApi
             }
 
             // Configure the HTTP request pipeline.
+            app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseAuthorization();
+
             app.AddVolumeEndPoints();
             app.AddBackupEndPoints();
+
+            app.MapFallbackToFile("/index.html");
 
             app.Run();
         }
