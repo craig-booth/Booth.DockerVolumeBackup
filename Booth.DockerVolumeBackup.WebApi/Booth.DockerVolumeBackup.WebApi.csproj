@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Booth.DockerClient\Booth.Docker.csproj" />
-    <ProjectReference Include="..\Booth.DockerVolumeBackup.UI\booth.dockervolumebackup.ui.esproj" />
+    <ProjectReference Include="..\booth.dockervolumebackup.ui\booth.dockervolumebackup.ui.esproj" />
   </ItemGroup>
 
 </Project>
