@@ -3,7 +3,8 @@ pipeline {
 	agent any
 
 	environment {
-		PROJECT      = './Booth.DockerVolumeBackup/Booth.DockerVolumeBackup.WebApi.csproj'
+		PROJECT           = './Booth.DockerVolumeBackup.WebApi/Booth.DockerVolumeBackup.WebApi.csproj'
+		PORTAINER_WEBHOOK = credentials('dockervolumebackup_webhook')
     }
 
     stages {
@@ -35,7 +36,7 @@ pipeline {
 			steps {
 				script {
 					def dockerImage = docker.build("craigbooth/dockervolumebackup")
-					httpRequest httpMode: 'POST', responseHandle: 'NONE', url: 'https://portainer.boothfamily.id.au/api/webhooks/b2cbc165-1a43-499f-ac3b-058146abf907', wrapAsMultipart: false
+					httpRequest httpMode: 'POST', responseHandle: 'NONE', url: "${PORTAINER_WEBHOOK}", wrapAsMultipart: false
 				}
             }
 		}
