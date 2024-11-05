@@ -25,7 +25,7 @@ namespace Booth.DockerVolumeBackup.WebApi
             });
 
             // Add services to the container.
-            builder.Services.AddSingleton<IDockerClient>(DockerClientFactory.CreateClient("http://192.168.1.11:2375"));
+            builder.Services.AddSingleton<IDockerClient>(DockerClientFactory.CreateUnixClient(null));
             builder.Services.AddSingleton<IDataContext, DataContext>();
             builder.Services.AddSingleton<IBackupNotificationService, BackupNotificationService>();
             builder.Services.AddSingleton<IBackupDataProvider, BackupDataProvider>();
