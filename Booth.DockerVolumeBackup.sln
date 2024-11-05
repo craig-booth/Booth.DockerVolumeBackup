@@ -1,17 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30804.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booth.DockerClient", "Booth.DockerClient\Booth.DockerClient.csproj", "{C6B69841-76DF-48B2-8467-C55EFCC757C4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booth.DockerTest", "Booth.DockerTest\Booth.DockerTest.csproj", "{E91644F6-39E9-49B1-A672-E4DA7E9A50A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Booth.Docker", "Booth.DockerClient\Booth.Docker.csproj", "{C6B69841-76DF-48B2-8467-C55EFCC757C4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5AD6A82A-B8DD-40B3-BBF7-85244EB47926}"
 	ProjectSection(SolutionItems) = preProject
 		Dockerfile = Dockerfile
 		Jenkinsfile = Jenkinsfile
 	EndProjectSection
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "booth.dockervolumebackup.ui", "Booth.DockerVolumeBackup.UI\booth.dockervolumebackup.ui.esproj", "{28AC8723-1E02-43EB-A655-5110C48C05CD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Booth.DockerVolumeBackup.WebApi", "Booth.DockerVolumeBackup.WebApi\Booth.DockerVolumeBackup.WebApi.csproj", "{FA619707-1F2F-4CF9-A6E6-77D4EB7EB239}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +25,16 @@ Global
 		{C6B69841-76DF-48B2-8467-C55EFCC757C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6B69841-76DF-48B2-8467-C55EFCC757C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6B69841-76DF-48B2-8467-C55EFCC757C4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E91644F6-39E9-49B1-A672-E4DA7E9A50A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E91644F6-39E9-49B1-A672-E4DA7E9A50A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E91644F6-39E9-49B1-A672-E4DA7E9A50A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E91644F6-39E9-49B1-A672-E4DA7E9A50A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28AC8723-1E02-43EB-A655-5110C48C05CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28AC8723-1E02-43EB-A655-5110C48C05CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28AC8723-1E02-43EB-A655-5110C48C05CD}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{28AC8723-1E02-43EB-A655-5110C48C05CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28AC8723-1E02-43EB-A655-5110C48C05CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28AC8723-1E02-43EB-A655-5110C48C05CD}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{FA619707-1F2F-4CF9-A6E6-77D4EB7EB239}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA619707-1F2F-4CF9-A6E6-77D4EB7EB239}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA619707-1F2F-4CF9-A6E6-77D4EB7EB239}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA619707-1F2F-4CF9-A6E6-77D4EB7EB239}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

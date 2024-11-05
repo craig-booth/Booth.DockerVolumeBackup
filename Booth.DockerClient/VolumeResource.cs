@@ -4,32 +4,31 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net.Http.Json;
 
-using Booth.DockerClient.Models;
-using Newtonsoft.Json;
+using Booth.Docker.Models;
 
-namespace Booth.DockerClient
+
+namespace Booth.Docker
 {
-    public class VolumeResource
+    internal class VolumeResource : IVolumeResource
     {
         private readonly HttpClient _HttpClient;
 
-        public VolumeResource(HttpClient httpClient)
+        internal VolumeResource(HttpClient httpClient)
         {
             _HttpClient = httpClient;
         }
 
-        public async Task<VolumeResponse> List()
-        {
-            var response = await _HttpClient.GetAsync("/volumes");
-            if (response.IsSuccessStatusCode)
-            {
-                var volumes = JsonConvert.DeserializeObject<VolumeResponse>(await response.Content.ReadAsStringAsync());
 
-                return volumes;
-            }
-            else
-                return null;
+        private class VolumeResponse
+        {
+            public List<Volume> Volumes { get; set; }
+        }
+        public async Task<IList<Volume>> ListAsync()
+        {
+            var response = await _HttpClient.GetFromJsonAsync<VolumeResponse>("/system/df?type=volume");
+            return response.Volumes;
         }
     }
 }

@@ -3,14 +3,14 @@ pipeline {
 	agent any
 
 	environment {
-		PROJECT      = './Booth.DockerTest/Booth.DockerTest.csproj'
+		PROJECT      = './Booth.DockerVolumeBackup/Booth.DockerVolumeBackup.WebApi.csproj'
     }
 
     stages {
 		stage('Build') {
 			agent { 
 				docker { 
-					image 'mcr.microsoft.com/dotnet/sdk:5.0-alpine' 
+					image 'mcr.microsoft.com/dotnet/sdk:8.0-alpine' 
 					reuseNode true
 				}
 			}

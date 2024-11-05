@@ -1,0 +1,6 @@
+@Booth.DockerVolumeBackup.WebApi_HostAddress = http://localhost:5239
+
+GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/volumes/
+Accept: application/json
+
+###
