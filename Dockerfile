@@ -6,7 +6,7 @@ RUN apk add --no-cache icu-libs
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 	
 WORKDIR /app
-COPY /deploy ./app
+COPY /deploy .
 
 WORKDIR /app
 ENTRYPOINT ["dotnet", "Booth.DockerVolumeBackup.WebApi.dll"]
