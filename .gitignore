@@ -338,3 +338,4 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/Booth.DockerVolumeBackup.WebApi/BackupDatabase.db
