@@ -1,8 +1,10 @@
-﻿
+﻿using System.Diagnostics;
+
 using Booth.Docker;
 using Booth.Docker.Models;
 using Booth.DockerVolumeBackup.WebApi.DataProviders;
 using Booth.DockerVolumeBackup.WebApi.DataProviders.Models;
+
 
 namespace Booth.DockerVolumeBackup.WebApi.Backup
 {
@@ -51,21 +53,56 @@ namespace Booth.DockerVolumeBackup.WebApi.Backup
 
             if (stoppingToken.IsCancellationRequested)
                 return;
-         
+
             try
             {
                 await StopServices(dependentServices, stoppingToken);
                 if (stoppingToken.IsCancellationRequested)
                     return;
 
-                foreach (var backupVolume in backup.Volumes)
+                // Create process to backup volumes
+                using (var process = new Process())
                 {
-                    var volumeDefinition = volumeDefinitions.FirstOrDefault(x => x.Name == backupVolume.Volume);
-                    if (volumeDefinition == null)
-                        continue;
+                    process.StartInfo = new ProcessStartInfo()
+                    {
+                        FileName = "/bin/sh",
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false
+                    };
 
-                    await BackupVolume(backupVolume.BackupVolumeId, volumeDefinition, stoppingToken);
-                }
+                    process.Start();
+
+                    var backupFolder = $"/backup/{DateTime.Now.ToString("yyyy-MM-dd")}_{backupId}";
+                    var command = $"mkdir {backupFolder}";
+                    await process.StandardInput.WriteLineAsync(command);
+                    var output = await process.StandardOutput.ReadLineAsync();
+
+                    foreach (var backupVolume in backup.Volumes)
+                    {
+                        await StopServices(dependentServices, stoppingToken);
+                        if (stoppingToken.IsCancellationRequested)
+                            return;
+
+                        var volumeDefinition = volumeDefinitions.FirstOrDefault(x => x.Name == backupVolume.Volume);
+                        if (volumeDefinition == null)
+                            continue;
+
+                        await _DataProvider.UpdateVolumeStatusAsync(backupVolume.BackupVolumeId, Status.Active);
+                        _NotificationService.SignalStatusChanged(backupVolume.BackupVolumeId);
+
+                        command = $"tar -czf {backupFolder}/{volumeDefinition.Name}.tar.gz -C {volumeDefinition.Mountpoint} ./";
+                        await process.StandardInput.WriteLineAsync(command);
+                        output = await process.StandardOutput.ReadLineAsync();
+
+                        await _DataProvider.UpdateVolumeStatusAsync(backupVolume.BackupVolumeId, Status.Complete);
+                        _NotificationService.SignalStatusChanged(backupVolume.BackupVolumeId);
+
+                    }
+
+                };
+
             }
             finally
             {
@@ -132,19 +169,5 @@ namespace Booth.DockerVolumeBackup.WebApi.Backup
             }
         }
 
-        private async Task BackupVolume(int backupVolumeId, Volume volume, CancellationToken stoppingToken)
-        {
-            await _DataProvider.UpdateVolumeStatusAsync(backupVolumeId, Status.Active);
-            _NotificationService.SignalStatusChanged(backupVolumeId);
-
-            var command = $"tar -czf /backup/{volume.Name}.tar.gz -C {volume.Mountpoint} ./";
-
-
-
-            await Task.Delay(10000, stoppingToken);
-
-            await _DataProvider.UpdateVolumeStatusAsync(backupVolumeId, Status.Complete);
-            _NotificationService.SignalStatusChanged(backupVolumeId);
-        }
     }
 }
