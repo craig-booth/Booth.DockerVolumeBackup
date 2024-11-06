@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-
+using System.Runtime.CompilerServices;
 using Booth.Docker;
 using Booth.Docker.Models;
 using Booth.DockerVolumeBackup.WebApi.DataProviders;
@@ -14,11 +14,13 @@ namespace Booth.DockerVolumeBackup.WebApi.Backup
         private readonly IDockerClient _DockerClient;
         private readonly IBackupDataProvider _DataProvider;
         private readonly IBackupNotificationService _NotificationService;
-        public BackupBackgroundService(IDockerClient dockerClient, IBackupDataProvider dataProvider, IBackupNotificationService notificationService) 
+        private ILogger<BackupBackgroundService> _Logger;
+        public BackupBackgroundService(IDockerClient dockerClient, IBackupDataProvider dataProvider, IBackupNotificationService notificationService, ILogger<BackupBackgroundService> logger) 
         {
             _DockerClient = dockerClient;
             _DataProvider = dataProvider;
             _NotificationService = notificationService;
+            _Logger = logger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -40,10 +42,14 @@ namespace Booth.DockerVolumeBackup.WebApi.Backup
 
         private async Task ExecuteBackupAsync(int backupId, CancellationToken stoppingToken)
         {
+            _Logger.LogInformation($"Starting backup {backupId}");
+
             var backup = await _DataProvider.GetBackupAsync(backupId);
             if (backup == null)
+            {
+                _Logger.LogError("Error loading backup definition");
                 return;
-
+            }
             await _DataProvider.UpdateBackupStatusAsync(backup.BackupId, Status.Active);
             _NotificationService.SignalStatusChanged(backup.BackupId);
 
@@ -52,13 +58,20 @@ namespace Booth.DockerVolumeBackup.WebApi.Backup
             var dependentServices = await GetDependentServices(volumeDefinitions);
 
             if (stoppingToken.IsCancellationRequested)
+            {
+                _Logger.LogWarning("Backup Cancelled");
                 return;
+            }
 
             try
             {
+                _Logger.LogInformation("Stopping dependent services");
                 await StopServices(dependentServices, stoppingToken);
                 if (stoppingToken.IsCancellationRequested)
+                {
+                    _Logger.LogWarning("Backup Cancelled");
                     return;
+                }
 
                 // Create process to backup volumes
                 using (var process = new Process())
@@ -72,33 +85,30 @@ namespace Booth.DockerVolumeBackup.WebApi.Backup
                         UseShellExecute = false
                     };
 
+                    _Logger.LogDebug("Starting shell process to run backup commands");
                     process.Start();
+                    _Logger.LogDebug("Process started");
 
                     var backupFolder = $"/backup/{DateTime.Now.ToString("yyyy-MM-dd")}_{backupId}";
-                    var command = $"mkdir {backupFolder}";
-                    await process.StandardInput.WriteLineAsync(command);
-                    var output = await process.StandardOutput.ReadLineAsync();
+                    await RunShellCommand(process, $"mkdir {backupFolder}");
+                    _Logger.LogInformation($"Backup destination folder {backupFolder} created");
 
                     foreach (var backupVolume in backup.Volumes)
                     {
-                        await StopServices(dependentServices, stoppingToken);
-                        if (stoppingToken.IsCancellationRequested)
-                            return;
-
                         var volumeDefinition = volumeDefinitions.FirstOrDefault(x => x.Name == backupVolume.Volume);
                         if (volumeDefinition == null)
                             continue;
 
+                        _Logger.LogInformation($"Starting backup of volume {volumeDefinition.Name}");
                         await _DataProvider.UpdateVolumeStatusAsync(backupVolume.BackupVolumeId, Status.Active);
                         _NotificationService.SignalStatusChanged(backupVolume.BackupVolumeId);
 
-                        command = $"tar -czf {backupFolder}/{volumeDefinition.Name}.tar.gz -C {volumeDefinition.Mountpoint} ./";
-                        await process.StandardInput.WriteLineAsync(command);
-                        output = await process.StandardOutput.ReadLineAsync();
-
+                        await RunShellCommand(process, $"tar -czf {backupFolder}/{volumeDefinition.Name}.tar.gz -C {volumeDefinition.Mountpoint} ./");
+                  
                         await _DataProvider.UpdateVolumeStatusAsync(backupVolume.BackupVolumeId, Status.Complete);
                         _NotificationService.SignalStatusChanged(backupVolume.BackupVolumeId);
 
+                        _Logger.LogInformation($"Backup of {volumeDefinition.Name} complete");
                     }
 
                 };
@@ -106,12 +116,26 @@ namespace Booth.DockerVolumeBackup.WebApi.Backup
             }
             finally
             {
+                _Logger.LogInformation("Restarting dependent services");
                 await RestartServices(dependentServices, CancellationToken.None);
             }
 
-
             await _DataProvider.UpdateBackupStatusAsync(backup.BackupId, Status.Complete);
             _NotificationService.SignalStatusChanged(backup.BackupId);
+
+            _Logger.LogInformation("Backup complete");
+        }
+
+        private async Task RunShellCommand(Process process, string command)
+        {
+            _Logger.LogDebug($"Executing shell command '{command}'");
+            await process.StandardInput.WriteLineAsync(command);
+
+            _Logger.LogDebug($"Command executed, waiting for completion");
+            var output = await process.StandardOutput.ReadLineAsync();
+
+            _Logger.LogDebug("Command completed");
+
         }
 
         private async Task<List<Volume>> GetBackupVolumes(IEnumerable<string> volumeNames)
