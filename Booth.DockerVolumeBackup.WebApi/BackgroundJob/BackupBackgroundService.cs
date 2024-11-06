@@ -132,7 +132,7 @@ namespace Booth.DockerVolumeBackup.WebApi.Backup
             await process.StandardInput.WriteLineAsync(command);
 
             _Logger.LogDebug($"Command executed, waiting for completion");
-            var output = await process.StandardOutput.ReadLineAsync();
+            var output = await process.StandardOutput.ReadToEndAsync();
 
             _Logger.LogDebug("Command completed");
 
