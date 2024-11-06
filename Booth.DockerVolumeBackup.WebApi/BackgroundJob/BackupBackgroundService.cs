@@ -111,6 +111,9 @@ namespace Booth.DockerVolumeBackup.WebApi.Backup
                         _Logger.LogInformation($"Backup of {volumeDefinition.Name} complete");
                     }
 
+                    await RunShellCommand(process, "exit");
+                    await process.WaitForExitAsync();
+
                 };
 
             }
@@ -128,14 +131,22 @@ namespace Booth.DockerVolumeBackup.WebApi.Backup
 
         private async Task RunShellCommand(Process process, string command)
         {
+            var completedText = "--@!@Completed@!@--";
+
             _Logger.LogDebug($"Executing shell command '{command}'");
             await process.StandardInput.WriteLineAsync(command);
+            await process.StandardInput.WriteLineAsync($"echo {completedText}");
+
 
             _Logger.LogDebug($"Command executed, waiting for completion");
-            var output = await process.StandardOutput.ReadToEndAsync();
+            while (true)
+            {
+                var output = await process.StandardOutput.ReadLineAsync();
+                if ((output != null) && (output == completedText))
+                    break;
+            }
 
             _Logger.LogDebug("Command completed");
-
         }
 
         private async Task<List<Volume>> GetBackupVolumes(IEnumerable<string> volumeNames)
