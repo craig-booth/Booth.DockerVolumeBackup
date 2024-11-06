@@ -111,9 +111,6 @@ namespace Booth.DockerVolumeBackup.WebApi.Backup
                         _Logger.LogInformation($"Backup of {volumeDefinition.Name} complete");
                     }
 
-                    await RunShellCommand(process, "exit");
-                    await process.WaitForExitAsync();
-
                 };
 
             }
