@@ -7,12 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.1.35" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.10" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Booth.DockerClient\Booth.Docker.csproj" />
+    <ProjectReference Include="..\Booth.DockerVolumeBackup.Application\Booth.DockerVolumeBackup.Application.csproj" />
+    <ProjectReference Include="..\Booth.DockerVolumeBackup.Infrastructure\Booth.DockerVolumeBackup.Infrastructure.csproj" />
     <ProjectReference Include="..\booth.dockervolumebackup.ui\booth.dockervolumebackup.ui.esproj" />
   </ItemGroup>
 

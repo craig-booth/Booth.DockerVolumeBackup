@@ -1,10 +1,13 @@
-﻿
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.Extensions.Options;
 
-using Booth.DockerVolumeBackup.WebApi.Models;
-using Booth.DockerVolumeBackup.WebApi.Services;
-using Booth.DockerVolumeBackup.WebApi.Backup;
+using MediatR;
+
+using Booth.DockerVolumeBackup.WebApi.Dtos;
+using Booth.DockerVolumeBackup.Application.Backups.Queries;
+using Booth.DockerVolumeBackup.Application.Backups.Dtos;
+using Booth.DockerVolumeBackup.Application.Backups.Commands;
+using Booth.DockerVolumeBackup.Application.Services;
 
 
 namespace Booth.DockerVolumeBackup.WebApi.EndPoints
@@ -14,50 +17,62 @@ namespace Booth.DockerVolumeBackup.WebApi.EndPoints
 
         public static void AddBackupEndPoints(this WebApplication app)
         {
-            app.MapPost("api/volumes/backup", async (HttpContext context, BackupService backupService) =>
+
+            app.MapGet("api/backups", async (IMediator mediator) =>
+            {   
+                var backups = await mediator.Send(new GetAllBackupsQuery());
+                return Results.Ok(backups);
+            })
+            .WithName("GetAllBackups")
+            .Produces<IReadOnlyList<BackupDto>>(StatusCodes.Status200OK);
+
+
+            app.MapGet("api/backups/{id:int}", async (int id, IMediator mediator) =>
             {
-                if (!context.Request.HasJsonContentType())
-                {
-                    context.Response.StatusCode = StatusCodes.Status415UnsupportedMediaType;
-                    return -1;
-                }
+                var backup = await mediator.Send(new GetBackupQuery(id));
+                if (backup == null)
+                    return Results.NotFound();
 
-                var backupRequest = await context.Request.ReadFromJsonAsync<VolumeBackupRequest>();
-                if (backupRequest == null)
-                {
-                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    return -1;
-                }
+                return Results.Ok(backup);
+            })
+            .WithName("GetBackup")
+            .Produces<BackupDto>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound);
 
-                var backupId = await backupService.BackupVolumesAsync(backupRequest.Volumes);
+            app.MapGet("api/backups/{id:int}/status", async(int id, HttpContext context, CancellationToken cancellationToken, IMediator mediator, IBackupNotificationService notificationService, IOptions<Microsoft.AspNetCore.Http.Json.JsonOptions> serializeOptions) =>
+            {
+                context.Response.Headers.Append("Content-Type", "text/event-stream");
+
+                var backupStatusUpdates = mediator.CreateStream(new GetBackupStatusQuery(id), cancellationToken);
+                await foreach (var backupStatus in backupStatusUpdates)
+                {
+                    await context.Response.WriteAsync($"data: ");
+                    await JsonSerializer.SerializeAsync(context.Response.Body, backupStatus, serializeOptions.Value.SerializerOptions);
+                    await context.Response.WriteAsync($"\n\n");
+                    await context.Response.Body.FlushAsync();
+
+                }
+            });
+
+            app.MapGet("api/backups/{id:int}/log", (int id) =>
+            {
+                throw new NotSupportedException();
+            });
+
+            app.MapPost("api/backups/{id:int}/run", (int id) =>
+            {
+                throw new NotSupportedException();
+            });
+
+
+            app.MapPost("api/backups/run", async (VolumeBackupRequestDto request, IMediator mediator) =>
+            {
+                var backupId = await mediator.Send(new RunAdhocBackupCommand(request.Volumes));
 
                 return backupId;
             });
 
-            app.MapGet("api/backup/{id:int}", async (int id, HttpContext context, CancellationToken cancellationToken, BackupService backupService, IBackupNotificationService notificationService, IOptions<Microsoft.AspNetCore.Http.Json.JsonOptions> serializeOptions) =>
-            {
-                var backupUpdateEvent = new AutoResetEvent(false);
-                var onBackupUpdate = (int backupId) => { backupUpdateEvent.Set(); };
-                notificationService.SubscribeToUpdates(id, onBackupUpdate);
 
-                context.Response.Headers.Append("Content-Type", "text/event-stream");
-
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    backupUpdateEvent.WaitOne();
-
-                    var status = await backupService.GetBackupStatusAsync(id);
-                    if (status == null)
-                        break;
-
-                    await context.Response.WriteAsync($"data: ");
-                    await JsonSerializer.SerializeAsync(context.Response.Body, status, serializeOptions.Value.SerializerOptions);
-                    await context.Response.WriteAsync($"\n\n");
-                    await context.Response.Body.FlushAsync();
-                }
-
-                notificationService.UnsubscribeToUpdates(id, onBackupUpdate);
-            });
 
         }
 

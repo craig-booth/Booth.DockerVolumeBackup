@@ -1,14 +1,16 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Booth.Docker;
-using Booth.DockerVolumeBackup.WebApi.Backup;
-using Booth.DockerVolumeBackup.WebApi.DataProviders;
+
+using Booth.DockerVolumeBackup.Application;
+
 using Booth.DockerVolumeBackup.WebApi.EndPoints;
-using Booth.DockerVolumeBackup.WebApi.Models;
-using Booth.DockerVolumeBackup.WebApi.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace Booth.DockerVolumeBackup.WebApi
 {
+    public interface IApiMarker { }
+
     public class Program
     {
         public static async Task Main(string[] args)
@@ -25,23 +27,11 @@ namespace Booth.DockerVolumeBackup.WebApi
             });
 
             // Add services to the container.
-            builder.Services.AddSingleton<IDockerClient>(DockerClientFactory.CreateUnixClient(null));
-            builder.Services.AddSingleton<IDataContext, DataContext>();
-            builder.Services.AddSingleton<IBackupNotificationService, BackupNotificationService>();
-            builder.Services.AddSingleton<IBackupDataProvider, BackupDataProvider>();
-            builder.Services.AddSingleton<VolumeService>();
-            builder.Services.AddSingleton<BackupService>();
-
-            builder.Services.AddHostedService<BackupBackgroundService>();
+            builder.Services.Configure<AppConfig>(builder.Configuration.GetSection("AppConfig"));
+            builder.Services.AddInfrastructure();
+            builder.Services.AddApplication();
 
             var app = builder.Build();
-
-            // Setup Database
-            using (var scope = app.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<IDataContext>();
-                await SetupDatabase.CreateDatabase(context);
-            }
 
             // Configure the HTTP request pipeline.
             app.UseDefaultFiles();
@@ -52,6 +42,9 @@ namespace Booth.DockerVolumeBackup.WebApi
             app.AddBackupEndPoints();
 
             app.MapFallbackToFile("/index.html");
+
+            // Setup database
+            await app.SetupDatabase();
 
             app.Run();
         }

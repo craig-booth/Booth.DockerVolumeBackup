@@ -1,6 +1,35 @@
-@Booth.DockerVolumeBackup.WebApi_HostAddress = http://localhost:5239
+﻿@Booth.DockerVolumeBackup.WebApi_HostAddress = http://localhost:5239
 
-GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/volumes/
-Accept: application/json
+GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups
+
+###
+
+POST {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups/run
+Content-Type: application/json
+
+{
+  //VolumeBackupRequestDto
+}
+
+###
+
+@id=0
+GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups/{id:int}?id={{id}}
+
+###
+
+GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups/{id:int}/log?id={{id}}
+
+###
+
+POST {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups/{id:int}/run?id={{id}}
+
+###
+
+GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups/{id:int}/status?id={{id}}
+
+###
+
+GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/volumes
 
 ###

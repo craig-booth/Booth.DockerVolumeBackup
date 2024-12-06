@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Booth.Docker", "Booth.DockerClient\Booth.Docker.csproj", "{C6B69841-76DF-48B2-8467-C55EFCC757C4}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5AD6A82A-B8DD-40B3-BBF7-85244EB47926}"
 	ProjectSection(SolutionItems) = preProject
 		Dockerfile = Dockerfile
@@ -16,16 +14,20 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "booth.dockervolumebackup.ui
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Booth.DockerVolumeBackup.WebApi", "Booth.DockerVolumeBackup.WebApi\Booth.DockerVolumeBackup.WebApi.csproj", "{FA619707-1F2F-4CF9-A6E6-77D4EB7EB239}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booth.DockerVolumeBackup.Application", "Booth.DockerVolumeBackup.Application\Booth.DockerVolumeBackup.Application.csproj", "{AE58C859-5C17-4D68-8C52-5D26A095364D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booth.DockerVolumeBackup.Test", "Booth.DockerVolumeBackup.Test\Booth.DockerVolumeBackup.Test.csproj", "{76DC04A0-1315-4FEB-A428-512CC03FCF89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booth.DockerVolumeBackup.Infrastructure", "Booth.DockerVolumeBackup.Infrastructure\Booth.DockerVolumeBackup.Infrastructure.csproj", "{DF91B53B-812C-4A52-A47A-74533DB44AB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Booth.DockerVolumeBackup.Domain", "Booth.DockerVolumeBackup.Domain\Booth.DockerVolumeBackup.Domain.csproj", "{CE93E2D6-E9CC-4F3B-B52A-DC2BAEB78882}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C6B69841-76DF-48B2-8467-C55EFCC757C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C6B69841-76DF-48B2-8467-C55EFCC757C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C6B69841-76DF-48B2-8467-C55EFCC757C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C6B69841-76DF-48B2-8467-C55EFCC757C4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{28AC8723-1E02-43EB-A655-5110C48C05CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{28AC8723-1E02-43EB-A655-5110C48C05CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28AC8723-1E02-43EB-A655-5110C48C05CD}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
@@ -36,6 +38,22 @@ Global
 		{FA619707-1F2F-4CF9-A6E6-77D4EB7EB239}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA619707-1F2F-4CF9-A6E6-77D4EB7EB239}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA619707-1F2F-4CF9-A6E6-77D4EB7EB239}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE58C859-5C17-4D68-8C52-5D26A095364D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE58C859-5C17-4D68-8C52-5D26A095364D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE58C859-5C17-4D68-8C52-5D26A095364D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE58C859-5C17-4D68-8C52-5D26A095364D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76DC04A0-1315-4FEB-A428-512CC03FCF89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76DC04A0-1315-4FEB-A428-512CC03FCF89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76DC04A0-1315-4FEB-A428-512CC03FCF89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76DC04A0-1315-4FEB-A428-512CC03FCF89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF91B53B-812C-4A52-A47A-74533DB44AB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF91B53B-812C-4A52-A47A-74533DB44AB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF91B53B-812C-4A52-A47A-74533DB44AB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF91B53B-812C-4A52-A47A-74533DB44AB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE93E2D6-E9CC-4F3B-B52A-DC2BAEB78882}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE93E2D6-E9CC-4F3B-B52A-DC2BAEB78882}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE93E2D6-E9CC-4F3B-B52A-DC2BAEB78882}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE93E2D6-E9CC-4F3B-B52A-DC2BAEB78882}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
