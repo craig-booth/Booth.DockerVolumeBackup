@@ -11,18 +11,21 @@ using Booth.DockerVolumeBackup.Test.Fixtures.Factories;
 
 namespace Booth.DockerVolumeBackup.Test.Fixtures.Mocks
 {
-    internal static class DockerClientMock
+    internal class DockerFactoryMock: IDockerClientFactory
     {
-
-        public static IDockerClient CreateMock()
+        private IDockerClient _DockerClient;
+        public DockerFactoryMock()
         {
             var volumeResource = Substitute.For<IVolumeResource>();
             volumeResource.ListAsync().Returns(VolumeFactory.Generate(10));
 
-            var dockerClient = Substitute.For<IDockerClient>();
-            dockerClient.Volumes.Returns(volumeResource);
+            _DockerClient = Substitute.For<IDockerClient>();
+            _DockerClient.Volumes.Returns(volumeResource);
+        }
 
-            return dockerClient;
+        public IDockerClient CreateClient()
+        {
+            return _DockerClient;
         }
     }
 }

@@ -4,8 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
+using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Infrastructure.Docker;
 using Booth.DockerVolumeBackup.Infrastructure.Database;
+using Booth.DockerVolumeBackup.Infrastructure.Repositories;
+using Booth.DockerVolumeBackup.Infrastructure.Services;
 
 namespace Booth.DockerVolumeBackup.Application
 {
@@ -25,6 +28,11 @@ namespace Booth.DockerVolumeBackup.Application
             services.AddSingleton<IDockerClientFactory, DockerClientFactory>();
             services.AddSingleton<IDockerClient>((services) => services.GetRequiredService<IDockerClientFactory>().CreateClient());
             services.AddSingleton<IDataContext, DataContext>();
+            services.AddSingleton<IBackupRepository, BackupRepository>();
+            services.AddSingleton<IScheduleRepository, ScheduleRepository>();
+            services.AddSingleton<IDockerService, DockerService>();
+            services.AddTransient<IMountPointBackupService,MountPointBackupService>();
+
 
             return services;
         }

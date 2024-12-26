@@ -8,7 +8,6 @@
         public int? ScheduleId { get; set; }
         public string ScheduleName { get; set; } = string.Empty;
         public Status Status { get; set; }
-        public DateTimeOffset? ScheduledTime { get; set; }
         public DateTimeOffset? StartTime { get; set; }
         public DateTimeOffset? EndTime { get; set; }
 

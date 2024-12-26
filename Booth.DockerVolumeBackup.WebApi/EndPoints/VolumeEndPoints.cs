@@ -1,6 +1,10 @@
 ﻿using MediatR;
+using ErrorOr;
+
+
 using Booth.DockerVolumeBackup.Application.Volumes.Dtos;
 using Booth.DockerVolumeBackup.Application.Volumes.Queries;
+using Booth.DockerVolumeBackup.WebApi.Extensions;
 
 
 namespace Booth.DockerVolumeBackup.WebApi.EndPoints
@@ -12,12 +16,10 @@ namespace Booth.DockerVolumeBackup.WebApi.EndPoints
         {
             app.MapGet("api/volumes", async (IMediator mediator) =>
             {
-                var volumes = await mediator.Send(new GetAllVolumesQuery());
-
-                return volumes;
+                var result = await mediator.Send(new GetAllVolumesQuery());
+                return result.Match(value => Results.Ok(value), errors => ErrorResult.Error(errors));
             })
-            .WithName("GetAllVolumes")
-            .Produces<IReadOnlyList<VolumeDto>>(StatusCodes.Status200OK);
+            .WithName("GetAllVolumes");
         }
 
 

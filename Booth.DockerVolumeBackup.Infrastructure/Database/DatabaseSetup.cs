@@ -3,18 +3,16 @@
 using Dapper;
 using Bogus;
 
+using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Infrastructure.Docker;
-using Booth.DockerVolumeBackup.Domain;
-using System.Collections;
 using Booth.DockerVolumeBackup.Infrastructure.Docker.Models;
-using System.Net.WebSockets;
-using System;
+using Booth.DockerVolumeBackup.Domain.Models;
 
 namespace Booth.DockerVolumeBackup.Infrastructure.Database
 {
     internal class DatabaseSetup(IDataContext context, IDockerClient dockerClient)
     {
-        private Faker _Faker;
+        private Faker? _Faker;
         public async Task CreateDatabase()
         {
             using (var connection = context.CreateConnection())
@@ -25,7 +23,6 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
                         BackupId        INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                         Status          INTEGER NOT NULL,
                         ScheduleId      INTEGER,
-                        ScheduledTime   TIMESTAMP,
                         StartTime       TIMESTAMP,
                         EndTime         TIMESTAMP
                     );
@@ -41,9 +38,23 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
 
                     CREATE TABLE IF NOT EXISTS BackupSchedule (
                         ScheduleId      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                        Name            TEXT NOT NULL,               
                         Enabled         INTEGER NOT NULL,
-                        Days            INTEGER NOT NULL,
+                        Sunday          INTEGER NOT NULL,
+                        Monday          INTEGER NOT NULL,
+                        Tuesday         INTEGER NOT NULL,
+                        Wednesday       INTEGER NOT NULL,
+                        Thursday        INTEGER NOT NULL,
+                        Friday          INTEGER NOT NULL,
+                        Saturday        INTEGER NOT NULL,
                         Time            TIME NOT NULL
+                    );
+
+                    
+                    CREATE TABLE IF NOT EXISTS BackupScheduleVolume (
+                        BackupScheduleVolumeId      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                        ScheduleId      INTEGER NOT NULL,               
+                        Volume          TEXT
                     );
                     """;
 
@@ -52,31 +63,41 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
         }
 
         public async Task SeedDatabase()
-        {
-            Randomizer.Seed = new Random(1312);
-            _Faker = new Faker();
-       
+        {       
             var volumes = await dockerClient.Volumes.ListAsync();
+            var volumeNames = volumes.Select(x => x.Name).ToList(); ;
 
             using (var connection = context.CreateConnection())
             {
                 // Clear existing data
-                await connection.ExecuteAsync("DELETE FROM BackupSchedule");
-                await connection.ExecuteAsync("DELETE FROM Backup");
-                await connection.ExecuteAsync("DELETE FROM BackupVolume");
+                await connection.ExecuteAsync("DELETE FROM BackupSchedule;");
+                await connection.ExecuteAsync("DELETE FROM BackupScheduleVolume;");
+                await connection.ExecuteAsync("DELETE FROM Backup;");
+                await connection.ExecuteAsync("DELETE FROM BackupVolume;");
+                await connection.ExecuteAsync("UPDATE sqlite_sequence SET seq = 0;");
 
-                var schedules = await SeedSchedules(connection);
+                var schedules = await SeedSchedules(connection, volumeNames);
 
-                await SeedBackups(connection, schedules, volumes);
+                await SeedBackups(connection, schedules);
             }
         }
 
-        private async Task<List<BackupSchedule>> SeedSchedules(IDbConnection connection)
+        private async Task<List<(BackupSchedule schedule, List<string> volumes)>> SeedSchedules(IDbConnection connection, List<string> volumes)
         {
+            Randomizer.Seed = new Random(1312);
+            _Faker = new Faker();
+
             string ADD_SCHEDULE_SQL = """
-                INSERT INTO BackupSchedule (Enabled, Days, Time)
-                    VALUES (@Enabled, @Days, @Time) RETURNING RowId;
+                INSERT INTO BackupSchedule (Enabled, Name, Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Time)
+                    VALUES (@Enabled, @Name, @Sunday, @Monday, @Tuesday, @Wednesday, @Thursday, @Friday, @Saturday, @Time) RETURNING RowId;
                 """;
+
+            string ADD_SCHEDULEVOLME_SQL = """
+                INSERT INTO BackupScheduleVolume (ScheduleId, Volume)
+                    VALUES (@ScheduleId, @Volume) RETURNING RowId;
+                """;
+
+            var addedSchedules = new List<(BackupSchedule schedule, List<string> volumes)>();
 
             // Add schedules
             var faker = new Faker<BackupSchedule>()
@@ -84,8 +105,15 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
                 {
                     var schedule = new BackupSchedule()
                     {
+                        Name = f.Name.FirstName(),
                         Enabled = f.Random.Bool(0.9f),
-                        Days = new BitArray([true, false, false, false, false, true, false]),
+                        Sunday = f.Random.Bool(0.25f),
+                        Monday = f.Random.Bool(0.25f),
+                        Tuesday = f.Random.Bool(0.25f),
+                        Wednesday = f.Random.Bool(0.25f),
+                        Thursday = f.Random.Bool(0.25f),
+                        Friday = f.Random.Bool(0.25f),
+                        Saturday = f.Random.Bool(0.25f),
                         Time = f.Date.BetweenTimeOnly(TimeOnly.MinValue, TimeOnly.MaxValue), 
                     };
 
@@ -95,16 +123,26 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
             foreach (var schedule in schedules)
             {
                 schedule.ScheduleId = await connection.ExecuteScalarAsync<int>(ADD_SCHEDULE_SQL, schedule);
+
+                var volumeCount = _Faker.Random.Number(volumes.Count);
+                var scheduleVolumes = _Faker.PickRandom(volumes, volumeCount).ToList();
+
+                foreach (var volume in scheduleVolumes)
+                {
+                    await connection.ExecuteScalarAsync<int>(ADD_SCHEDULEVOLME_SQL, new { ScheduleId = schedule.ScheduleId, Volume = volume});
+                }
+
+                addedSchedules.Add((schedule, scheduleVolumes));
             }
 
-            return schedules;
+            return addedSchedules;
         }
 
-        private async Task SeedBackups(IDbConnection connection, IList<BackupSchedule> schedules, IList<Volume> volumes)
+        private async Task SeedBackups(IDbConnection connection, List<(BackupSchedule schedule, List<string> volumes)> schedules)
         {
             string ADD_BACKUP_SQL = """
-                INSERT INTO Backup (Status, ScheduleId, ScheduledTime, StartTime, EndTime)
-                    VALUES (@Status, @ScheduleId, @ScheduledTime, @StartTime, @EndTime) RETURNING RowId;
+                INSERT INTO Backup (Status, ScheduleId, StartTime, EndTime)
+                    VALUES (@Status, @ScheduleId, @StartTime, @EndTime) RETURNING RowId;
                 """;
 
             string ADD_BACKUPVOLUME_SQL = """
@@ -113,12 +151,9 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
                 """;
 
             var now = DateTimeOffset.UtcNow;
-            foreach (var schedule in schedules)
+            foreach (var (schedule, volumes) in schedules)
             {
                 var scheduledTime = new DateTimeOffset(_Faker.Date.PastDateOnly(1), schedule.Time, new TimeSpan(0));
-
-                var volumeCount = _Faker.Random.Number(volumes.Count);
-                var backupVolumes = _Faker.PickRandom(volumes, volumeCount);
 
                 while (scheduledTime < now)
                 {
@@ -126,21 +161,20 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
                     {
                         Status = Status.Complete,
                         ScheduleId = schedule.ScheduleId,
-                        ScheduledTime = scheduledTime,
                         StartTime = scheduledTime,
                         EndTime = scheduledTime.AddHours(1)
                     };
                     backup.BackupId = await connection.ExecuteScalarAsync<int>(ADD_BACKUP_SQL, backup);
 
-                    foreach (var volume in backupVolumes)
+                    foreach (var volume in volumes)
                     {
                         var backupVolume = new BackupVolume()
                         {
                             BackupId = backup.BackupId,
-                            Volume = volume.Name,
+                            Volume = volume,
                             Status = Status.Complete,
                             StartTime = backup.StartTime,
-                            EndTime = backup.EndTime.AddMinutes(12)
+                            EndTime = backup.EndTime?.AddMinutes(12)
                         };
 
                         backupVolume.BackupVolumeId = await connection.ExecuteScalarAsync<int>(ADD_BACKUPVOLUME_SQL, backupVolume);

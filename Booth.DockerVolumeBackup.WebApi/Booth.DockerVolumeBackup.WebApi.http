@@ -1,6 +1,59 @@
 ﻿@Booth.DockerVolumeBackup.WebApi_HostAddress = http://localhost:5239
+@scheduleId=1
+@backupId=1
+
+
+GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/schedules
+
+###
+
+GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/schedules/{{scheduleId}}
+
+###
+
+POST {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/schedules
+Content-Type: application/json
+
+{
+    "Name": "",
+    "Enabled": true,
+    "Days": { "Sunday": true, "Monday": false, "Tuesday": false, "Wednesday": false, "Thursday": false, "Friday": false, "Saturday": false },
+    "Time": "15:30:00",
+    "Volumes": [ "Volume1", "Volume2" ]
+}
+###
+
+PUT {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/schedules/{{scheduleId}}
+Content-Type: application/json
+
+{ 
+    //ScheduleDto
+}
+###
+
+DELETE {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/schedules/{{scheduleId}}
+
+###
+
 
 GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups
+
+###
+
+GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups?scheduleId={{scheduleId
+}}
+
+###
+
+GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups/{{backupId}}
+
+###
+
+GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups/{{backupId}}/log
+
+###
+
+POST {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups/{{backupId}}/run
 
 ###
 
@@ -13,20 +66,7 @@ Content-Type: application/json
 
 ###
 
-@id=0
-GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups/{id:int}?id={{id}}
-
-###
-
-GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups/{id:int}/log?id={{id}}
-
-###
-
-POST {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups/{id:int}/run?id={{id}}
-
-###
-
-GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups/{id:int}/status?id={{id}}
+GET {{Booth.DockerVolumeBackup.WebApi_HostAddress}}/api/backups/{{id}}/status
 
 ###
 

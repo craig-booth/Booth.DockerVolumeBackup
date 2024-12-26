@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Booth.DockerVolumeBackup.Application\Booth.DockerVolumeBackup.Application.csproj" />
     <ProjectReference Include="..\Booth.DockerVolumeBackup.Domain\Booth.DockerVolumeBackup.Domain.csproj" />
   </ItemGroup>
 

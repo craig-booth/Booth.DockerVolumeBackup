@@ -6,8 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Bogus;
-
-using Booth.DockerVolumeBackup.Domain;
+using Booth.DockerVolumeBackup.Domain.Models;
 
 namespace Booth.DockerVolumeBackup.Test.Fixtures.Factories
 {
@@ -19,9 +18,14 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures.Factories
             {
                 ScheduleId = f.Random.Number(1, 100),
                 Enabled = f.Random.Bool(0.9f),
-                Days = new BitArray([true, false, false, false, false, true, false]),
+                Sunday = f.Random.Bool(0.25f),
+                Monday = f.Random.Bool(0.25f),
+                Tuesday = f.Random.Bool(0.25f),
+                Wednesday = f.Random.Bool(0.25f),
+                Thursday = f.Random.Bool(0.25f),
+                Friday = f.Random.Bool(0.25f),
+                Saturday = f.Random.Bool(0.25f),
                 Time = f.Date.BetweenTimeOnly(TimeOnly.MinValue, TimeOnly.MaxValue),
-                FirstRunTime = f.Date.PastOffset(1)
             };
 
             return schedule;

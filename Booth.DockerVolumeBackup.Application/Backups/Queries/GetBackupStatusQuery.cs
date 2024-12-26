@@ -1,49 +1,20 @@
 ﻿
 using Dapper;
 using MediatR;
+using ErrorOr;
 
-using Booth.DockerVolumeBackup.Infrastructure.Database;
+using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Application.Backups.Dtos;
-using Booth.DockerVolumeBackup.Application.Services;
-using System.Runtime.CompilerServices;
 
 
 namespace Booth.DockerVolumeBackup.Application.Backups.Queries
 {
-    public record GetBackupStatusQuery(int BackupId) : IStreamRequest<BackupStatusDto?>;
+    public record GetBackupStatusQuery(int BackupId) : IRequest<ErrorOr<BackupStatusDto>>;
 
-    internal class GetBackupStatusQueryHandler(IDataContext dataContext, IBackupNotificationService notificationService) : IStreamRequestHandler<GetBackupStatusQuery, BackupStatusDto?>
+    internal class GetBackupStatusQueryHandler(IDataContext dataContext) : IRequestHandler<GetBackupStatusQuery, ErrorOr<BackupStatusDto>>
     {
 
-        public async IAsyncEnumerable<BackupStatusDto?> Handle(GetBackupStatusQuery request, [EnumeratorCancellation] CancellationToken cancellationToken)
-        {
-            BackupStatusDto? backupStatus = await GetBackupStatus(request.BackupId);
-            if ((backupStatus != null) && ((backupStatus.Status == Status.Queued) || (backupStatus.Status == Status.Active)))
-            {
-                var backupUpdateEvent = new AutoResetEvent(false);
-                var onBackupUpdate = (int backupId) => { backupUpdateEvent.Set(); };
-                notificationService.SubscribeToUpdates(onBackupUpdate);
-
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    backupUpdateEvent.WaitOne();
-
-                    backupStatus = await GetBackupStatus(request.BackupId);
-                    if (backupStatus == null) 
-                        break;
-
-                    if ((backupStatus.Status == Status.Complete) || (backupStatus.Status == Status.Error))
-                        break;
-
-                    yield return backupStatus;
-                }
-
-                notificationService.UnsubscribeToUpdates(onBackupUpdate);
-            }
-            yield return backupStatus;           
-        }
-
-        private async Task<BackupStatusDto?> GetBackupStatus(int backupId)
+        public async Task<ErrorOr<BackupStatusDto>> Handle(GetBackupStatusQuery request, CancellationToken cancellationToken)
         {
             BackupStatusDto? backupStatus = null;
 
@@ -58,15 +29,16 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries
                     FROM BackupVolume
                     WHERE BackupId = @BackupId;
                 """;
-                var multi = await connection.QueryMultipleAsync(sql, new { BackupId = backupId });
+                var multi = await connection.QueryMultipleAsync(sql, new { BackupId = request.BackupId });
 
-                backupStatus = await multi.ReadSingleAsync<BackupStatusDto>();
+                backupStatus = await multi.ReadSingleOrDefaultAsync<BackupStatusDto>();
                 var backupVolumes = await multi.ReadAsync<VolumeBackupStatusDto>();
 
-                backupStatus.Volumes.AddRange(backupVolumes);
+                if (backupStatus != null)
+                    backupStatus.Volumes.AddRange(backupVolumes);
             }
 
-            return backupStatus;
+            return backupStatus != null ? backupStatus : Error.NotFound();
         }
     }
 }

@@ -1,21 +1,21 @@
 ﻿using System.Globalization;
 using Dapper;
 using MediatR;
+using ErrorOr;
 
-using Booth.DockerVolumeBackup.Infrastructure.Docker;
-using Booth.DockerVolumeBackup.Infrastructure.Database;
+using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Application.Volumes.Dtos;
 
 namespace Booth.DockerVolumeBackup.Application.Volumes.Queries
 {
-    public record GetAllVolumesQuery : IRequest<IReadOnlyList<VolumeDto>>;
+    public record GetAllVolumesQuery : IRequest<ErrorOr<IReadOnlyList<VolumeDto>>>;
 
-    internal class GetAllVolumesQueryHandler(IDockerClient dockerClient, IDataContext dataContext) : IRequestHandler<GetAllVolumesQuery, IReadOnlyList<VolumeDto>>
+    internal class GetAllVolumesQueryHandler(IDockerService dockerService, IDataContext dataContext) : IRequestHandler<GetAllVolumesQuery, ErrorOr<IReadOnlyList<VolumeDto>>>
     {
-        public async Task<IReadOnlyList<VolumeDto>> Handle(GetAllVolumesQuery request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<IReadOnlyList<VolumeDto>>> Handle(GetAllVolumesQuery request, CancellationToken cancellationToken)
         {
-            var volumes = await dockerClient.Volumes.ListAsync();
-            var queryResult = volumes.Select(x => new VolumeDto { Name = x.Name, Size = x.UsageData.Size }).ToList();
+            var volumes = await dockerService.GetVolumesAsync();
+            var queryResult = volumes.Select(x => new VolumeDto { Name = x.Name, Size = x.Size }).ToList();
 
             // Get the last backup date from the database
             using (var connection = dataContext.CreateConnection())

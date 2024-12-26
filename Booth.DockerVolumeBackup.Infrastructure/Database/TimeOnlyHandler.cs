@@ -9,12 +9,12 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
     {
         public override TimeOnly Parse(object value)
         {
-            return TimeOnly.Parse((string)value, null, DateTimeStyles.AssumeUniversal);
+            return TimeOnly.Parse((string)value);
         }
 
         public override void SetValue(IDbDataParameter parameter, TimeOnly value)
         {
-            parameter.Value = value.ToString("hh:mm:ss");
+            parameter.Value = value.ToString("HH:mm:ss");
         }
     }
 }

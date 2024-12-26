@@ -1,5 +1,5 @@
 ﻿using System.Collections.Concurrent;
-using Booth.DockerVolumeBackup.Application.Backups.Events;
+using Booth.DockerVolumeBackup.Domain.Events;
 using MediatR;
 
 namespace Booth.DockerVolumeBackup.Application.Services

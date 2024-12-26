@@ -1,14 +1,13 @@
 ﻿using MediatR;
 using Dapper;
 
-using Booth.DockerVolumeBackup.Infrastructure.Database;
-using Booth.DockerVolumeBackup.Application.Backups.Dtos;
+using Booth.DockerVolumeBackup.Application.Interfaces;
+using Booth.DockerVolumeBackup.Domain.Models;
+using Booth.DockerVolumeBackup.Domain.Events;
 
 
 namespace Booth.DockerVolumeBackup.Application.Backups.Events
 {
-    public record BackupStatusChangedEvent(int BackupId, Status Status) : INotification;
-
     public class BackupStatusChangedEventHandler(IDataContext dataContext) : INotificationHandler<BackupStatusChangedEvent>
     {
         public async Task Handle(BackupStatusChangedEvent notification, CancellationToken cancellationToken)

@@ -1,24 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json;
+using System.Net.Http.Json;
 
 using Xunit;
 using FluentAssertions;
-
-using Booth.DockerVolumeBackup.Test.Fixtures;
-using System.Net.Http.Json;
-using Booth.DockerVolumeBackup.Application.Volumes.Dtos;
 using FluentAssertions.Execution;
 
+using Booth.DockerVolumeBackup.Test.Fixtures;
+using Booth.DockerVolumeBackup.Application.Volumes.Dtos;
 
-namespace Booth.DockerVolumeBackup.Test.Volumes
+namespace Booth.DockerVolumeBackup.Test.EndPoints
 {
 
     [Collection(nameof(WebApiFixtureCollection))]
-    public class GetAllVolumesTests(WebApiFixture fixture)
+    public class VolumeTests(WebApiFixture fixture)
     {
 
         [Fact]

@@ -7,6 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Booth.DockerVolumeBackup.WebApi;
 using Booth.DockerVolumeBackup.Infrastructure.Docker;
 using Booth.DockerVolumeBackup.Test.Fixtures.Mocks;
+using Booth.DockerVolumeBackup.Infrastructure.Database;
+using Booth.DockerVolumeBackup.Application.Interfaces;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Booth.DockerVolumeBackup.Test.Fixtures
 {
@@ -17,7 +21,9 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures
  
             builder.ConfigureTestServices(services =>
             {
-                services.AddSingleton<IDockerClient>(DockerClientMock.CreateMock());
+                services.AddSingleton<IDockerClientFactory, DockerFactoryMock>();
+                services.AddSingleton<IDataContext, DataContextMock>();
+                services.RemoveAll<IHostedService>();
             });
         }
     }

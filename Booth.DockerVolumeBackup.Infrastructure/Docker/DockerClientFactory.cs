@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace Booth.DockerVolumeBackup.Infrastructure.Docker
 {
-    internal interface IDockerClientFactory
+    public interface IDockerClientFactory
     {
         IDockerClient CreateClient();
     }
@@ -42,7 +42,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Docker
             }
             else
             {
-                unixUrl = url;
+                unixUrl = url ?? "";
             }
 
             return CreateUnixClient(unixUrl);

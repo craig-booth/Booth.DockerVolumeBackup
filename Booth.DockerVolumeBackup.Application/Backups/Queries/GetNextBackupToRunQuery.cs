@@ -1,15 +1,16 @@
 ﻿using MediatR;
 using Dapper;
+using ErrorOr;
 
-using Booth.DockerVolumeBackup.Infrastructure.Database;
+using Booth.DockerVolumeBackup.Application.Interfaces;
 
 namespace Booth.DockerVolumeBackup.Application.Backups.Queries
 {
-    public record GetNextBackupToRunQuery() : IRequest<int>;
+    public record GetNextBackupToRunQuery() : IRequest<ErrorOr<int>>;
 
-    internal class GetNextBackupToRunQueryHandler(IDataContext dataContext) : IRequestHandler<GetNextBackupToRunQuery, int>
+    internal class GetNextBackupToRunQueryHandler(IDataContext dataContext) : IRequestHandler<GetNextBackupToRunQuery, ErrorOr<int>>
     {
-        public async Task<int> Handle(GetNextBackupToRunQuery request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<int>> Handle(GetNextBackupToRunQuery request, CancellationToken cancellationToken)
         {
             int backupId = 0;
 
@@ -25,7 +26,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries
                 backupId = await connection.ExecuteScalarAsync<int>(sql);
             }
 
-            return backupId;
+            return backupId > 0 ? backupId : Error.NotFound();
         }
     }
 }

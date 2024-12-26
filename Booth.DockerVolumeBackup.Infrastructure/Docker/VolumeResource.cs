@@ -27,7 +27,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Docker
         public async Task<IList<Volume>> ListAsync()
         {
             var response = await _HttpClient.GetFromJsonAsync<VolumeResponse>("/system/df?type=volume");
-            return response.Volumes;
+            return response != null ? response.Volumes : [];
         }
     }
 }

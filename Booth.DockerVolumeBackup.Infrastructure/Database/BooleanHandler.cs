@@ -9,7 +9,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
     {
         public override bool Parse(object value)
         {
-            return ((int)value == 1);
+            return ((long)value == 1);
         }
 
         public override void SetValue(IDbDataParameter parameter, bool value)

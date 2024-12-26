@@ -6,6 +6,9 @@ using Xunit;
 
 using Booth.DockerVolumeBackup.Infrastructure.Database;
 using Booth.DockerVolumeBackup.Infrastructure.Docker;
+using Microsoft.AspNetCore.Http.Json;
+using System.Text.Json;
+using Microsoft.Extensions.Options;
 
 namespace Booth.DockerVolumeBackup.Test.Fixtures
 {
@@ -18,8 +21,16 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures
         { 
             _Factory = new WebApiWebFactory();
         }
-
         public HttpClient CreateClient() => _Factory.CreateClient();
+        public JsonSerializerOptions JsonSerializerOptions
+        {
+            get
+            {
+                var options = _Factory.Services.GetRequiredService<IOptions<Microsoft.AspNetCore.Http.Json.JsonOptions>>();
+                return options.Value.SerializerOptions;
+            }
+        }
+            
         public void Dispose()
         {
 

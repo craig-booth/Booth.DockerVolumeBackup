@@ -34,9 +34,20 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Docker
             var responseContent = await response.Content.ReadAsStringAsync();
             var serviceConfig = JsonNode.Parse(responseContent);
 
-            var version = serviceConfig["Version"]["Index"];
+            if (serviceConfig == null)
+                return;
+
+            var version = serviceConfig["Version"]?["Index"];
+            if (version == null) 
+                return;
+
             var specJson = serviceConfig["Spec"];
-            var replicasNode = specJson["Mode"]["Replicated"]["Replicas"];
+            if (specJson == null) 
+                return;
+
+            var replicasNode = specJson["Mode"]?["Replicated"]?["Replicas"];
+            if (replicasNode == null) 
+                return;
             replicasNode.ReplaceWith(scale);
 
             var updatedContent = new StringContent(specJson.ToString(), Encoding.UTF8, "application/json");
