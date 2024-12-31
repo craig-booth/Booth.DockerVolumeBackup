@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
 
 using MediatR;
 using ErrorOr;
 using FluentValidation;
-using Dapper;
 
 using Booth.DockerVolumeBackup.Application.Schedules.Dtos;
 using Booth.DockerVolumeBackup.Application.Interfaces;
@@ -15,7 +14,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
 
     public record UpdateScheduleCommand : IRequest<ErrorOr<bool>>
     {
-        public int Id { get; set; }
+        public int ScheduleId { get; set; }
         public required string Name { get; set; }
         public bool Enabled { get; set; }
         public ScheduleDaysDto Days { get; set; } = new ScheduleDaysDto();
@@ -37,60 +36,29 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
     {
         public async Task<ErrorOr<bool>> Handle(UpdateScheduleCommand request, CancellationToken cancellationToken)
         {
-            
-            using (var connection = dataContext.CreateConnection())
-            {
-                var sql = """
-                    UPDATE BackupSchedule
-                        SET Enabled = @Enabled,
-                            Name = @Name,
-                            Sunday = @Sunday,
-                            Monday = @Monday,
-                            Tuesday = @Tuesday,
-                            Wednesday = @Wednesday,
-                            Thursday = @Thursday,
-                            Friday = @Friday,
-                            Saturday = @Saturday,
-                            Time = @Time
-                    WHERE ScheduleId = @ScheduleId;
-                """;
+            var schedule = await dataContext.Schedules
+                .Where(x => x.ScheduleId == request.ScheduleId)
+                .SingleOrDefaultAsync(cancellationToken);
 
-                var schedule = new BackupSchedule()
-                {
-                    ScheduleId = request.Id,
-                    Name = request.Name,
-                    Enabled = request.Enabled,
-                    Sunday = request.Days.Sunday,
-                    Monday = request.Days.Monday,
-                    Tuesday = request.Days.Tuesday,
-                    Wednesday = request.Days.Wednesday,
-                    Thursday = request.Days.Thursday,
-                    Friday = request.Days.Friday,
-                    Saturday = request.Days.Saturday,
-                    Time = request.Time
-                };
+            if (schedule == null)
+                return Error.NotFound();
 
-                var recordsAffected = await connection.ExecuteAsync(sql, schedule);
-                if (recordsAffected == 0)
-                    return Error.NotFound();
+            schedule.Name = request.Name;
+            schedule.Enabled = request.Enabled;
+            schedule.Sunday = request.Days.Sunday;
+            schedule.Monday = request.Days.Monday;
+            schedule.Tuesday = request.Days.Tuesday;
+            schedule.Wednesday = request.Days.Wednesday;
+            schedule.Thursday = request.Days.Thursday;
+            schedule.Friday = request.Days.Friday;
+            schedule.Saturday = request.Days.Saturday;
+            schedule.Time = request.Time;
 
-                sql = """
-                    DELETE FROM BackupScheduleVolume WHERE ScheduleId = @ScheduleId;
-                """;
-                await connection.ExecuteAsync(sql, new { ScheduleId = request.Id });
+            schedule.Volumes.RemoveAll(x => !request.Volumes.Contains(x.Volume));
+            schedule.Volumes.AddRange(request.Volumes.Where(x => !schedule.Volumes.Any(v => v.Volume == x)).Select(x => new BackupScheduleVolume { ScheduleId = schedule.ScheduleId, Volume = x }));
 
-                sql = """
-                    INSERT INTO BackupScheduleVolume (ScheduleId, Volume)
-                    VALUES (@ScheduleId, @Volume) RETURNING RowId;
-                """;
-                foreach (var volume in request.Volumes)
-                {
-                    await connection.ExecuteAsync(sql, new { ScheduleId = request.Id, Volume = volume });
-                }
-
-                return true;
-            }
-
+            await dataContext.SaveChangesAsync(cancellationToken);
+            return true;
         }
     }
 }

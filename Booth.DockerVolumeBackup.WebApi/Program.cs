@@ -28,8 +28,8 @@ namespace Booth.DockerVolumeBackup.WebApi
 
             // Add services to the container.
             builder.Services.Configure<AppConfig>(builder.Configuration.GetSection("AppConfig"));
-            builder.Services.AddInfrastructure();
-            builder.Services.AddApplication();
+            builder.AddInfrastructure();
+            builder.AddApplication();
 
             var app = builder.Build();
 

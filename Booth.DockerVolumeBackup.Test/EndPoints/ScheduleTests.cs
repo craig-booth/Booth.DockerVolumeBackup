@@ -1,23 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net;
+using System.Net.Http.Json;
 
 using Xunit;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using FluentAssertions.Web;
 
 using Booth.DockerVolumeBackup.Test.Fixtures;
-using Booth.DockerVolumeBackup.Application.Backups.Dtos;
-using System.Net.Http.Json;
 using Booth.DockerVolumeBackup.Application.Schedules.Dtos;
-using System.Net;
-using System.Net.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 
 namespace Booth.DockerVolumeBackup.Test.EndPoints
 {
@@ -39,9 +29,6 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 schedules[0].ScheduleId.Should().Be(1);
                 schedules[0].Name.Should().Be("Caleigh");
                 schedules[0].Enabled.Should().BeTrue();
-                schedules[0].Days.Should().BeEquivalentTo(new {Sunday = false, Monday = false, Tuesday = false, Wednesday = true, Thursday = false, Friday = false, Saturday = false});
-                schedules[0].Time.Should().Be(new TimeOnly(1, 48, 12));
-                schedules[0].Volumes.Should().HaveCount(9);
             }
         }
 

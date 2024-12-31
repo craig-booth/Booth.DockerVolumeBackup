@@ -3,12 +3,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore.Sqlite;
 
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Infrastructure.Docker;
 using Booth.DockerVolumeBackup.Infrastructure.Database;
-using Booth.DockerVolumeBackup.Infrastructure.Repositories;
 using Booth.DockerVolumeBackup.Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Booth.DockerVolumeBackup.Application
 {
@@ -23,18 +24,16 @@ namespace Booth.DockerVolumeBackup.Application
     public static class DependencyInjection
     {
 
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+        public static IHostApplicationBuilder AddInfrastructure(this IHostApplicationBuilder builder)
         {
-            services.AddSingleton<IDockerClientFactory, DockerClientFactory>();
-            services.AddSingleton<IDockerClient>((services) => services.GetRequiredService<IDockerClientFactory>().CreateClient());
-            services.AddSingleton<IDataContext, DataContext>();
-            services.AddSingleton<IBackupRepository, BackupRepository>();
-            services.AddSingleton<IScheduleRepository, ScheduleRepository>();
-            services.AddSingleton<IDockerService, DockerService>();
-            services.AddTransient<IMountPointBackupService,MountPointBackupService>();
+            builder.Services.AddTransient<IDataContext, DataContext>();
+            builder.Services.AddSingleton<IDockerClientFactory, DockerClientFactory>();
+            builder.Services.AddSingleton<IDockerClient>((services) => services.GetRequiredService<IDockerClientFactory>().CreateClient());
+            builder.Services.AddSingleton<IDockerService, DockerService>();
+            builder.Services.AddTransient<IMountPointBackupService,MountPointBackupService>();
 
 
-            return services;
+            return builder;
         }
 
         public static async Task SetupDatabase(this IHost host)

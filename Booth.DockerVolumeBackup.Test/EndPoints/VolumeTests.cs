@@ -6,7 +6,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 
 using Booth.DockerVolumeBackup.Test.Fixtures;
-using Booth.DockerVolumeBackup.Application.Volumes.Dtos;
+using Booth.DockerVolumeBackup.Application.Volumes.Queries.GetAllVolumes;
 
 namespace Booth.DockerVolumeBackup.Test.EndPoints
 {

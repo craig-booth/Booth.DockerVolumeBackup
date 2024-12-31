@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
 
 using MediatR;
-using Dapper;
 using FluentValidation;
 using ErrorOr;
 
 using Booth.DockerVolumeBackup.Application.Schedules.Dtos;
-using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Domain.Models;
+using Booth.DockerVolumeBackup.Application.Interfaces;
 
 
 namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
@@ -33,7 +32,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
     }
 
 
-    internal class CreateScheduleCommandHandler(IScheduleRepository repository) : IRequestHandler<CreateScheduleCommand, ErrorOr<int>>
+    internal class CreateScheduleCommandHandler(IDataContext dataContext) : IRequestHandler<CreateScheduleCommand, ErrorOr<int>>
     {
         public async Task<ErrorOr<int>> Handle(CreateScheduleCommand request, CancellationToken cancellationToken)
         {
@@ -52,9 +51,10 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
             };
             schedule.Volumes.AddRange(request.Volumes.Select(x => new BackupScheduleVolume() { Volume = x }));
 
-            var scheduleId = await repository.Add(schedule);
+            dataContext.Schedules.Add(schedule);
+            await dataContext.SaveChangesAsync(cancellationToken);
 
-            return scheduleId;
+            return schedule.ScheduleId;
 
         }
     }

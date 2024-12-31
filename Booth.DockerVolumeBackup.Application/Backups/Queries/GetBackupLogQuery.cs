@@ -3,7 +3,7 @@
 using MediatR;
 using ErrorOr;
 
-namespace Booth.DockerVolumeBackup.Application.Backups.Queries
+namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupLog
 {
     public record GetBackupLogQuery : IRequest<string>;
 

@@ -13,32 +13,41 @@ namespace Booth.DockerVolumeBackup.Application.Services
 {
     public interface IBackupService
     {
-        Task RunBackupAsync(Backup backup, CancellationToken stoppingToken);
+        Task RunBackupAsync(int backupId, CancellationToken stoppingToken);
     }
 
     internal class BackupService : IBackupService
     {
-
+        private readonly IDataContext _DataContext;
         private readonly IDockerService _DockerService;
         private readonly IMountPointBackupService _MountPointBackupService;
         private readonly IPublisher _Publisher;
         private readonly ILogger<BackupService> _Logger;
-        public BackupService(IDockerService dockerService, IMountPointBackupService mountPointBackupService, IPublisher publisher, ILogger<BackupService> logger)
+        public BackupService(IDataContext dataContext, IDockerService dockerService, IMountPointBackupService mountPointBackupService, IPublisher publisher, ILogger<BackupService> logger)
         {
+            _DataContext = dataContext;
             _DockerService = dockerService;
             _MountPointBackupService = mountPointBackupService;
             _Publisher = publisher;
             _Logger = logger;
         }
 
-        public async Task RunBackupAsync(Backup backup, CancellationToken stoppingToken)
+        public async Task RunBackupAsync(int backupId, CancellationToken stoppingToken)
         {
-            _Logger.LogInformation($"Starting backup {backup.BackupId}");
+            var backup = _DataContext.Backups.FirstOrDefault(x => x.BackupId == backupId);
+            if (backup == null)
+            {
+                _Logger.LogError($"Error loading backup definition with ID {backupId}");
+                return;
+            }
+
+            _Logger.LogInformation($"Starting backup {backupId}");
 
             backup.BackupStatusChanged += Backup_BackupStatusChanged;
             backup.BackupVolumeStatusChanged += Backup_BackupVolumeStatusChanged;
                       
             backup.StartBackup();
+            await _DataContext.SaveChangesAsync(stoppingToken);
 
             var volumeNames = backup.Volumes.Select(x => x.Volume);
 
@@ -76,10 +85,12 @@ namespace Booth.DockerVolumeBackup.Application.Services
 
                     _Logger.LogInformation($"Starting backup of volume {volumeDefinition.Name}");
                     backup.StartVolumeBackup(backupVolume.Volume);
+                    await _DataContext.SaveChangesAsync(stoppingToken);
 
                     await _MountPointBackupService.BackupDirectoryAsync(volumeDefinition.MountPoint, $"{backupFolder}/{volumeDefinition.Name}.tar.gz");
 
                     backup.EndVolumeBackup(backupVolume.Volume);
+                    await _DataContext.SaveChangesAsync(stoppingToken);
                     _Logger.LogInformation($"Backup of {volumeDefinition.Name} complete");
                 }
             }
@@ -90,6 +101,7 @@ namespace Booth.DockerVolumeBackup.Application.Services
             }
 
             backup.EndBackup();
+            await _DataContext.SaveChangesAsync(stoppingToken);
             _Logger.LogInformation("Backup complete"); 
         }
 

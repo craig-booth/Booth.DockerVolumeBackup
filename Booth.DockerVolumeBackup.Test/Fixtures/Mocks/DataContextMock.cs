@@ -11,6 +11,8 @@ using NSubstitute;
 using Booth.DockerVolumeBackup.Application;
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Infrastructure.Database;
+using Booth.DockerVolumeBackup.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Booth.DockerVolumeBackup.Test.Fixtures.Mocks
 {
@@ -18,6 +20,10 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures.Mocks
     {
         private readonly IDataContext _Context;
         private readonly IDbConnection _Connection;
+
+        public DbSet<Backup> Backups => _Context.Backups;
+        public DbSet<BackupSchedule> Schedules => _Context.Schedules;
+
         public DataContextMock()
         {
             var appConfig = new AppConfig()
@@ -27,7 +33,8 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures.Mocks
             };
             var config = Substitute.For<IOptions<AppConfig>>();
             config.Value.Returns(appConfig);
-            _Context = new DataContext(config);
+
+            _Context = new DataContext(config);         
 
             // Create connection to keep in memory database open to prevent it being cleaned up
             _Connection = _Context.CreateConnection();
@@ -42,6 +49,21 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures.Mocks
         {
             if (_Connection != null)
                 _Connection.Dispose();
+        }
+
+        public Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+        {
+            return _Context.SaveChangesAsync(cancellationToken);
+        }
+
+        public IQueryable<T> ExecuteSqlQueryAsync<T>(string sql, object[] parameters)
+        {
+            return _Context.ExecuteSqlQueryAsync<T>(sql, parameters);   
+        }
+
+        public Task<int> ExecuteSqlCommandAsync(string sql, object[] parameters, CancellationToken cancellationToken)
+        {
+            return _Context.ExecuteSqlCommandAsync(sql , parameters, cancellationToken);
         }
     }
 }

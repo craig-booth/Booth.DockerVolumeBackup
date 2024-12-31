@@ -1,12 +1,10 @@
 ﻿
 using MediatR;
-using ErrorOr;
 
-using Booth.DockerVolumeBackup.Application.Backups.Dtos;
 using Booth.DockerVolumeBackup.Application.Schedules.Commands;
 using Booth.DockerVolumeBackup.Application.Schedules.Dtos;
-using Booth.DockerVolumeBackup.Application.Schedules.Queries;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Booth.DockerVolumeBackup.Application.Schedules.Queries.GetSchedule;
+using Booth.DockerVolumeBackup.Application.Schedules.Queries.GetAllSchedules;
 using Booth.DockerVolumeBackup.WebApi.Extensions;
 
 
@@ -33,7 +31,7 @@ namespace Booth.DockerVolumeBackup.WebApi.EndPoints
             .WithName("GetSchedule");
 
 
-            app.MapPost("api/schedules", async (ScheduleDto schedule, IMediator mediator) =>
+            app.MapPost("api/schedules", async (Application.Schedules.Dtos.ScheduleDto schedule, IMediator mediator) =>
             {
                 var result = await mediator.Send(new CreateScheduleCommand()
                 {
@@ -48,11 +46,11 @@ namespace Booth.DockerVolumeBackup.WebApi.EndPoints
             .WithName("CreateSchedule");
 
 
-            app.MapPut("api/schedules/{id:int}", async (int id, ScheduleDto schedule, IMediator mediator) =>
+            app.MapPut("api/schedules/{id:int}", async (int id, Application.Schedules.Dtos.ScheduleDto schedule, IMediator mediator) =>
             {
                 var result = await mediator.Send(new UpdateScheduleCommand()
                 {
-                    Id = id,
+                    ScheduleId = id,
                     Name = schedule.Name,
                     Enabled = schedule.Enabled,
                     Days = schedule.Days,

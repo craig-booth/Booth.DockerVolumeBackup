@@ -2,7 +2,7 @@
 using System.Globalization;
 using Dapper;
 
-namespace Booth.DockerVolumeBackup.Infrastructure.Database
+namespace Booth.DockerVolumeBackup.Infrastructure.Database.DataTypeHandlers
 {
 
     internal class DateTimeOffsetHandler : SqlMapper.TypeHandler<DateTimeOffset>

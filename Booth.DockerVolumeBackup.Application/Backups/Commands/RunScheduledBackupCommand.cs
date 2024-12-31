@@ -1,13 +1,13 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore;
 
 using MediatR;
-using Dapper;
 using ErrorOr;
 
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Domain.Models;
 
-namespace Booth.DockerVolumeBackup.Application.Backups.Commands
+namespace Booth.DockerVolumeBackup.Application.Backups.Commands.RunScheduledBackup
 {
     public record RunScheduledBackupCommand(int ScheduleId) : IRequest<ErrorOr<int>>;
 
@@ -15,37 +15,26 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Commands
     {
         public async  Task<ErrorOr<int>> Handle(RunScheduledBackupCommand request, CancellationToken cancellationToken)
         {
-            var backupId = 0;
+            var schedule = await dataContext.Schedules.AsNoTracking()
+                .Where(x => x.ScheduleId == request.ScheduleId)
+                .Include(x => x.Volumes)
+                .SingleOrDefaultAsync();
+            if (schedule == null)
+                return Error.NotFound();
 
-            using (var connection = dataContext.CreateConnection())
+
+            var backup = new Backup
             {
-                var sql = """
-                    SELECT Count(ScheduleId)
-                    FROM BackupSchedule 
-                    WHERE ScheduleId = @ScheduleId;
-                """;
-                var count = await connection.ExecuteScalarAsync<int>(sql, new { ScheduleId = request.ScheduleId });
-                if (count == 0)
-                    return Error.NotFound();
+                ScheduleId = request.ScheduleId,
+                Status = Status.Queued
+            };
+            backup.Volumes.AddRange(schedule.Volumes.Select(x => new BackupVolume { Volume = x.Volume, Status = Status.Queued }));
 
-                sql = """
-                    INSERT INTO Backup (ScheduleId, Status)
-                        VALUES (@ScheduleId, @Status) RETURNING RowId;
-                """;
-                backupId = await connection.ExecuteScalarAsync<int>(sql, new { ScheduleId = request.ScheduleId, Status = Status.Queued });
+            dataContext.Backups.Add(backup);
 
-                sql = """
-                    INSERT INTO BackupVolume(BackupId, Volume, Status)
-                        SELECT @BackupId, Volume, @Status 
-                        FROM BackupScheduleVolume
-                        WHERE ScheduleId = @ScheduleId
+            await dataContext.SaveChangesAsync(cancellationToken);
 
-                    """;
-
-                await connection.ExecuteAsync(sql, new { BackupId = backupId, ScheduleId = request.ScheduleId, Status = Status.Queued });
-            }
-
-            return backupId;
+            return backup.BackupId;
         }
     }
 }

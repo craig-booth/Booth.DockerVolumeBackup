@@ -7,29 +7,30 @@ using FluentValidation;
 
 using Booth.DockerVolumeBackup.Application.Services;
 using Booth.DockerVolumeBackup.Application.Behavoirs;
+using Microsoft.Extensions.Hosting;
 
 namespace Booth.DockerVolumeBackup.Application
 {
     public static class DependencyInjection
     {
 
-        public static IServiceCollection AddApplication(this IServiceCollection services)
+        public static IHostApplicationBuilder AddApplication(this IHostApplicationBuilder builder)
         {
-            services.AddSingleton<IBackupNotificationService, BackupNotificationService>();
-            services.AddTransient<IBackupService, BackupService>();
-            services.AddHostedService<BackupBackgroundService>();
+            builder.Services.AddSingleton<IBackupNotificationService, BackupNotificationService>();
+            builder.Services.AddTransient<IBackupService, BackupService>();
+            builder.Services.AddHostedService<BackupBackgroundService>();
 
             var applicationAssembly = typeof(DependencyInjection).Assembly;
-            services.AddMediatR(config =>
+            builder.Services.AddMediatR(config =>
             {
                 config.RegisterServicesFromAssembly(applicationAssembly);
                 config.AddOpenBehavior(typeof(ValidationBehavior<,>));
             });
 
-            services.AddValidatorsFromAssembly(applicationAssembly, ServiceLifetime.Transient, includeInternalTypes: true);
+            builder.Services.AddValidatorsFromAssembly(applicationAssembly, ServiceLifetime.Transient, includeInternalTypes: true);
 
 
-            return services;
+            return builder;
         }
     }
 }

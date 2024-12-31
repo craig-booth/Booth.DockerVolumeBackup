@@ -1,13 +1,20 @@
-﻿using System.Globalization;
-using Dapper;
+﻿using Microsoft.EntityFrameworkCore;
+
 using MediatR;
 using ErrorOr;
 
 using Booth.DockerVolumeBackup.Application.Interfaces;
-using Booth.DockerVolumeBackup.Application.Volumes.Dtos;
 
-namespace Booth.DockerVolumeBackup.Application.Volumes.Queries
+
+namespace Booth.DockerVolumeBackup.Application.Volumes.Queries.GetAllVolumes
 {
+    public class VolumeDto
+    {
+        public required string Name { get; set; }
+        public long Size { get; set; }
+        public DateTimeOffset? LastBackup { get; set; }
+    }
+
     public record GetAllVolumesQuery : IRequest<ErrorOr<IReadOnlyList<VolumeDto>>>;
 
     internal class GetAllVolumesQueryHandler(IDockerService dockerService, IDataContext dataContext) : IRequestHandler<GetAllVolumesQuery, ErrorOr<IReadOnlyList<VolumeDto>>>
@@ -18,28 +25,28 @@ namespace Booth.DockerVolumeBackup.Application.Volumes.Queries
             var queryResult = volumes.Select(x => new VolumeDto { Name = x.Name, Size = x.Size }).ToList();
 
             // Get the last backup date from the database
-            using (var connection = dataContext.CreateConnection())
-            {
-                var sql = """
-                    SELECT Volume, Max(EndTime) AS BackupTime
+            var sql = """
+                    SELECT Volume AS Name, 0 AS Size, Max(EndTime) AS LastBackup
                     FROM BackupVolume
                     GROUP BY Volume
                     HAVING Status = 2 AND EndTime IS NOT NULL
                 """;
-                var backupDates = (await connection.QueryAsync(sql)).AsList();
+            var volumeLatestBackup = await dataContext.ExecuteSqlQueryAsync<VolumeDto>(sql, [])
+                .ToListAsync();
 
-                foreach (var volume in queryResult)
+            foreach (var volume in queryResult)
+            {
+                var backupRecord = volumeLatestBackup.Find(x => x.Name == volume.Name);
+                if (backupRecord != null)
                 {
-                    var backupRecord = backupDates.Find(x => x.Volume == volume.Name);
-                    if (backupRecord != null)
-                    {
-                        volume.LastBackup = DateTimeOffset.Parse(backupRecord.BackupTime, null, DateTimeStyles.AssumeUniversal);
-                    }
+                    volume.LastBackup = backupRecord.LastBackup;
                 }
             }
 
             return queryResult;
         }
+
+        
     }
 
 }

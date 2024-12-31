@@ -1,20 +1,19 @@
 ﻿using System.Text.Json;
+using System.ComponentModel;
 using Microsoft.Extensions.Options;
 
 using MediatR;
 using ErrorOr;
 
 using Booth.DockerVolumeBackup.WebApi.Dtos;
-using Booth.DockerVolumeBackup.Application.Backups.Queries;
-using Booth.DockerVolumeBackup.Application.Backups.Dtos;
-using Booth.DockerVolumeBackup.Application.Backups.Commands;
-using Booth.DockerVolumeBackup.Application.Services;
-using Booth.DockerVolumeBackup.Application.Schedules.Dtos;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Booth.DockerVolumeBackup.WebApi.Extensions;
-using System.ComponentModel;
-using Microsoft.AspNetCore.Components.Forms;
-
+using Booth.DockerVolumeBackup.Application.Services;
+using Booth.DockerVolumeBackup.Application.Backups.Queries.GetAllBackups;
+using Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackup;
+using Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupStatus;
+using Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupStatusEvents;
+using Booth.DockerVolumeBackup.Application.Backups.Commands.RunScheduledBackup;
+using Booth.DockerVolumeBackup.Application.Backups.Commands.RunAdhocBackup;
 
 
 namespace Booth.DockerVolumeBackup.WebApi.EndPoints
@@ -41,7 +40,7 @@ namespace Booth.DockerVolumeBackup.WebApi.EndPoints
 
             app.MapGet("api/backups/{id:int}/status", async (int id, HttpContext context, CancellationToken cancellationToken, IMediator mediator, IBackupNotificationService notificationService, IOptions<Microsoft.AspNetCore.Http.Json.JsonOptions> serializeOptions) =>
             {
-                var result = await mediator.Send(new GetBackupStatusQuery(id));
+                var result = await mediator.Send(new Application.Backups.Queries.GetBackupStatus.GetBackupStatusQuery(id));
                 return result.Match(value => Results.Ok(value), errors => ErrorResult.Error(errors));
             });
 

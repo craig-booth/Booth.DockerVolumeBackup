@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using Microsoft.EntityFrameworkCore;
+
 using MediatR;
 using ErrorOr;
 using FluentValidation;
@@ -6,7 +7,7 @@ using FluentValidation;
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Domain.Models;
 
-namespace Booth.DockerVolumeBackup.Application.Backups.Commands
+namespace Booth.DockerVolumeBackup.Application.Backups.Commands.RunAdhocBackup
 {
     public record RunAdhocBackupCommand(IEnumerable<string> Volumes) : IRequest<ErrorOr<int>>;
 
@@ -22,26 +23,18 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Commands
     {
         public async Task<ErrorOr<int>> Handle(RunAdhocBackupCommand request, CancellationToken cancellationToken)
         {
-            var backupId = 0;
-
-            using (var connection = dataContext.CreateConnection())
+            var backup = new Backup
             {
-                var sql = """
-                    INSERT INTO Backup (ScheduleId, Status)
-                        VALUES (NULL, @Status) RETURNING RowId;
-                """;
-                backupId = await connection.ExecuteScalarAsync<int>(sql, new { Status = Status.Queued });
+                ScheduleId = null,
+                Status = Status.Queued
+            };
+            backup.Volumes.AddRange(request.Volumes.Select(x => new BackupVolume { Volume = x, Status = Status.Queued }));
 
-                sql = """
-                        INSERT INTO BackupVolume(BackupId, Volume, Status)
-                        VALUES(@BackupId, @Volume, @Status);
+            dataContext.Backups.Add(backup);
 
-                    """;
+            await dataContext.SaveChangesAsync(cancellationToken);
 
-                await connection.ExecuteAsync(sql, request.Volumes.Select(x => new { BackupId = backupId, Volume = x, Status = Status.Queued }));
-            }
-
-            return backupId; 
+            return backup.BackupId; 
         }
     }
 }

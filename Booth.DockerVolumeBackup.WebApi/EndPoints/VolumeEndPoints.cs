@@ -2,8 +2,7 @@
 using ErrorOr;
 
 
-using Booth.DockerVolumeBackup.Application.Volumes.Dtos;
-using Booth.DockerVolumeBackup.Application.Volumes.Queries;
+using Booth.DockerVolumeBackup.Application.Volumes.Queries.GetAllVolumes;
 using Booth.DockerVolumeBackup.WebApi.Extensions;
 
 

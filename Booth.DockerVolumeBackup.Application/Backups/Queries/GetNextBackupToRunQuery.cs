@@ -1,10 +1,12 @@
-﻿using MediatR;
-using Dapper;
+﻿using Microsoft.EntityFrameworkCore;
+
+using MediatR;
 using ErrorOr;
 
 using Booth.DockerVolumeBackup.Application.Interfaces;
+using Booth.DockerVolumeBackup.Domain.Models;
 
-namespace Booth.DockerVolumeBackup.Application.Backups.Queries
+namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetNextBakupToRun
 {
     public record GetNextBackupToRunQuery() : IRequest<ErrorOr<int>>;
 
@@ -13,6 +15,9 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries
         public async Task<ErrorOr<int>> Handle(GetNextBackupToRunQuery request, CancellationToken cancellationToken)
         {
             int backupId = 0;
+
+     /*       dataContext.Backups.AsNoTracking()
+                .Where(x => x.Status == Status.Queued && x.scj)
 
             using (var connection = dataContext.CreateConnection())
             {
@@ -24,7 +29,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries
                     LIMIT 1
                 """;
                 backupId = await connection.ExecuteScalarAsync<int>(sql);
-            }
+            } */
 
             return backupId > 0 ? backupId : Error.NotFound();
         }

@@ -1,47 +1,43 @@
-﻿using MediatR;
-using Dapper;
+﻿using Microsoft.EntityFrameworkCore;
+
+using MediatR;
 using ErrorOr;
 
 using Booth.DockerVolumeBackup.Application.Interfaces;
-using Booth.DockerVolumeBackup.Application.Backups.Dtos;
+using Booth.DockerVolumeBackup.Domain.Models;
+using Booth.DockerVolumeBackup.Application.Backups.Common;
 
-namespace Booth.DockerVolumeBackup.Application.Backups.Queries
+
+namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetAllBackups
 {
     public record GetAllBackupsQuery(int? ScheduleId = null) : IRequest<ErrorOr<IReadOnlyList<BackupDto>>>;
+
+    public class BackupDto
+    {
+        public int BackupId { get; set; }
+        public int? ScheduleId { get; set; }
+        public string ScheduleName { get; set; } = string.Empty;
+        public StatusDto Status { get; set; }
+    }
 
     internal class GetAllBackupsQueryHandler(IDataContext dataContext) : IRequestHandler<GetAllBackupsQuery, ErrorOr<IReadOnlyList<BackupDto>>>
     {
         public async Task<ErrorOr<IReadOnlyList<BackupDto>>> Handle(GetAllBackupsQuery request, CancellationToken cancellationToken)
         {
-            var backups = new List<BackupDto>();
+            var query = dataContext.Backups.AsNoTracking<Backup>();
+            if (request.ScheduleId != null)
+                query = query.Where(x => x.ScheduleId == request.ScheduleId);
 
-            using (var connection = dataContext.CreateConnection())
-            {
-                var sql = """
-                    SELECT b.BackupId, b.ScheduleId, bs.Name as 'ScheduleName', b.Status, b.StartTime, b.EndTime,
-                           bv.BackupVolumeId, bv.Volume, bv.Status, bv.StartTime, bv.EndTime
-                    FROM Backup b 
-                    JOIN BackupSchedule bs ON bs.ScheduleId = b.ScheduleId
-                    JOIN BackupVolume bv ON bv.BackupId = b.BackupId
-                """;
-                if (request.ScheduleId.HasValue)
+            var queryDto = query
+                .Select(x => new BackupDto()
                 {
-                    sql += " WHERE b.ScheduleId = @ScheduleId";
-                }
-                var queryResult = await connection.QueryAsync<BackupDto, BackupVolumeDto, BackupDto>(sql, (backup, volume) =>
-                {
-                    backup.Volumes.Add(volume);
-                    return backup;
-                }, new { ScheduleId = request.ScheduleId }, splitOn: "BackupVolumeId");
+                    BackupId = x.BackupId,
+                    ScheduleId = x.ScheduleId,
+                    ScheduleName = (x.Schedule != null) ? x.Schedule.Name : "",
+                    Status = (StatusDto)x.Status     
+                });
 
-
-                backups = queryResult.GroupBy(x => x.BackupId).Select(group =>
-                    {
-                        var backup = group.First();
-                        backup.Volumes = group.Select(x => x.Volumes.Single()).ToList();
-                        return backup;
-                    }).ToList();
-            } 
+            var backups = await queryDto.ToListAsync(cancellationToken);
 
             return backups;
         }

@@ -10,12 +10,12 @@ using Booth.DockerVolumeBackup.Domain.Models;
 
 namespace Booth.DockerVolumeBackup.Infrastructure.Database
 {
-    internal class DatabaseSetup(IDataContext context, IDockerClient dockerClient)
+    internal class DatabaseSetup(IDataContext dataContext, IDockerClient dockerClient)
     {
         private Faker? _Faker;
         public async Task CreateDatabase()
         {
-            using (var connection = context.CreateConnection())
+            using (var connection = dataContext.CreateConnection())
             {
 
                 var sql = """
@@ -67,7 +67,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
             var volumes = await dockerClient.Volumes.ListAsync();
             var volumeNames = volumes.Select(x => x.Name).ToList(); ;
 
-            using (var connection = context.CreateConnection())
+            using (var connection = dataContext.CreateConnection())
             {
                 // Clear existing data
                 await connection.ExecuteAsync("DELETE FROM BackupSchedule;");

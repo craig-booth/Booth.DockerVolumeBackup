@@ -8,8 +8,12 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 
 using Booth.DockerVolumeBackup.Test.Fixtures;
-using Booth.DockerVolumeBackup.Application.Backups.Dtos;
+using Booth.DockerVolumeBackup.Application.Backups.Common;
 using Booth.DockerVolumeBackup.WebApi.Dtos;
+using Booth.DockerVolumeBackup.Application.Backups.Queries.GetAllBackups;
+using Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackup;
+using Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupStatus;
+using Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupStatusEvents;
 
 
 namespace Booth.DockerVolumeBackup.Test.EndPoints
@@ -24,7 +28,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
         {
             var httpClient = fixture.CreateClient();
 
-            var backups = await httpClient.GetFromJsonAsync<IReadOnlyList<BackupDto>>("api/backups", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            var backups = await httpClient.GetFromJsonAsync<IReadOnlyList<Application.Backups.Queries.GetAllBackups.BackupDto>>("api/backups", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
 
             using (var scope = new AssertionScope())
             {
@@ -33,11 +37,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 backups[0].BackupId.Should().Be(1);
                 backups[0].ScheduleId.Should().Be(1);
                 backups[0].ScheduleName.Should().Be("Caleigh");
-                backups[0].Status.Should().Be(Status.Complete);
-
-                backups[0].StartTime.Should().BeBefore(DateTimeOffset.UtcNow);
-                backups[0].EndTime.Should().BeBefore(DateTimeOffset.UtcNow);
-                backups[0].Volumes.Should().HaveCount(9);
+                backups[0].Status.Should().Be(StatusDto.Complete);
             }
         }
 
@@ -46,7 +46,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
         {
             var httpClient = fixture.CreateClient();
 
-            var backups = await httpClient.GetFromJsonAsync<IReadOnlyList<BackupDto>>("api/backups?scheduleid=2", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            var backups = await httpClient.GetFromJsonAsync<IReadOnlyList<Application.Backups.Queries.GetAllBackups.BackupDto>>("api/backups?scheduleid=2", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
 
             using (var scope = new AssertionScope())
             {
@@ -61,7 +61,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
         {
             var httpClient = fixture.CreateClient();
 
-            var backup = await httpClient.GetFromJsonAsync<BackupDto>("api/backups/1", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            var backup = await httpClient.GetFromJsonAsync<Application.Backups.Queries.GetBackup.BackupDto>("api/backups/1", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
 
             using (var scope = new AssertionScope())
             {
@@ -69,7 +69,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 backup.BackupId.Should().Be(1);
                 backup.ScheduleId.Should().Be(1);
                 backup.ScheduleName.Should().Be("Caleigh");
-                backup.Status.Should().Be(Status.Complete);
+                backup.Status.Should().Be(StatusDto.Complete);
                 backup.StartTime.Should().BeBefore(DateTimeOffset.UtcNow);
                 backup.EndTime.Should().BeBefore(DateTimeOffset.UtcNow);
                 backup.Volumes.Should().HaveCount(9);
@@ -91,13 +91,13 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
         {
             var httpClient = fixture.CreateClient();
 
-            var status = await httpClient.GetFromJsonAsync<BackupStatusDto>("api/backups/1/status", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            var status = await httpClient.GetFromJsonAsync<Application.Backups.Queries.GetBackupStatus.BackupStatusDto>("api/backups/1/status", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
 
             using (var scope = new AssertionScope())
             {
                 status.Should().NotBeNull();
                 status.BackupId.Should().Be(1);
-                status.Status.Should().Be(Status.Complete);
+                status.Status.Should().Be(StatusDto.Complete);
                 status.Volumes.Should().HaveCount(9);
             }
         }
@@ -119,7 +119,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             var response = await httpClient.GetAsync("api/backups/1/statusevents", TestContext.Current.CancellationToken);
             response.Should().BeSuccessful();
 
-            List<BackupStatusDto> statuses = new List<BackupStatusDto>();
+            List<Application.Backups.Queries.GetBackupStatusEvents.BackupStatusDto> statuses = [];
             var stream = await response.Content.ReadAsStreamAsync(TestContext.Current.CancellationToken);
             using (var streamReader = new StreamReader(stream))
             {
@@ -130,7 +130,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                     {
                         if (line.StartsWith("data: "))
                         {
-                            var status = JsonSerializer.Deserialize<BackupStatusDto>(line.Substring(6), fixture.JsonSerializerOptions);
+                            var status = JsonSerializer.Deserialize<Application.Backups.Queries.GetBackupStatusEvents.BackupStatusDto>(line.Substring(6), fixture.JsonSerializerOptions);
                             statuses.Add(status);
                         }
                     }
@@ -138,7 +138,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             }
 
             statuses.Should().HaveCount(1);
-            statuses.Last().Status.Should().Be(Status.Complete);
+            statuses.Last().Status.Should().Be(StatusDto.Complete);
         }
 
         [Fact]
@@ -172,12 +172,12 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
 
             var id = await response.Content.ReadFromJsonAsync<int>(fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
 
-            var status = await httpClient.GetFromJsonAsync<BackupStatusDto>($"api/backups/{id}/status", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            var status = await httpClient.GetFromJsonAsync<Application.Backups.Queries.GetBackupStatus.BackupStatusDto>($"api/backups/{id}/status", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
             using (var scope = new AssertionScope())
             {
                 status.Should().NotBeNull();
                 status.BackupId.Should().Be(id);
-                status.Status.Should().Be(Status.Queued);
+                status.Status.Should().Be(StatusDto.Queued);
                 status.Volumes.Should().HaveCount(9);
             }
         }
@@ -206,12 +206,12 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
 
             var id = await response.Content.ReadFromJsonAsync<int>(fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
 
-            var status = await httpClient.GetFromJsonAsync<BackupStatusDto>($"api/backups/{id}/status", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            var status = await httpClient.GetFromJsonAsync<Application.Backups.Queries.GetBackupStatus.BackupStatusDto>($"api/backups/{id}/status", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
             using (var scope = new AssertionScope())
             {
                 status.Should().NotBeNull();
                 status.BackupId.Should().Be(id);
-                status.Status.Should().Be(Status.Queued);
+                status.Status.Should().Be(StatusDto.Queued);
                 status.Volumes.Should().HaveCount(2);
             }
         }
