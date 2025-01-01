@@ -34,7 +34,6 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupStatusEv
         public async IAsyncEnumerable<BackupStatusDto?> Handle(GetBackupStatusEventsQuery request, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var query = dataContext.Backups
-                .AsNoTracking()
                 .Where(x => x.BackupId == request.BackupId)
                 .Select(x => new BackupStatusDto()
                 {

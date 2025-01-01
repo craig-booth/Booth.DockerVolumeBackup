@@ -4,8 +4,6 @@ using System.Text.Json.Serialization;
 using Booth.DockerVolumeBackup.Application;
 
 using Booth.DockerVolumeBackup.WebApi.EndPoints;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 
 namespace Booth.DockerVolumeBackup.WebApi
 {

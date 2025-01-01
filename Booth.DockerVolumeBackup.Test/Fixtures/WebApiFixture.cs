@@ -9,6 +9,10 @@ using Booth.DockerVolumeBackup.Infrastructure.Docker;
 using Microsoft.AspNetCore.Http.Json;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
+using System.Data.Common;
+using Microsoft.EntityFrameworkCore;
+using Booth.DockerVolumeBackup.Application.Interfaces;
+using System.Data;
 
 namespace Booth.DockerVolumeBackup.Test.Fixtures
 {
@@ -16,24 +20,27 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures
     public class WebApiFixture : IDisposable
     {
         private readonly WebApiWebFactory _Factory;
+        private IDbConnection _DbConnection;
 
         public WebApiFixture()
         { 
             _Factory = new WebApiWebFactory();
         }
+
         public HttpClient CreateClient() => _Factory.CreateClient();
         public JsonSerializerOptions JsonSerializerOptions
         {
             get
             {
-                var options = _Factory.Services.GetRequiredService<IOptions<Microsoft.AspNetCore.Http.Json.JsonOptions>>();
+                var options = _Factory.Services.GetRequiredService<IOptions<JsonOptions>>();
                 return options.Value.SerializerOptions;
             }
         }
             
         public void Dispose()
         {
-
+            if (_DbConnection != null)
+                _DbConnection.Close();
         }
     }
 

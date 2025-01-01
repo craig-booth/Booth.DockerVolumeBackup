@@ -15,7 +15,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Commands.RunScheduledBack
     {
         public async  Task<ErrorOr<int>> Handle(RunScheduledBackupCommand request, CancellationToken cancellationToken)
         {
-            var schedule = await dataContext.Schedules.AsNoTracking()
+            var schedule = await dataContext.Schedules
                 .Where(x => x.ScheduleId == request.ScheduleId)
                 .Include(x => x.Volumes)
                 .SingleOrDefaultAsync();

@@ -24,7 +24,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetAllBackups
     {
         public async Task<ErrorOr<IReadOnlyList<BackupDto>>> Handle(GetAllBackupsQuery request, CancellationToken cancellationToken)
         {
-            var query = dataContext.Backups.AsNoTracking<Backup>();
+            var query = dataContext.Backups.AsQueryable();
             if (request.ScheduleId != null)
                 query = query.Where(x => x.ScheduleId == request.ScheduleId);
 

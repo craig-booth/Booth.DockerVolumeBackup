@@ -1,103 +1,47 @@
 ﻿using System.Data;
+using Microsoft.EntityFrameworkCore;
 
-using Dapper;
 using Bogus;
 
-using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Infrastructure.Docker;
-using Booth.DockerVolumeBackup.Infrastructure.Docker.Models;
 using Booth.DockerVolumeBackup.Domain.Models;
+
 
 namespace Booth.DockerVolumeBackup.Infrastructure.Database
 {
-    internal class DatabaseSetup(IDataContext dataContext, IDockerClient dockerClient)
+    internal class DatabaseSetup(DataContext dataContext, IDockerClient dockerClient)
     {
         private Faker? _Faker;
         public async Task CreateDatabase()
         {
-            using (var connection = dataContext.CreateConnection())
-            {
-
-                var sql = """
-                    CREATE TABLE IF NOT EXISTS Backup (
-                        BackupId        INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                        Status          INTEGER NOT NULL,
-                        ScheduleId      INTEGER,
-                        StartTime       TIMESTAMP,
-                        EndTime         TIMESTAMP
-                    );
-
-                    CREATE TABLE IF NOT EXISTS BackupVolume (
-                        BackupVolumeId  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                        BackupId        INTEGER NOT NULL,
-                        Volume          TEXT NOT NULL,
-                        Status          INTEGER NOT NULL,
-                        StartTime       TIMESTAMP,
-                        EndTime         TIMESTAMP
-                    );
-
-                    CREATE TABLE IF NOT EXISTS BackupSchedule (
-                        ScheduleId      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                        Name            TEXT NOT NULL,               
-                        Enabled         INTEGER NOT NULL,
-                        Sunday          INTEGER NOT NULL,
-                        Monday          INTEGER NOT NULL,
-                        Tuesday         INTEGER NOT NULL,
-                        Wednesday       INTEGER NOT NULL,
-                        Thursday        INTEGER NOT NULL,
-                        Friday          INTEGER NOT NULL,
-                        Saturday        INTEGER NOT NULL,
-                        Time            TIME NOT NULL
-                    );
-
-                    
-                    CREATE TABLE IF NOT EXISTS BackupScheduleVolume (
-                        BackupScheduleVolumeId      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                        ScheduleId      INTEGER NOT NULL,               
-                        Volume          TEXT
-                    );
-                    """;
-
-                await connection.ExecuteAsync(sql);
-            }
+            var sql = dataContext.Database.GenerateCreateScript();
+            await dataContext.ExecuteSqlCommandAsync(sql, [], CancellationToken.None);
         }
 
         public async Task SeedDatabase()
         {       
             var volumes = await dockerClient.Volumes.ListAsync();
-            var volumeNames = volumes.Select(x => x.Name).ToList(); ;
+            var volumeNames = volumes.Select(x => x.Name).ToList(); 
+            var schedules = GenerateSchedules(volumeNames);
+            var backups = GenerateBackups(schedules);
 
-            using (var connection = dataContext.CreateConnection())
-            {
-                // Clear existing data
-                await connection.ExecuteAsync("DELETE FROM BackupSchedule;");
-                await connection.ExecuteAsync("DELETE FROM BackupScheduleVolume;");
-                await connection.ExecuteAsync("DELETE FROM Backup;");
-                await connection.ExecuteAsync("DELETE FROM BackupVolume;");
-                await connection.ExecuteAsync("UPDATE sqlite_sequence SET seq = 0;");
+            // Clear existing data
+            await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupSchedule;", [], CancellationToken.None);
+            await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupScheduleVolume;", [], CancellationToken.None);
+            await dataContext.ExecuteSqlCommandAsync("DELETE FROM Backup;", [], CancellationToken.None);
+            await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupVolume;", [], CancellationToken.None);
+            await dataContext.ExecuteSqlCommandAsync("UPDATE sqlite_sequence SET seq = 0;", [], CancellationToken.None);
 
-                var schedules = await SeedSchedules(connection, volumeNames);
-
-                await SeedBackups(connection, schedules);
-            }
+            //Add new data
+            dataContext.Schedules.AddRange(schedules);
+            dataContext.Backups.AddRange(backups);
+            await dataContext.SaveChangesAsync();
         }
 
-        private async Task<List<(BackupSchedule schedule, List<string> volumes)>> SeedSchedules(IDbConnection connection, List<string> volumes)
+        private List<BackupSchedule> GenerateSchedules(List<string> volumeNames)
         {
             Randomizer.Seed = new Random(1312);
             _Faker = new Faker();
-
-            string ADD_SCHEDULE_SQL = """
-                INSERT INTO BackupSchedule (Enabled, Name, Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Time)
-                    VALUES (@Enabled, @Name, @Sunday, @Monday, @Tuesday, @Wednesday, @Thursday, @Friday, @Saturday, @Time) RETURNING RowId;
-                """;
-
-            string ADD_SCHEDULEVOLME_SQL = """
-                INSERT INTO BackupScheduleVolume (ScheduleId, Volume)
-                    VALUES (@ScheduleId, @Volume) RETURNING RowId;
-                """;
-
-            var addedSchedules = new List<(BackupSchedule schedule, List<string> volumes)>();
 
             // Add schedules
             var faker = new Faker<BackupSchedule>()
@@ -119,39 +63,24 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
 
                     return schedule;
                 });
+
             var schedules = faker.Generate(5);
             foreach (var schedule in schedules)
             {
-                schedule.ScheduleId = await connection.ExecuteScalarAsync<int>(ADD_SCHEDULE_SQL, schedule);
-
-                var volumeCount = _Faker.Random.Number(volumes.Count);
-                var scheduleVolumes = _Faker.PickRandom(volumes, volumeCount).ToList();
-
-                foreach (var volume in scheduleVolumes)
-                {
-                    await connection.ExecuteScalarAsync<int>(ADD_SCHEDULEVOLME_SQL, new { ScheduleId = schedule.ScheduleId, Volume = volume});
-                }
-
-                addedSchedules.Add((schedule, scheduleVolumes));
+                var volumeCount = _Faker.Random.Number(volumeNames.Count);
+                var scheduleVolumes = _Faker.PickRandom(volumeNames, volumeCount);
+                schedule.Volumes.AddRange(scheduleVolumes.Select(x => new BackupScheduleVolume { Volume = x }));
             }
 
-            return addedSchedules;
+            return schedules;
         }
 
-        private async Task SeedBackups(IDbConnection connection, List<(BackupSchedule schedule, List<string> volumes)> schedules)
+        private List<Backup> GenerateBackups(List<BackupSchedule> schedules)
         {
-            string ADD_BACKUP_SQL = """
-                INSERT INTO Backup (Status, ScheduleId, StartTime, EndTime)
-                    VALUES (@Status, @ScheduleId, @StartTime, @EndTime) RETURNING RowId;
-                """;
-
-            string ADD_BACKUPVOLUME_SQL = """
-                INSERT INTO BackupVolume (BackupId, Volume, Status, StartTime, EndTime)
-                    VALUES (@BackupId, @Volume, @Status, @StartTime, @EndTime) RETURNING RowId;
-                """;
+            var backups = new List<Backup>();
 
             var now = DateTimeOffset.UtcNow;
-            foreach (var (schedule, volumes) in schedules)
+            foreach (var schedule in schedules)
             {
                 var scheduledTime = new DateTimeOffset(_Faker.Date.PastDateOnly(1), schedule.Time, new TimeSpan(0));
 
@@ -160,29 +89,26 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
                     var backup = new Backup()
                     {
                         Status = Status.Complete,
-                        ScheduleId = schedule.ScheduleId,
+                        Schedule = schedule,
                         StartTime = scheduledTime,
                         EndTime = scheduledTime.AddHours(1)
                     };
-                    backup.BackupId = await connection.ExecuteScalarAsync<int>(ADD_BACKUP_SQL, backup);
 
-                    foreach (var volume in volumes)
+                    backup.Volumes.AddRange(schedule.Volumes.Select(x => new BackupVolume()
                     {
-                        var backupVolume = new BackupVolume()
-                        {
-                            BackupId = backup.BackupId,
-                            Volume = volume,
-                            Status = Status.Complete,
-                            StartTime = backup.StartTime,
-                            EndTime = backup.EndTime?.AddMinutes(12)
-                        };
+                        Volume = x.Volume,
+                        Status = Status.Complete,
+                        StartTime = backup.StartTime,
+                        EndTime = backup.EndTime?.AddMinutes(12)
+                    }));
 
-                        backupVolume.BackupVolumeId = await connection.ExecuteScalarAsync<int>(ADD_BACKUPVOLUME_SQL, backupVolume);
-                    }
+                    backups.Add(backup);
 
                     scheduledTime = schedule.GetNextRunTime(scheduledTime);
                 }    
-            }      
+            }
+
+            return backups;
         }
 
     }

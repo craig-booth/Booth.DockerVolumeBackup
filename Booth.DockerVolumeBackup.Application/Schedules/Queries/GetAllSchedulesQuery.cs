@@ -21,7 +21,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Queries.GetAllSchedules
     {
         public async Task<ErrorOr<IReadOnlyList<ScheduleDto>>> Handle(GetAllSchedulesQuery request, CancellationToken cancellationToken)
         {
-            var query = dataContext.Schedules.AsNoTracking()
+            var query = dataContext.Schedules
                 .Select(x => new ScheduleDto
                 {
                     ScheduleId = x.ScheduleId,

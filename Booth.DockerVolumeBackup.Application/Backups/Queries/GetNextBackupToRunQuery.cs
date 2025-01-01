@@ -16,7 +16,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetNextBakupToRun
         {
             int backupId = 0;
 
-     /*       dataContext.Backups.AsNoTracking()
+     /*       dataContext.Backups
                 .Where(x => x.Status == Status.Queued && x.scj)
 
             using (var connection = dataContext.CreateConnection())

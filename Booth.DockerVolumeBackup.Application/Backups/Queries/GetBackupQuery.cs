@@ -35,7 +35,6 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackup
         public async Task<ErrorOr<BackupDto>> Handle(GetBackupQuery request, CancellationToken cancellationToken)
         {
             var query = dataContext.Backups
-                .AsNoTracking()
                 .Where(x => x.BackupId == request.BackupId)
                 .Select(x => new BackupDto()
                 {

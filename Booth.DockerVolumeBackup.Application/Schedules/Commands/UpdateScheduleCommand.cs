@@ -36,7 +36,8 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
     {
         public async Task<ErrorOr<bool>> Handle(UpdateScheduleCommand request, CancellationToken cancellationToken)
         {
-            var schedule = await dataContext.Schedules
+            var schedule = await dataContext.Schedules.AsTracking()
+                .Include(x => x.Volumes)
                 .Where(x => x.ScheduleId == request.ScheduleId)
                 .SingleOrDefaultAsync(cancellationToken);
 

@@ -25,8 +25,9 @@ namespace Booth.DockerVolumeBackup.Application
     {
 
         public static IHostApplicationBuilder AddInfrastructure(this IHostApplicationBuilder builder)
-        {
-            builder.Services.AddTransient<IDataContext, DataContext>();
+        {      
+            builder.Services.AddDbContext<DataContext>();
+            builder.Services.AddScoped<IDataContext>(x => x.GetRequiredService<DataContext>());
             builder.Services.AddSingleton<IDockerClientFactory, DockerClientFactory>();
             builder.Services.AddSingleton<IDockerClient>((services) => services.GetRequiredService<IDockerClientFactory>().CreateClient());
             builder.Services.AddSingleton<IDockerService, DockerService>();
@@ -40,7 +41,7 @@ namespace Booth.DockerVolumeBackup.Application
         {
             using (var scope = host.Services.CreateScope())
             {
-                var context = scope.ServiceProvider.GetRequiredService<IDataContext>();
+                var context = scope.ServiceProvider.GetRequiredService<DataContext>();
                 var dockerClient = scope.ServiceProvider.GetRequiredService<IDockerClient>();
                 var config = scope.ServiceProvider.GetRequiredService<IOptions<AppConfig>>();
 

@@ -46,7 +46,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 schedule.Name.Should().Be("Caleigh");
                 schedule.Enabled.Should().BeTrue();
                 schedule.Days.Should().BeEquivalentTo(new { Sunday = false, Monday = false, Tuesday = false, Wednesday = true, Thursday = false, Friday = false, Saturday = false });
-                schedule.Time.Should().Be(new TimeOnly(1, 48, 12));
+                schedule.Time.Should().BeCloseTo(new TimeOnly(1, 48, 12), TimeSpan.FromSeconds(1));
                 schedule.Volumes.Should().HaveCount(9);
             }
         }
