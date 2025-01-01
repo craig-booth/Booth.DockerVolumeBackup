@@ -12,12 +12,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
     internal class DatabaseSetup(DataContext dataContext, IDockerClient dockerClient)
     {
         private Faker? _Faker;
-        public async Task CreateDatabase()
-        {
-            var sql = dataContext.Database.GenerateCreateScript();
-            await dataContext.ExecuteSqlCommandAsync(sql, [], CancellationToken.None);
-        }
-
+      
         public async Task SeedDatabase()
         {       
             var volumes = await dockerClient.Volumes.ListAsync();

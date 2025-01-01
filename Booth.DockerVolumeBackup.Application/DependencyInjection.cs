@@ -18,7 +18,7 @@ namespace Booth.DockerVolumeBackup.Application
         {
             builder.Services.AddSingleton<IBackupNotificationService, BackupNotificationService>();
             builder.Services.AddTransient<IBackupService, BackupService>();
-            builder.Services.AddHostedService<BackupBackgroundService>();
+          //  builder.Services.AddHostedService<BackupBackgroundService>();
 
             var applicationAssembly = typeof(DependencyInjection).Assembly;
             builder.Services.AddMediatR(config =>

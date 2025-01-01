@@ -42,15 +42,14 @@ namespace Booth.DockerVolumeBackup.Application
             using (var scope = host.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-                var dockerClient = scope.ServiceProvider.GetRequiredService<IDockerClient>();
+                context.Database.Migrate();
+
                 var config = scope.ServiceProvider.GetRequiredService<IOptions<AppConfig>>();
-
-                var databaseSetup = new DatabaseSetup(context, dockerClient);
-
-                await databaseSetup.CreateDatabase();
-
                 if (config.Value.SeedDatabase)
                 {
+                    var dockerClient = scope.ServiceProvider.GetRequiredService<IDockerClient>();
+
+                    var databaseSetup = new DatabaseSetup(context, dockerClient);
                     await databaseSetup.SeedDatabase();
                 }
             }
