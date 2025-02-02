@@ -21,11 +21,11 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
             var backups = GenerateBackups(schedules);
 
             // Clear existing data
-            await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupSchedule;", [], CancellationToken.None);
-            await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupDefinitionVolume;", [], CancellationToken.None);
-            await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupDefinitionVolume;", [], CancellationToken.None);
-            await dataContext.ExecuteSqlCommandAsync("DELETE FROM Backup;", [], CancellationToken.None);
             await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupVolume;", [], CancellationToken.None);
+            await dataContext.ExecuteSqlCommandAsync("DELETE FROM Backup;", [], CancellationToken.None);
+            await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupDefinitionVolume;", [], CancellationToken.None);
+            await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupDefinition;", [], CancellationToken.None);
+            await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupSchedule;", [], CancellationToken.None);
             await dataContext.ExecuteSqlCommandAsync("UPDATE sqlite_sequence SET seq = 0;", [], CancellationToken.None);
 
             //Add new data

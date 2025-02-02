@@ -6,7 +6,7 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures.Factories
 {
     internal static class VolumeFactory
     {
-        private static readonly Faker<Volume> VolumeFaker = new Faker<Volume>().CustomInstantiator(f =>
+        private static readonly Faker<Volume> VolumeFaker = new Faker<Volume>().UseSeed(1332).CustomInstantiator(f =>
         {
             var volume = new Volume()
             {
