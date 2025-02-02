@@ -26,7 +26,8 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Migrations
                     Thursday = table.Column<bool>(type: "INTEGER", nullable: false),
                     Friday = table.Column<bool>(type: "INTEGER", nullable: false),
                     Saturday = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Time = table.Column<TimeOnly>(type: "TEXT", nullable: false)
+                    Time = table.Column<TimeOnly>(type: "TEXT", nullable: false),
+                    BackupDefinitionId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -55,19 +56,18 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BackupScheduleVolume",
+                name: "BackupDefinition",
                 columns: table => new
                 {
-                    BackupScheduleVolumeId = table.Column<int>(type: "INTEGER", nullable: false)
+                    BackupDefinitionId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    ScheduleId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Volume = table.Column<string>(type: "TEXT", nullable: false)
+                    ScheduleId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BackupScheduleVolume", x => x.BackupScheduleVolumeId);
+                    table.PrimaryKey("PK_BackupDefinition", x => x.BackupDefinitionId);
                     table.ForeignKey(
-                        name: "FK_BackupScheduleVolume_BackupSchedule_ScheduleId",
+                        name: "FK_BackupDefinition_BackupSchedule_ScheduleId",
                         column: x => x.ScheduleId,
                         principalTable: "BackupSchedule",
                         principalColumn: "ScheduleId",
@@ -97,15 +97,41 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "BackupDefinitionVolume",
+                columns: table => new
+                {
+                    BackupDefinitionVolumeId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    BackupDefinitionId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Volume = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BackupDefinitionVolume", x => x.BackupDefinitionVolumeId);
+                    table.ForeignKey(
+                        name: "FK_BackupDefinitionVolume_BackupDefinition_BackupDefinitionId",
+                        column: x => x.BackupDefinitionId,
+                        principalTable: "BackupDefinition",
+                        principalColumn: "BackupDefinitionId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Backup_ScheduleId",
                 table: "Backup",
                 column: "ScheduleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BackupScheduleVolume_ScheduleId",
-                table: "BackupScheduleVolume",
-                column: "ScheduleId");
+                name: "IX_BackupDefinition_ScheduleId",
+                table: "BackupDefinition",
+                column: "ScheduleId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BackupDefinitionVolume_BackupDefinitionId",
+                table: "BackupDefinitionVolume",
+                column: "BackupDefinitionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BackupVolume_BackupId",
@@ -117,10 +143,13 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BackupScheduleVolume");
+                name: "BackupDefinitionVolume");
 
             migrationBuilder.DropTable(
                 name: "BackupVolume");
+
+            migrationBuilder.DropTable(
+                name: "BackupDefinition");
 
             migrationBuilder.DropTable(
                 name: "Backup");

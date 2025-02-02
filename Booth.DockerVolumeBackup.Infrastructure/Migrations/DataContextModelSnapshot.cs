@@ -42,10 +42,50 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Migrations
                     b.ToTable("Backup", (string)null);
                 });
 
+            modelBuilder.Entity("Booth.DockerVolumeBackup.Domain.Models.BackupDefinition", b =>
+                {
+                    b.Property<int>("BackupDefinitionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ScheduleId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("BackupDefinitionId");
+
+                    b.HasIndex("ScheduleId")
+                        .IsUnique();
+
+                    b.ToTable("BackupDefinition", (string)null);
+                });
+
+            modelBuilder.Entity("Booth.DockerVolumeBackup.Domain.Models.BackupDefinitionVolume", b =>
+                {
+                    b.Property<int>("BackupDefinitionVolumeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BackupDefinitionId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Volume")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("BackupDefinitionVolumeId");
+
+                    b.HasIndex("BackupDefinitionId");
+
+                    b.ToTable("BackupDefinitionVolume", (string)null);
+                });
+
             modelBuilder.Entity("Booth.DockerVolumeBackup.Domain.Models.BackupSchedule", b =>
                 {
                     b.Property<int>("ScheduleId")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BackupDefinitionId")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("Enabled")
@@ -82,26 +122,6 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Migrations
                     b.HasKey("ScheduleId");
 
                     b.ToTable("BackupSchedule", (string)null);
-                });
-
-            modelBuilder.Entity("Booth.DockerVolumeBackup.Domain.Models.BackupScheduleVolume", b =>
-                {
-                    b.Property<int>("BackupScheduleVolumeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ScheduleId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Volume")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("BackupScheduleVolumeId");
-
-                    b.HasIndex("ScheduleId");
-
-                    b.ToTable("BackupScheduleVolume", (string)null);
                 });
 
             modelBuilder.Entity("Booth.DockerVolumeBackup.Domain.Models.BackupVolume", b =>
@@ -142,11 +162,20 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Migrations
                     b.Navigation("Schedule");
                 });
 
-            modelBuilder.Entity("Booth.DockerVolumeBackup.Domain.Models.BackupScheduleVolume", b =>
+            modelBuilder.Entity("Booth.DockerVolumeBackup.Domain.Models.BackupDefinition", b =>
                 {
                     b.HasOne("Booth.DockerVolumeBackup.Domain.Models.BackupSchedule", null)
+                        .WithOne("BackupDefinition")
+                        .HasForeignKey("Booth.DockerVolumeBackup.Domain.Models.BackupDefinition", "ScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Booth.DockerVolumeBackup.Domain.Models.BackupDefinitionVolume", b =>
+                {
+                    b.HasOne("Booth.DockerVolumeBackup.Domain.Models.BackupDefinition", null)
                         .WithMany("Volumes")
-                        .HasForeignKey("ScheduleId")
+                        .HasForeignKey("BackupDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -165,11 +194,17 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Migrations
                     b.Navigation("Volumes");
                 });
 
+            modelBuilder.Entity("Booth.DockerVolumeBackup.Domain.Models.BackupDefinition", b =>
+                {
+                    b.Navigation("Volumes");
+                });
+
             modelBuilder.Entity("Booth.DockerVolumeBackup.Domain.Models.BackupSchedule", b =>
                 {
-                    b.Navigation("Backups");
+                    b.Navigation("BackupDefinition")
+                        .IsRequired();
 
-                    b.Navigation("Volumes");
+                    b.Navigation("Backups");
                 });
 #pragma warning restore 612, 618
         }

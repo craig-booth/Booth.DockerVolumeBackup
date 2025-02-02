@@ -37,7 +37,8 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
         public async Task<ErrorOr<bool>> Handle(UpdateScheduleCommand request, CancellationToken cancellationToken)
         {
             var schedule = await dataContext.Schedules.AsTracking()
-                .Include(x => x.Volumes)
+                .Include(x => x.BackupDefinition)
+                .Include(x => x.BackupDefinition.Volumes)
                 .Where(x => x.ScheduleId == request.ScheduleId)
                 .SingleOrDefaultAsync(cancellationToken);
 
@@ -55,8 +56,8 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
             schedule.Saturday = request.Days.Saturday;
             schedule.Time = request.Time;
 
-            schedule.Volumes.RemoveAll(x => !request.Volumes.Contains(x.Volume));
-            schedule.Volumes.AddRange(request.Volumes.Where(x => !schedule.Volumes.Any(v => v.Volume == x)).Select(x => new BackupScheduleVolume { ScheduleId = schedule.ScheduleId, Volume = x }));
+            schedule.BackupDefinition.Volumes.RemoveAll(x => !request.Volumes.Contains(x.Volume));
+            schedule.BackupDefinition.Volumes.AddRange(request.Volumes.Where(x => !schedule.BackupDefinition.Volumes.Any(v => v.Volume == x)).Select(x => new BackupDefinitionVolume { Volume = x }));
 
             await dataContext.SaveChangesAsync(cancellationToken);
             return true;

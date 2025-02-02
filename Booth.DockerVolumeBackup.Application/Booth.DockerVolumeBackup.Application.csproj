@@ -25,4 +25,10 @@
     <ProjectReference Include="..\Booth.DockerVolumeBackup.Domain\Booth.DockerVolumeBackup.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+	  <InternalsVisibleTo Include="Booth.DockerVolumeBackup.Test" />
+	  <InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
+  </ItemGroup>
+
 </Project>
+ 

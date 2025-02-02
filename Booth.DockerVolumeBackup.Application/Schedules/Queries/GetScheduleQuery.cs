@@ -55,7 +55,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Queries.GetSchedule
                         Saturday = x.Saturday
                     },
                     Time = x.Time,
-                    Volumes = x.Volumes.Select(x => x.Volume).ToList()
+                    Volumes = x.BackupDefinition.Volumes.Select(x => x.Volume).ToList()
                 });
 
 

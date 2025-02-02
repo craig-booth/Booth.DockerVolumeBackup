@@ -16,9 +16,11 @@ namespace Booth.DockerVolumeBackup.Domain.Models
         public bool Friday { get; set; }
         public bool Saturday { get; set; }
         public TimeOnly Time { get; set; }
-        public List<BackupScheduleVolume> Volumes { get; set; } = [];
 
-        public ICollection<Backup> Backups { get; } = new List<Backup>();
+        public int BackupDefinitionId { get; set; }
+        public BackupDefinition BackupDefinition { get; } = new BackupDefinition();
+
+        public ICollection<Backup> Backups { get; } = [];
 
         public DateTimeOffset GetNextRunTime(DateTimeOffset after)
         {
@@ -26,10 +28,4 @@ namespace Booth.DockerVolumeBackup.Domain.Models
         }
     }
 
-    public class BackupScheduleVolume
-    {
-        public int BackupScheduleVolumeId { get; set; }
-        public int ScheduleId { get; set; }
-        public required string Volume { get; set; }
-    }
 }

@@ -6,7 +6,7 @@ using MediatR;
 
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Application.Backups.Common;
-using Booth.DockerVolumeBackup.Application.Services;
+using Booth.DockerVolumeBackup.Infrastructure.Services;
 
 
 namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupStatusEvents

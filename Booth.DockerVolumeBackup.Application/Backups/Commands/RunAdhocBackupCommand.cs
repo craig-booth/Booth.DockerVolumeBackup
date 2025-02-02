@@ -6,6 +6,8 @@ using FluentValidation;
 
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Domain.Models;
+using Booth.DockerVolumeBackup.Application.BackgroundJobs;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Booth.DockerVolumeBackup.Application.Backups.Commands.RunAdhocBackup
 {
@@ -19,20 +21,20 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Commands.RunAdhocBackup
         }
     }
 
-    internal class RunAdhocBackupCommandHandler(IDataContext dataContext) : IRequestHandler<RunAdhocBackupCommand, ErrorOr<int>>
+    internal class RunAdhocBackupCommandHandler(IDataContext dataContext, IServiceScopeFactory serviceScopeFactory, IBackupScheduler scheduler) : IRequestHandler<RunAdhocBackupCommand, ErrorOr<int>>
     {
         public async Task<ErrorOr<int>> Handle(RunAdhocBackupCommand request, CancellationToken cancellationToken)
         {
             var backup = new Backup
             {
-                ScheduleId = null,
                 Status = Status.Queued
             };
             backup.Volumes.AddRange(request.Volumes.Select(x => new BackupVolume { Volume = x, Status = Status.Queued }));
-
             dataContext.Backups.Add(backup);
-
             await dataContext.SaveChangesAsync(cancellationToken);
+
+            var backupJob = new BackupJob(backup.BackupId, serviceScopeFactory);
+            scheduler.QueueBackup(backupJob);
 
             return backup.BackupId; 
         }

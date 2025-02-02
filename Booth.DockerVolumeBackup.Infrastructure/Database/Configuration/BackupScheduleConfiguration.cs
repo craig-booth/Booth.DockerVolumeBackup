@@ -18,19 +18,11 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database.Configuration
                 .WithOne(x => x.Schedule)
                 .HasForeignKey(x => x.ScheduleId);
 
-            builder.HasMany(x => x.Volumes)
+            builder.HasOne(x => x.BackupDefinition)
                 .WithOne()
-                .HasForeignKey(x => x.ScheduleId);
+                .HasForeignKey<BackupDefinition>(x => x.ScheduleId)
+                .IsRequired();
         }
     }
 
-
-    internal class BackupScheduleVolumeConfiguration : IEntityTypeConfiguration<BackupScheduleVolume>
-    {
-        public void Configure(EntityTypeBuilder<BackupScheduleVolume> builder)
-        {
-            builder.ToTable("BackupScheduleVolume");
-            builder.HasKey(x => x.BackupScheduleVolumeId);
-        }
-    }
 }

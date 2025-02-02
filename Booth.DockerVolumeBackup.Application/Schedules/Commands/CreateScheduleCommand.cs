@@ -49,7 +49,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
                 Saturday = request.Days.Saturday,
                 Time = request.Time
             };
-            schedule.Volumes.AddRange(request.Volumes.Select(x => new BackupScheduleVolume() { Volume = x }));
+            schedule.BackupDefinition.Volumes.AddRange(request.Volumes.Select(x => new BackupDefinitionVolume() { Volume = x }));
 
             dataContext.Schedules.Add(schedule);
             await dataContext.SaveChangesAsync(cancellationToken);

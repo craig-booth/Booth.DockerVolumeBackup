@@ -39,7 +39,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Dtos
                 Time = schedule.Time,
             };
 
-            scheduleDto.Volumes.AddRange(schedule.Volumes.Select(x => x.Volume));
+         //   scheduleDto.Volumes.AddRange(schedule.BackupDefinition.Volumes.Select(x => x.Volume));
 
             return scheduleDto;
         }

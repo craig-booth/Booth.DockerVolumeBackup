@@ -1,17 +1,18 @@
-﻿using System.Collections.Concurrent;
-using Booth.DockerVolumeBackup.Domain.Events;
+﻿
 using MediatR;
 
-namespace Booth.DockerVolumeBackup.Application.Services
-{
+using Booth.DockerVolumeBackup.Application.Interfaces;
+using Booth.DockerVolumeBackup.Domain.Events;
 
+
+namespace Booth.DockerVolumeBackup.Infrastructure.Services
+{
     public interface IBackupNotificationService
     {
         void SubscribeToUpdates(Action<int> handler);
         void UnsubscribeToUpdates(Action<int> handler);
     }
-
-    public class BackupNotificationService  : IBackupNotificationService, INotificationHandler<BackupStatusChangedEvent>, INotificationHandler<BackupVolumeStatusChangedEvent>
+    internal class BackupNotificationService : IBackupNotificationService, INotificationHandler<BackupStatusChangedEvent>, INotificationHandler<BackupVolumeStatusChangedEvent>
     {
         private readonly List<Action<int>> _Subscribers = new List<Action<int>>();
         private readonly ReaderWriterLockSlim _Lock = new ReaderWriterLockSlim();

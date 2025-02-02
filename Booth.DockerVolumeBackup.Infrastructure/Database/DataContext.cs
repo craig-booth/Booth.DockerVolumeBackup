@@ -16,6 +16,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
 
         public DbSet<Backup> Backups => Set<Backup>();
         public DbSet<BackupSchedule> Schedules => Set<BackupSchedule>();
+
         public DataContext(IOptions<AppConfig> config)
         {
             _AppConfig = config;

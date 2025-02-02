@@ -22,7 +22,8 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
 
             // Clear existing data
             await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupSchedule;", [], CancellationToken.None);
-            await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupScheduleVolume;", [], CancellationToken.None);
+            await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupDefinitionVolume;", [], CancellationToken.None);
+            await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupDefinitionVolume;", [], CancellationToken.None);
             await dataContext.ExecuteSqlCommandAsync("DELETE FROM Backup;", [], CancellationToken.None);
             await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupVolume;", [], CancellationToken.None);
             await dataContext.ExecuteSqlCommandAsync("UPDATE sqlite_sequence SET seq = 0;", [], CancellationToken.None);
@@ -64,7 +65,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
             {
                 var volumeCount = _Faker.Random.Number(volumeNames.Count);
                 var scheduleVolumes = _Faker.PickRandom(volumeNames, volumeCount);
-                schedule.Volumes.AddRange(scheduleVolumes.Select(x => new BackupScheduleVolume { Volume = x }));
+                schedule.BackupDefinition.Volumes.AddRange(scheduleVolumes.Select(x => new BackupDefinitionVolume { Volume = x }));
             }
 
             return schedules;
@@ -89,7 +90,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
                         EndTime = scheduledTime.AddHours(1)
                     };
 
-                    backup.Volumes.AddRange(schedule.Volumes.Select(x => new BackupVolume()
+                    backup.Volumes.AddRange(schedule.BackupDefinition.Volumes.Select(x => new BackupVolume()
                     {
                         Volume = x.Volume,
                         Status = Status.Complete,

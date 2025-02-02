@@ -1,15 +1,17 @@
-﻿using System;
-using Microsoft.Extensions.Configuration;
+﻿
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.EntityFrameworkCore.Sqlite;
+using Microsoft.EntityFrameworkCore;
+
+using Coravel;
 
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Infrastructure.Docker;
 using Booth.DockerVolumeBackup.Infrastructure.Database;
 using Booth.DockerVolumeBackup.Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
+using Booth.DockerVolumeBackup.Infrastructure.Scheduler;
+
 
 namespace Booth.DockerVolumeBackup.Application
 {
@@ -31,8 +33,11 @@ namespace Booth.DockerVolumeBackup.Application
             builder.Services.AddSingleton<IDockerClientFactory, DockerClientFactory>();
             builder.Services.AddSingleton<IDockerClient>((services) => services.GetRequiredService<IDockerClientFactory>().CreateClient());
             builder.Services.AddSingleton<IDockerService, DockerService>();
+            builder.Services.AddScoped<IBackupScheduler, BackupScheduler>();
             builder.Services.AddTransient<IMountPointBackupService,MountPointBackupService>();
 
+            builder.Services.AddQueue();
+            builder.Services.AddScheduler();
 
             return builder;
         }

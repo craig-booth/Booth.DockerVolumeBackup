@@ -44,6 +44,7 @@ namespace Booth.DockerVolumeBackup.WebApi
 
             // Setup database
             await app.SetupDatabase();
+            await app.AddScheduledBackups();
 
             app.Run();
         }
