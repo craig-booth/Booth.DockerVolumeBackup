@@ -1,13 +1,14 @@
-import { Badge } from '@radix-ui/themes';
+import { Badge, BadgeProps } from '@radix-ui/themes';
 import { Status } from '@/models/Backup';
 
 
 export type StatusBadgeProps = {
 	status: Status;
 }
+
 export function StatusBadge({ status }: StatusBadgeProps) {
 
-	const statusColor = (status: Status) : string => {
+	const statusColor = (status: Status): BadgeProps['color'] => {
 		switch (status) {
 			case 'Queued':
 				return 'gray';
