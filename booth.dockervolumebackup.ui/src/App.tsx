@@ -4,7 +4,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import './App.css'
 
-import Layout from '@/components/Layout.tsx';
+import Layout from '@/layout/Layout.tsx';
+import BackupRoutes from '@/pages/backups/BackupRoutes.tsx';
 import VolumeRoutes from '@/pages/volumes/VolumeRoutes.tsx';
 import ScheduleRoutes from '@/pages/schedules/ScheduleRoutes.tsx';
 
@@ -20,8 +21,9 @@ function App() {
             children: [
                 {
                     path: '/',
-                    element: <Navigate to="volumes" replace={true} />
+                    element: <Navigate to="backups" replace={true} />
                 },
+                BackupRoutes,
                 VolumeRoutes,
                 ScheduleRoutes,
             ]

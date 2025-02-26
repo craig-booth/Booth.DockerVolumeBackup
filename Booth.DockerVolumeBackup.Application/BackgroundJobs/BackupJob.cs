@@ -4,9 +4,8 @@ using MediatR;
 
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Domain.Events;
-using Booth.DockerVolumeBackup.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
-using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
@@ -37,7 +36,11 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                 var mountPointBackupService = scope.ServiceProvider.GetRequiredService<IMountPointBackupService>();
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<BackupJob>>();
 
-                var backup = await dataContext.Backups.FindAsync([_BackupId], cancellationToken);
+                var backup = await dataContext.Backups
+                    .AsTracking()
+                    .Where(x => x.BackupId == _BackupId)
+                    .Include(x => x.Volumes)
+                    .SingleAsync();
 
                 if (cancellationToken.IsCancellationRequested)
                 {

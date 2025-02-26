@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 using Booth.DockerVolumeBackup.Application.Interfaces;
+using System.Threading;
 
 namespace Booth.DockerVolumeBackup.Infrastructure.Services
 {

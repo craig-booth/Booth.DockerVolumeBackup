@@ -18,14 +18,17 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupStatusEv
     {
         public int BackupId { get; set; }
         public StatusDto Status { get; set; }
+        public DateTimeOffset? StartTime { get; set; }
+        public DateTimeOffset? EndTime { get; set; }
         public List<BackupVolumeStatusDto> Volumes { get; set; } = [];
     }
 
     public class BackupVolumeStatusDto
     {
-        public string Volume { get; set; } = "";
+        public int BackupVolumeId { get; set; }
         public StatusDto Status { get; set; }
-        public DateTimeOffset? BackupTime { get; set; }
+        public DateTimeOffset? StartTime { get; set; }
+        public DateTimeOffset? EndTime { get; set; }
     }
 
     internal class GetBackupStatusEventsQueryHandler(IDataContext dataContext, IBackupNotificationService notificationService) : IStreamRequestHandler<GetBackupStatusEventsQuery, BackupStatusDto?>
@@ -39,11 +42,14 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupStatusEv
                 {
                     BackupId = x.BackupId,
                     Status = (StatusDto)x.Status,
-                    Volumes = x.Volumes.Select(x => new BackupVolumeStatusDto()
+                    StartTime = x.StartTime,
+                    EndTime = x.EndTime,
+                    Volumes = x.Volumes.Select(v => new BackupVolumeStatusDto()
                     {
-                        Volume = x.Volume,
-                        Status = (StatusDto)x.Status,
-                        BackupTime = x.EndTime
+                        BackupVolumeId = v.BackupVolumeId,
+                        Status = (StatusDto)v.Status,
+                        StartTime = v.StartTime,
+                        EndTime = v.EndTime
                     }).ToList()
                 });
 

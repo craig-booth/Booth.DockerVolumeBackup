@@ -1,6 +1,4 @@
 ﻿using Xunit;
-using FluentAssertions;
-using FluentAssertions.Execution;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -8,11 +6,8 @@ using NSubstitute;
 using Booth.DockerVolumeBackup.Application.BackgroundJobs;
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Domain.Models;
-using System.Threading;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using Booth.DockerVolumeBackup.Test.Fixtures.Mocks;
-using Coravel.Scheduling.Schedule;
+using MockQueryable.NSubstitute;
 
 namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
 {
@@ -24,20 +19,19 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             var backup = new Backup
             {
                 BackupId = 45,
-                Volumes = new List<BackupVolume> 
-                { 
-                    new BackupVolume { Volume = "Volume1" },
-                    new BackupVolume { Volume = "Volume2" },
-                }
+                Volumes = new List<BackupVolume>
+                    {
+                        new BackupVolume { Volume = "Volume1" },
+                        new BackupVolume { Volume = "Volume2" },
+                    }
             };
+            var backups = new[] { backup };
+                
+            var backupDataSet = backups.AsQueryable().BuildMockDbSet();
 
-            var backupDataSet = Substitute.For<DbSet<Backup>>();
-            backupDataSet.FindAsync(Arg.Any<object[]>(), Arg.Any<CancellationToken>()).Returns(backup);
-
-            var dataContext = Substitute.For<IDataContext>();
+            var dataContext = Substitute.For<IDataContext>();  
             dataContext.Backups.Returns(backupDataSet);
                 
-
             var dockerService = Substitute.For<IDockerService>();
 
             var volumes = new List<Volume> 

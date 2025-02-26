@@ -21,7 +21,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
     {
 
         [Fact]
-        public async Task GellAllVolumes()
+        public async Task GetAllVolumes()
         {
             var httpClient = fixture.CreateClient();
 
@@ -38,7 +38,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
         }
 
         [Fact]
-        public async Task GellVolumeBackups()
+        public async Task GetVolumeBackups()
         {
             var httpClient = fixture.CreateClient();
 
@@ -58,7 +58,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
         }
 
         [Fact]
-        public async Task GellVolumeBackupsNotFound()
+        public async Task GetVolumeBackupsNotFound()
         {
             var httpClient = fixture.CreateClient();
 

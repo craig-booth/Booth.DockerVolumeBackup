@@ -18,7 +18,6 @@ namespace Booth.DockerVolumeBackup.Application.Interfaces
 
         IQueryable<T> ExecuteSqlQueryAsync<T>(string sql, object[] parameters);
 
-        IDbConnection CreateConnection();
     }
 
 }

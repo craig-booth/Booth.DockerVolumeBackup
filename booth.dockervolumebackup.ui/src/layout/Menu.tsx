@@ -14,6 +14,9 @@ export default function Menu() {
 
 	return (
 		<TabNav.Root>
+			<TabNav.Link asChild active={isActive('/backups/')}>
+				<Link to={'backups'}>Backups</Link>
+			</TabNav.Link>
 			<TabNav.Link asChild active={isActive('/volumes/')}>
 				<Link to={'volumes'}>Volumes</Link>
 			</TabNav.Link>

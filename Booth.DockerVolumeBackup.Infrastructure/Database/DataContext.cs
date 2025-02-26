@@ -35,11 +35,6 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
 
             base.OnModelCreating(modelBuilder);
         }
-        public IDbConnection CreateConnection()
-        {
-            this.Database.OpenConnection();
-            return new SqliteConnection(_AppConfig.Value.DatabaseConnectionString);
-        }
 
         public IQueryable<T> ExecuteSqlQueryAsync<T>(string sql, object[] parameters)
         {

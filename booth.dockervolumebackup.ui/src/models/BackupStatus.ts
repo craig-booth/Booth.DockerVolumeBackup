@@ -1,12 +1,15 @@
-
+import { Status } from '@/models/Backup';
 export interface BackupStatus {
     backupId: number;
-    status: string;
+    status: Status;
+    startTime?: Date;
+    endTime?: Date;
     volumes: VolumeBackupStatus[];
 }
 
 export interface VolumeBackupStatus {
-    volumeName: string;
-    status: string;
-    backupTime?: Date;
+    backupVolumeId: number;
+    status: Status;
+    startTime?: Date;
+    endTime?: Date;
 }

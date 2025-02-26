@@ -38,9 +38,9 @@ namespace Booth.DockerVolumeBackup.WebApi.EndPoints
             })
             .WithName("GetBackup");
 
-            app.MapGet("api/backups/{id:int}/status", async (int id, HttpContext context, CancellationToken cancellationToken, IMediator mediator, IBackupNotificationService notificationService, IOptions<Microsoft.AspNetCore.Http.Json.JsonOptions> serializeOptions) =>
+            app.MapGet("api/backups/{id:int}/status", async (int id, IMediator mediator) =>
             {
-                var result = await mediator.Send(new Application.Backups.Queries.GetBackupStatus.GetBackupStatusQuery(id));
+                var result = await mediator.Send(new GetBackupStatusQuery(id));
                 return result.Match(value => Results.Ok(value), errors => ErrorResult.Error(errors));
             });
 
