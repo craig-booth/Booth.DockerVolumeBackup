@@ -26,9 +26,9 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             {
                 schedules.Should().NotBeNull();
                 schedules.Should().HaveCountGreaterThanOrEqualTo(5);
-                schedules[0].ScheduleId.Should().Be(1);
-                schedules[0].Name.Should().Be("Caleigh");
-                schedules[0].Enabled.Should().BeTrue();
+                schedules?[0].ScheduleId.Should().Be(1);
+                schedules?[0].Name.Should().Be("Caleigh");
+                schedules?[0].Enabled.Should().BeTrue();
             }
         }
 
@@ -42,12 +42,12 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             using (var scope = new AssertionScope())
             {
                 schedule.Should().NotBeNull();
-                schedule.ScheduleId.Should().Be(1);
-                schedule.Name.Should().Be("Caleigh");
-                schedule.Enabled.Should().BeTrue();
-                schedule.Days.Should().BeEquivalentTo(new { Sunday = false, Monday = false, Tuesday = false, Wednesday = true, Thursday = false, Friday = false, Saturday = false });
-                schedule.Time.Should().BeCloseTo(new TimeOnly(1, 48, 12), TimeSpan.FromSeconds(1));
-                schedule.Volumes.Should().HaveCount(9);
+                schedule?.ScheduleId.Should().Be(1);
+                schedule?.Name.Should().Be("Caleigh");
+                schedule?.Enabled.Should().BeTrue();
+                schedule?.Days.Should().BeEquivalentTo(new { Sunday = false, Monday = false, Tuesday = false, Wednesday = true, Thursday = false, Friday = false, Saturday = false });
+                schedule?.Time.Should().BeCloseTo(new TimeOnly(1, 48, 12), TimeSpan.FromSeconds(1));
+                schedule?.Volumes.Should().HaveCount(9);
             }
         }
 
@@ -82,14 +82,14 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             using (var scope = new AssertionScope())
             {
                 addedSchedule.Should().NotBeNull();
-                addedSchedule.ScheduleId.Should().Be(id);
-                addedSchedule.Name.Should().Be("test");
-                addedSchedule.Enabled.Should().BeTrue();
-                addedSchedule.Days.Should().BeEquivalentTo(new { Sunday = true, Monday = false, Tuesday = false, Wednesday = false, Thursday = false, Friday = false, Saturday = false });
-                addedSchedule.Time.Should().Be(new TimeOnly(15, 30));
-                addedSchedule.Volumes.Should().HaveCount(2);
-                addedSchedule.Volumes.Should().Contain("Volume1");
-                addedSchedule.Volumes.Should().Contain("Volume2");
+                addedSchedule?.ScheduleId.Should().Be(id);
+                addedSchedule?.Name.Should().Be("test");
+                addedSchedule?.Enabled.Should().BeTrue();
+                addedSchedule?.Days.Should().BeEquivalentTo(new { Sunday = true, Monday = false, Tuesday = false, Wednesday = false, Thursday = false, Friday = false, Saturday = false });
+                addedSchedule?.Time.Should().Be(new TimeOnly(15, 30));
+                addedSchedule?.Volumes.Should().HaveCount(2);
+                addedSchedule?.Volumes.Should().Contain("Volume1");
+                addedSchedule?.Volumes.Should().Contain("Volume2");
             }
         }
 
@@ -179,13 +179,13 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             using (var scope = new AssertionScope())
             {
                 updatedSchedule.Should().NotBeNull();
-                updatedSchedule.ScheduleId.Should().Be(id);
-                updatedSchedule.Name.Should().Be("New Test");
-                updatedSchedule.Enabled.Should().BeFalse();
-                updatedSchedule.Days.Should().BeEquivalentTo(new { Sunday = true, Monday = true, Tuesday = false, Wednesday = false, Thursday = false, Friday = false, Saturday = false });
-                updatedSchedule.Time.Should().Be(new TimeOnly(23, 45));
-                updatedSchedule.Volumes.Should().HaveCount(1);
-                updatedSchedule.Volumes.Should().Contain("Volume3");
+                updatedSchedule?.ScheduleId.Should().Be(id);
+                updatedSchedule?.Name.Should().Be("New Test");
+                updatedSchedule?.Enabled.Should().BeFalse();
+                updatedSchedule?.Days.Should().BeEquivalentTo(new { Sunday = true, Monday = true, Tuesday = false, Wednesday = false, Thursday = false, Friday = false, Saturday = false });
+                updatedSchedule?.Time.Should().Be(new TimeOnly(23, 45));
+                updatedSchedule?.Volumes.Should().HaveCount(1);
+                updatedSchedule?.Volumes.Should().Contain("Volume3");
             }
         }
 

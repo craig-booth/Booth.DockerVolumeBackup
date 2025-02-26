@@ -17,7 +17,6 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures
 {
     public class WebApiWebFactory : WebApplicationFactory<IApiMarker>
     {
-        private IDbConnection _DBConnection;
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
  

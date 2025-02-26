@@ -26,19 +26,24 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
 
             foreach (var service in allServices)
             {
-
-                if (service?.Spec?.TaskTemplate?.ContainerSpec?.Mounts != null)
+                if (service != null)
                 {
-                    foreach (var mount in service.Spec.TaskTemplate.ContainerSpec.Mounts)
+                    var serviceId = service.Id;
+                    var replicas = service.Spec?.Mode?.Replicated?.Replicas;
+
+                    if (service?.Spec?.TaskTemplate?.ContainerSpec?.Mounts != null)
                     {
-                        if (volumes.Any(x => x.Name == mount.Source))
+                        foreach (var mount in service.Spec.TaskTemplate.ContainerSpec.Mounts)
                         {
-                            var replicas = service?.Spec?.Mode?.Replicated?.Replicas;
-                            services.Add(new Service { Id = service.Id, Replicas = replicas ?? 0 });
-                            break;
+                            if (volumes.Any(x => x.Name == mount.Source))
+                            {  
+                                services.Add(new Service { Id = serviceId, Replicas = replicas ?? 0 });
+                                break;
+                            }
                         }
                     }
                 }
+
             }
 
             return services;

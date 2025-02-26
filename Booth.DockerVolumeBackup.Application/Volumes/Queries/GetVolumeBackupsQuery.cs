@@ -35,8 +35,8 @@ namespace Booth.DockerVolumeBackup.Application.Volumes.Queries.GetVolumeBackups
                     BackupId = x.BackupId,
                     ScheduleId = x.ScheduleId,
                     ScheduleName = (x.Schedule != null) ? x.Schedule.Name : "",
-                    Status = (StatusDto)x.Volumes.FirstOrDefault(v => v.Volume == request.VolumeName).Status,
-                    BackupTime = x.Volumes.FirstOrDefault(v => v.Volume == request.VolumeName).EndTime,
+                    Status = (StatusDto)x.Volumes.First(v => v.Volume == request.VolumeName).Status,
+                    BackupTime = x.Volumes.First(v => v.Volume == request.VolumeName).EndTime,
                 });
 
             var backups = await query.ToListAsync(cancellationToken);

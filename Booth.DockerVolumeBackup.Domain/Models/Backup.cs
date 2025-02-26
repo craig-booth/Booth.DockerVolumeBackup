@@ -17,8 +17,8 @@ namespace Booth.DockerVolumeBackup.Domain.Models
         public DateTimeOffset? EndTime { get; set; }
         public List<BackupVolume> Volumes { get; set; } = new List<BackupVolume>();
 
-        public event EventHandler<BackupStatusChangedEvent> BackupStatusChanged;
-        public event EventHandler<BackupVolumeStatusChangedEvent> BackupVolumeStatusChanged;
+        public event EventHandler<BackupStatusChangedEvent>? BackupStatusChanged;
+        public event EventHandler<BackupVolumeStatusChangedEvent>? BackupVolumeStatusChanged;
 
         public void StartBackup()
         {

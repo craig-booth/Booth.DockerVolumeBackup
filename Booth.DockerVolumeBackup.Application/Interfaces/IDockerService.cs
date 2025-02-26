@@ -16,14 +16,14 @@ namespace Booth.DockerVolumeBackup.Application.Interfaces
 
     public class Volume
     {
-        public string Name { get; set; }
-        public string MountPoint { get; set; }
+        public required string Name { get; set; }
+        public required string MountPoint { get; set; }
         public long Size { get; set; }
     }
 
     public class Service
     {
-        public string Id { get; set; }
+        public required string Id { get; set; }
         public int Replicas { get; set; }
     }
 }

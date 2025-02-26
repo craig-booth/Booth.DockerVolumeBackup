@@ -20,7 +20,6 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures
     public class WebApiFixture : IDisposable
     {
         private readonly WebApiWebFactory _Factory;
-        private IDbConnection _DbConnection;
 
         public WebApiFixture()
         { 
@@ -39,8 +38,6 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures
             
         public void Dispose()
         {
-            if (_DbConnection != null)
-                _DbConnection.Close();
         }
     }
 

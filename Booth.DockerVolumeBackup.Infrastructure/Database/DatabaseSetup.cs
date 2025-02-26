@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using Microsoft.EntityFrameworkCore;
 
 using Bogus;
 
@@ -11,14 +10,16 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
 {
     internal class DatabaseSetup(DataContext dataContext, IDockerClient dockerClient)
     {
-        private Faker? _Faker;
-      
+     
         public async Task SeedDatabase()
-        {       
+        {
+            Randomizer.Seed = new Random(1312);
+            var faker = new Faker();
+
             var volumes = await dockerClient.Volumes.ListAsync();
             var volumeNames = volumes.Select(x => x.Name).ToList(); 
-            var schedules = GenerateSchedules(volumeNames);
-            var backups = GenerateBackups(schedules);
+            var schedules = GenerateSchedules(volumeNames, faker);
+            var backups = GenerateBackups(schedules, faker);
 
             // Clear existing data
             await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupVolume;", [], CancellationToken.None);
@@ -34,13 +35,10 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
             await dataContext.SaveChangesAsync();
         }
 
-        private List<BackupSchedule> GenerateSchedules(List<string> volumeNames)
+        private List<BackupSchedule> GenerateSchedules(List<string> volumeNames, Faker faker)
         {
-            Randomizer.Seed = new Random(1312);
-            _Faker = new Faker();
-
             // Add schedules
-            var faker = new Faker<BackupSchedule>()
+            var backupScheduleFaker = new Faker<BackupSchedule>()
                 .CustomInstantiator(f =>
                 {
                     var schedule = new BackupSchedule()
@@ -60,25 +58,25 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
                     return schedule;
                 });
 
-            var schedules = faker.Generate(5);
+            var schedules = backupScheduleFaker.Generate(5);
             foreach (var schedule in schedules)
             {
-                var volumeCount = _Faker.Random.Number(volumeNames.Count);
-                var scheduleVolumes = _Faker.PickRandom(volumeNames, volumeCount);
+                var volumeCount = faker.Random.Number(volumeNames.Count);
+                var scheduleVolumes = faker.PickRandom(volumeNames, volumeCount);
                 schedule.BackupDefinition.Volumes.AddRange(scheduleVolumes.Select(x => new BackupDefinitionVolume { Volume = x }));
             }
 
             return schedules;
         }
 
-        private List<Backup> GenerateBackups(List<BackupSchedule> schedules)
+        private List<Backup> GenerateBackups(List<BackupSchedule> schedules, Faker faker)
         {
             var backups = new List<Backup>();
 
             var now = DateTimeOffset.UtcNow;
             foreach (var schedule in schedules)
             {
-                var scheduledTime = new DateTimeOffset(_Faker.Date.PastDateOnly(1), schedule.Time, new TimeSpan(0));
+                var scheduledTime = new DateTimeOffset(faker.Date.PastDateOnly(1), schedule.Time, new TimeSpan(0));
 
                 while (scheduledTime < now)
                 {

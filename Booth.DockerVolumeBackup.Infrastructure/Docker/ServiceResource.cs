@@ -24,7 +24,10 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Docker
         public async Task<IList<Service>> ListAsync()
         {
             var response = await _HttpClient.GetFromJsonAsync<Service[]>("/services");
-            return response;
+            if (response != null)
+                return response;
+            else
+                return [];      
         }
 
         public async Task ScaleAsync(string id, int scale)
