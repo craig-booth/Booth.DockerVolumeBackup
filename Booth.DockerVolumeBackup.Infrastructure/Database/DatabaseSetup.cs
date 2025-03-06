@@ -41,10 +41,12 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
             var backupScheduleFaker = new Faker<BackupSchedule>()
                 .CustomInstantiator(f =>
                 {
+                    var time = f.Date.BetweenTimeOnly(TimeOnly.MinValue, TimeOnly.MaxValue);
+
                     var schedule = new BackupSchedule()
                     {
                         Name = f.Name.FirstName(),
-                        Enabled = f.Random.Bool(0.9f),
+                        Enabled = f.Random.Bool(0.75f),
                         Sunday = f.Random.Bool(0.25f),
                         Monday = f.Random.Bool(0.25f),
                         Tuesday = f.Random.Bool(0.25f),
@@ -52,8 +54,9 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
                         Thursday = f.Random.Bool(0.25f),
                         Friday = f.Random.Bool(0.25f),
                         Saturday = f.Random.Bool(0.25f),
-                        Time = f.Date.BetweenTimeOnly(TimeOnly.MinValue, TimeOnly.MaxValue), 
+                        Time = new TimeOnly(time.Hour, time.Minute)
                     };
+
 
                     return schedule;
                 });

@@ -63,7 +63,7 @@ function BackupDetails() {
 		queryFn: () => getBackup(backupId ? Number.parseInt(backupId) : -1),
 	});
 
-	// Hanlde Backup being fetched
+	// Handle Backup being fetched
 	useEffect(() => {
 		if (isSuccess)
 			dispatch({ type: 'set', data: data });
@@ -108,7 +108,7 @@ function BackupDetails() {
 			<div>{backup.status}</div>
 			<div>{formatLongDateTime(backup.startTime)}</div>
 			<div>{formatLongDateTime(backup.endTime)}</div>
-			<DataTable<BackupVolumeDetail> columns={columns} data={backup.volumes} keyField='backupVolumeId' />
+			<DataTable columns={columns} data={backup.volumes} keyField='backupVolumeId' />
 		</>
 
 	)

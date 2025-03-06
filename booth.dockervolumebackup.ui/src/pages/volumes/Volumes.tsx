@@ -17,7 +17,7 @@ const columns: DataTableColumn<Volume>[] = [
 function Volumes() {
 
 	const [filter, setFilter] = useState('');
-	const [selection, setSelection] = useState<string[]>([]); 
+	const [selection, setSelection] = useState<Set<string>>(new Set()); 
 	const [backupRequested, setBackupRequested] = useState(false); 
 	const [backupId, setBackupId] = useState(0); 
 	const [showToast, setShowToast] = useState(false);
@@ -54,13 +54,13 @@ function Volumes() {
 		setFilter(value);
 	}
 
-	const selectionChanged = (selection: (number | string)[]) => {
-		setSelection(selection as string[]); 
+	const selectionChanged = (selection: Set<string>) => {
+		setSelection(selection); 
 	}
 
 	const startBackup = () => {
 		setBackupRequested(true);
-		backupRequest.mutate(selection);
+		backupRequest.mutate(Array.from(selection));
 	}
 
 	return (
@@ -84,10 +84,10 @@ function Volumes() {
 					</TextField.Root>
 				</Box>
 				<Box>
-					<Button disabled={selection.length == 0 || backupRequested} onClick={() => startBackup()}>Backup Now</Button>
+					<Button disabled={selection.size == 0 || backupRequested} onClick={() => startBackup()}>Backup Now</Button>
 				</Box>
 			</Flex>
-			<DataTable columns={columns} data={filteredVolumes} keyField='name' defaultSortColumn={1} includeCheckBox={true} onSelectionChange={selectionChanged} />
+			<DataTable columns={columns} data={filteredVolumes} keyField='name' defaultSortColumn={1} includeCheckBox={true} selection={selection} onSelectionChange={selectionChanged} />
 		</>
 	)
 }

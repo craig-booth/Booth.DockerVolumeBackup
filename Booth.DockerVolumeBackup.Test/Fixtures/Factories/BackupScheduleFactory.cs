@@ -14,6 +14,8 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures.Factories
     {
         private static readonly Faker<BackupSchedule> BackupScheduleFaker = new Faker<BackupSchedule>().CustomInstantiator(f =>
         {
+            var time = f.Date.BetweenTimeOnly(TimeOnly.MinValue, TimeOnly.MaxValue);
+
             var schedule = new BackupSchedule()
             {
                 ScheduleId = f.Random.Number(1, 100),
@@ -25,7 +27,7 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures.Factories
                 Thursday = f.Random.Bool(0.25f),
                 Friday = f.Random.Bool(0.25f),
                 Saturday = f.Random.Bool(0.25f),
-                Time = f.Date.BetweenTimeOnly(TimeOnly.MinValue, TimeOnly.MaxValue),
+                Time = new TimeOnly(time.Hour, time.Minute)
             };
 
             return schedule;

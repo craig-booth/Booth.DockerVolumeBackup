@@ -2,13 +2,21 @@ import { parseJson } from '@/api/jsonParser';
 import { Volume } from '@/models/Volume';
 import { VolumeBackupRequest } from '@/models/VolumeBackupRequest';
 import { Backup, BackupDetail } from '@/models/Backup';
+import { Schedule, ScheduleDetail } from '@/models/Schedule';
 
 
 export interface UseApiResult {
     getVolumes(): Promise<Volume[]>;
     backupVolumes(backupRequest: VolumeBackupRequest): Promise<number>;
+
     getBackups(): Promise<Backup[]>;
     getBackup(backupId: number): Promise<BackupDetail>;
+
+    getSchedules(): Promise<Schedule[]>;
+    getSchedule(scheduleId: number): Promise<ScheduleDetail>;
+    createSchedule(schedule: ScheduleDetail): Promise<number>;
+    updateSchedule(schedule: ScheduleDetail): Promise<boolean>;
+    deleteSchedule(scheduleId: number): Promise<boolean>;
 }
 
 export const useApi = (): UseApiResult => {
@@ -98,10 +106,119 @@ export const useApi = (): UseApiResult => {
         return backups;
     }
 
+    const getSchedules = async (): Promise<Schedule[]> => {
+
+        const schedules = fetch('/api/schedules',
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok)
+                    throw new Error(response.statusText)
+
+                return response.text();
+            })
+            .then(response => parseJson<Schedule[]>(response))
+
+        return schedules;
+    }
+
+    const getSchedule = async (scheduleId: number): Promise<ScheduleDetail> => {
+
+        const schedule = fetch('/api/schedules/' + scheduleId,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok)
+                    throw new Error(response.statusText)
+
+                return response.text();
+            })
+            .then(response => parseJson<ScheduleDetail>(response))
+
+        return schedule;
+    }
+
+    const createSchedule = async (schedule: ScheduleDetail): Promise<number> => {
+
+        const scheduleId = fetch('/api/schedules/',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(schedule),
+            })
+            .then(response => {
+                if (!response.ok)
+                    throw new Error(response.statusText)
+
+                return response.text();
+            })
+            .then(response => parseJson<number>(response))
+
+        return scheduleId;
+    }
+
+    const updateSchedule = async (schedule: ScheduleDetail): Promise<boolean> => {
+        const result = fetch('/api/schedules/' + schedule.scheduleId,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(schedule),
+            })
+            .then(response => {
+                if (!response.ok)
+                    throw new Error(response.statusText)
+
+                return true;
+            })
+
+        return result;
+    }
+
+    const deleteSchedule = async (scheduleId: number): Promise<boolean> => {
+
+        const result = fetch('/api/schedules/' + scheduleId,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+            })
+            .then(response => {
+                if (!response.ok)
+                    throw new Error(response.statusText)
+
+                return true;
+            })
+
+        return result;
+    }
+
     return {
         getVolumes,
         backupVolumes,
         getBackups,
-        getBackup
+        getBackup,
+        getSchedules,
+        getSchedule,
+        createSchedule,
+        updateSchedule,
+        deleteSchedule
     };
 }

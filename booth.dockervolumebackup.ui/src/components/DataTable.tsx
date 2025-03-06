@@ -20,15 +20,15 @@ export type DataTableColumn<T> = {
 	render?: (row: T) => React.ReactNode; 
 }
 
-export type DataTableProps<T> = {
+export type DataTableProps<T, K> = {
 	columns: DataTableColumn<T>[];
 	data: T[];
 	keyField: string;
 	defaultSortColumn?: number; 
 	defaultSortAscending?: boolean; 
 	includeCheckBox?: boolean;
-	onSelected?: (row: T, selected: boolean) => void;
-	onSelectionChange?: (selection: (number| string)[]) => void;
+	selection?: Set<K>;
+	onSelectionChange?: (selection: Set<K>) => void;
 }
 
 function sortData<T>(sortOrder: ColumnSort<T>, data: T[]): T[] {
@@ -92,20 +92,19 @@ function defaultFormater(value?: DataType): string {
 		return value.toString();
 };
 
-export function DataTable<T>({
+export function DataTable<T,K>({
 	columns,
 	data,
 	keyField,
 	defaultSortColumn,
 	defaultSortAscending = true,
 	includeCheckBox = false,
-	onSelected,
+	selection,
 	onSelectionChange
-	}: DataTableProps<T>) {
+	}: DataTableProps<T,K>) {
 
 	const [sortOrder, setSortOrder] = useState<ColumnSort<T>>({ column: columns.find(x => x.id == defaultSortColumn), ascending: defaultSortAscending });
 	const [selectAll, setSelectAll] = useState(false);
-	const [selected, setSelected] = useState<Set<number | string>>(new Set([]));
 	const sortedData = useMemo(() => sortData(sortOrder, data), [sortOrder, data]) ;
 
 	const sortOrderChanged = (selectedColumn: DataTableColumn<T>) => {
@@ -116,37 +115,32 @@ export function DataTable<T>({
 		return (sortOrder.column && (sortOrder.column.id == column.id) && (sortOrder.ascending == ascending)) ? 'inline' : 'none';
 	}
 
-	const getRowId = (row: T): number | string => {
-		return row[keyField as keyof T] as number | string;
+	const getRowId = (row: T): K => {
+		return row[keyField as keyof T] as K;
 	}
 
 	const toggleSelectAll = () => {
 		const newValue = !selectAll;
 		setSelectAll(newValue);
 
-		const newSelected = newValue ? new Set(data.map(x => getRowId(x))) : new Set([]);
+		const newSelection = newValue ? new Set(data.map(x => getRowId(x))) : new Set([]);
 
-		setSelected(newSelected);
-		onSelectionChange?.(Array.from(newSelected));
+		onSelectionChange?.(newSelection);
 	};
 
 	const toggleSelected = (row: T) => {
 
 		const rowId = getRowId(row);
 
-		const newSelected = new Set(selected);
-		if (newSelected.has(rowId)) {
-			newSelected.delete(rowId)
-			onSelected?.(row, false);
+		const newSelection = new Set(selection);
+		if (newSelection.has(rowId)) {
+			newSelection.delete(rowId)
 		}
 		else {
-			newSelected.add(rowId);
-			onSelected?.(row, true);
+			newSelection.add(rowId);
 		}
-		
 
-		setSelected(newSelected);
-		onSelectionChange?.(Array.from(newSelected));
+		onSelectionChange?.(newSelection);
 	}
 
 	return (
@@ -189,7 +183,7 @@ export function DataTable<T>({
 								<Table.Row key={getRowId(row)}>
 									{
 										includeCheckBox ?
-											(<Table.Cell width="1px"><Checkbox checked={selected.has(getRowId(row))} onClick={() => toggleSelected(row)} /></Table.Cell>)
+											(<Table.Cell width="1px"><Checkbox checked={selection.has(getRowId(row))} onClick={() => toggleSelected(row)} /></Table.Cell>)
 											: null
 									}
 									{

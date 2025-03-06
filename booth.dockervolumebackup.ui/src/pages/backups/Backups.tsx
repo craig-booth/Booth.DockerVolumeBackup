@@ -32,7 +32,7 @@ function Backups() {
 
 	return (
 		<>
-			<DataTable<Backup> columns={columns} data={backups} keyField='backupId' defaultSortColumn={3} defaultSortAscending={false}  />
+			<DataTable columns={columns} data={backups} keyField='backupId' defaultSortColumn={3} defaultSortAscending={false}  />
 		</>
 	)
 }

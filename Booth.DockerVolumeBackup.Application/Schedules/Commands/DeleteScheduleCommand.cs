@@ -14,14 +14,24 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
     {
         public async Task<ErrorOr<bool>> Handle(DeleteScheduleCommand request, CancellationToken cancellationToken)
         {
-            var recordsAffected = await dataContext.Schedules
-                .Where(x => x.ScheduleId == request.ScheduleId)
-                .ExecuteDeleteAsync(cancellationToken);
+            using (var transaction = await dataContext.BeginTransactionAsync())
+            {
+                await dataContext.Backups
+                    .Where(x => x.ScheduleId == request.ScheduleId)
+                    .ExecuteDeleteAsync(cancellationToken);
 
-             if (recordsAffected == 0)
-                return Error.NotFound();
+                var recordsAffected = await dataContext.Schedules
+                    .Where(x => x.ScheduleId == request.ScheduleId)
+                    .ExecuteDeleteAsync(cancellationToken);
 
-            return true;           
+                await transaction.CommitAsync(cancellationToken);
+
+                if (recordsAffected == 0)
+                    return Error.NotFound();
+
+                return true;
+            }
+      
         }
     }
 }

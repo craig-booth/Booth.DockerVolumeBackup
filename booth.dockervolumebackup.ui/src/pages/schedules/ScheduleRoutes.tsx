@@ -1,3 +1,4 @@
+import ScheduleDetails from './ScheduleDetails.tsx';
 import Schedules from './Schedules.tsx';
 
 const ScheduleRoutes = {
@@ -6,6 +7,10 @@ const ScheduleRoutes = {
 		{
 			index: true,
 			element: <Schedules />,
+		},
+		{
+			path: ':scheduleId',
+			element: <ScheduleDetails />,
 		}
 	]
 };
