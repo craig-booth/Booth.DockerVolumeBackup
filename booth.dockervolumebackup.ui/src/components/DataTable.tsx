@@ -27,8 +27,8 @@ export type DataTableProps<T> = {
 	defaultSortColumn?: number; 
 	defaultSortAscending?: boolean; 
 	includeCheckBox?: boolean;
-	selection?: Set<React.Key>;
-	onSelectionChange?: (selection: Set<React.Key>) => void;
+	selection?: Set<string | number>;
+	onSelectionChange?: (selection: Set<string | number>) => void;
 }
 
 function sortData<T>(sortOrder: ColumnSort<T>, data: T[]): T[] {
@@ -115,8 +115,8 @@ export function DataTable<T>({
 		return (sortOrder.column && (sortOrder.column.id == column.id) && (sortOrder.ascending == ascending)) ? 'inline' : 'none';
 	}
 
-	const getRowId = (row: T): React.Key => {
-		return row[keyField as keyof T] as React.Key;
+	const getRowId = (row: T): string | number => {
+		return row[keyField as keyof T] as string | number;
 	}
 
 	const toggleSelectAll = () => {

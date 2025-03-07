@@ -23,7 +23,7 @@ const newSchedule: ScheduleDetail = {
 function ScheduleDetails() {
 
 	const [ schedule, setSchedule] = useState<ScheduleDetail>(); 
-	const [ selection, setSelection] = useState<Set<string>>(new Set()); 
+	const [ selection, setSelection] = useState<Set<string|number>>(new Set()); 
 	const [ changeMade, setChangeMade] = useState(false); 
 
 	const { getSchedule, getVolumes, createSchedule, updateSchedule, deleteSchedule } = useApi();
@@ -92,10 +92,10 @@ function ScheduleDetails() {
 	const onSave = () => {
 		if (schedule) {
 			if (isNew) {
-				createScheduleRequest.mutate({ ...schedule, volumes: Array.from(selection) });
+				createScheduleRequest.mutate({ ...schedule, volumes: Array.from(selection) as string[] });
 			}
 			else {
-				updateScheduleRequest.mutate({ ...schedule, volumes: Array.from(selection) });
+				updateScheduleRequest.mutate({ ...schedule, volumes: Array.from(selection) as string[] });
 			}
 		}	
 	}
@@ -106,7 +106,7 @@ function ScheduleDetails() {
 		}
 	}
 
-	const selectionChanged = (selection: Set<string>) => {
+	const selectionChanged = (selection: Set<string|number>) => {
 		setSelection(selection);
 		setChangeMade(true);
 	}

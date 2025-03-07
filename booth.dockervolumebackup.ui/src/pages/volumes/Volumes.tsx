@@ -17,7 +17,7 @@ const columns: DataTableColumn<Volume>[] = [
 function Volumes() {
 
 	const [filter, setFilter] = useState('');
-	const [selection, setSelection] = useState<Set<string>>(new Set()); 
+	const [selection, setSelection] = useState<Set<string|number>>(new Set()); 
 	const [backupRequested, setBackupRequested] = useState(false); 
 	const [backupId, setBackupId] = useState(0); 
 	const [showToast, setShowToast] = useState(false);
@@ -54,13 +54,13 @@ function Volumes() {
 		setFilter(value);
 	}
 
-	const selectionChanged = (selection: Set<string>) => {
+	const selectionChanged = (selection: Set<string|number>) => {
 		setSelection(selection); 
 	}
 
 	const startBackup = () => {
 		setBackupRequested(true);
-		backupRequest.mutate(Array.from(selection));
+		backupRequest.mutate(Array.from(selection) as string[]);
 	}
 
 	return (
