@@ -20,15 +20,15 @@ export type DataTableColumn<T> = {
 	render?: (row: T) => React.ReactNode; 
 }
 
-export type DataTableProps<T, K> = {
+export type DataTableProps<T> = {
 	columns: DataTableColumn<T>[];
 	data: T[];
 	keyField: string;
 	defaultSortColumn?: number; 
 	defaultSortAscending?: boolean; 
 	includeCheckBox?: boolean;
-	selection?: Set<K>;
-	onSelectionChange?: (selection: Set<K>) => void;
+	selection?: Set<React.Key>;
+	onSelectionChange?: (selection: Set<React.Key>) => void;
 }
 
 function sortData<T>(sortOrder: ColumnSort<T>, data: T[]): T[] {
@@ -92,7 +92,7 @@ function defaultFormater(value?: DataType): string {
 		return value.toString();
 };
 
-export function DataTable<T,K>({
+export function DataTable<T>({
 	columns,
 	data,
 	keyField,
@@ -101,7 +101,7 @@ export function DataTable<T,K>({
 	includeCheckBox = false,
 	selection,
 	onSelectionChange
-	}: DataTableProps<T,K>) {
+	}: DataTableProps<T>) {
 
 	const [sortOrder, setSortOrder] = useState<ColumnSort<T>>({ column: columns.find(x => x.id == defaultSortColumn), ascending: defaultSortAscending });
 	const [selectAll, setSelectAll] = useState(false);
@@ -115,8 +115,8 @@ export function DataTable<T,K>({
 		return (sortOrder.column && (sortOrder.column.id == column.id) && (sortOrder.ascending == ascending)) ? 'inline' : 'none';
 	}
 
-	const getRowId = (row: T): K => {
-		return row[keyField as keyof T] as K;
+	const getRowId = (row: T): React.Key => {
+		return row[keyField as keyof T] as React.Key;
 	}
 
 	const toggleSelectAll = () => {
@@ -183,7 +183,7 @@ export function DataTable<T,K>({
 								<Table.Row key={getRowId(row)}>
 									{
 										includeCheckBox ?
-											(<Table.Cell width="1px"><Checkbox checked={selection.has(getRowId(row))} onClick={() => toggleSelected(row)} /></Table.Cell>)
+											(<Table.Cell width="1px"><Checkbox checked={selection?.has(getRowId(row))} onClick={() => toggleSelected(row)} /></Table.Cell>)
 											: null
 									}
 									{

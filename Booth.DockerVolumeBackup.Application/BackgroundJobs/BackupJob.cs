@@ -11,23 +11,15 @@ using Microsoft.EntityFrameworkCore;
 namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
 {
 
-     internal class BackupJob: IBackgroundJob
-     {
-        private readonly int _BackupId;
-        private readonly IServiceScopeFactory _ScopeFactory;
-        
+     internal class BackupJob(int backupId, IServiceScopeFactory scopeFactory) : IBackgroundJob
+     {       
         private IPublisher? _Publisher = null;
 
-        public int Id => _BackupId;
-        public BackupJob(int backupId, IServiceScopeFactory scopeFactory)
-        {
-            _BackupId = backupId;
-            _ScopeFactory = scopeFactory;
-        }
+        public int Id => backupId;
 
         public async Task Execute(CancellationToken cancellationToken)
         {
-            using (var scope = _ScopeFactory.CreateScope())
+            using (var scope = scopeFactory.CreateScope())
             {
                 _Publisher = scope.ServiceProvider.GetRequiredService<IPublisher>();
 
@@ -38,23 +30,23 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
 
                 var backup = await dataContext.Backups
                     .AsTracking()
-                    .Where(x => x.BackupId == _BackupId)
+                    .Where(x => x.BackupId == backupId)
                     .Include(x => x.Volumes)
-                    .SingleAsync();
+                    .SingleAsync(cancellationToken);
 
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    logger.LogWarning($"Backup {_BackupId} cancelled");
+                    logger.LogWarning("Backup {Id} cancelled", backupId);
                     return;
                 }
 
                 if (backup == null)
                 {
-                    logger.LogError($"Error loading backup definition with ID {_BackupId}");
+                    logger.LogError("Error loading backup definition with ID {Id}", backupId);
                     return;
                 }
 
-                logger.LogInformation($"Starting backup {_BackupId}");
+                logger.LogInformation("Starting backup {Id}", backupId);
 
                 backup.BackupStatusChanged += Backup_BackupStatusChanged;
                 backup.BackupVolumeStatusChanged += Backup_BackupVolumeStatusChanged;
@@ -63,7 +55,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                 await dataContext.SaveChangesAsync(cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    logger.LogWarning($"Backup {_BackupId} cancelled");
+                    logger.LogWarning("Backup {Id} cancelled", backupId);
                     return;
                 }
 
@@ -75,7 +67,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                 var dependentServices = await dockerService.GetDependentServices(volumeDefinitions);
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    logger.LogWarning($"Backup {_BackupId} cancelled");
+                    logger.LogWarning("Backup {Id} cancelled", backupId);
                     return;
                 }
 
@@ -85,18 +77,18 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                     await dockerService.StopServices(dependentServices, cancellationToken);
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        logger.LogWarning($"Backup {_BackupId} cancelled");
+                        logger.LogWarning("Backup {Id} cancelled", backupId);
                         return;
                     }
 
                     // Create backup folder
-                    var backupFolder = $"/backup/{DateTime.Now.ToString("yyyy-MM-dd")}_{backup.BackupId}";
+                    var backupFolder = $"/backup/{DateTime.Now:yyyy-MM-dd}_{backup.BackupId}";
                     await mountPointBackupService.CreateDirectoryAsync(backupFolder);
-                    logger.LogInformation($"Backup destination folder {backupFolder} created");
+                    logger.LogInformation("Backup destination folder {Folder} created", backupFolder);
 
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        logger.LogWarning($"Backup {_BackupId} cancelled");
+                        logger.LogWarning("Backup {Id} cancelled", backupId);
                         return;
                     }
 
@@ -106,7 +98,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                         if (volumeDefinition == null)
                             continue;
 
-                        logger.LogInformation($"Starting backup of volume {volumeDefinition.Name}");
+                        logger.LogInformation("Starting backup of volume {Volumne}", volumeDefinition.Name);
                         backup.StartVolumeBackup(backupVolume.Volume);
                         await dataContext.SaveChangesAsync(cancellationToken);
 
@@ -114,11 +106,11 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
 
                         backup.EndVolumeBackup(backupVolume.Volume);
                         await dataContext.SaveChangesAsync(cancellationToken);
-                        logger.LogInformation($"Backup of {volumeDefinition.Name} complete");
+                        logger.LogInformation("Backup of {Volume} complete", volumeDefinition.Name);
 
                         if (cancellationToken.IsCancellationRequested)
                         {
-                            logger.LogWarning($"Backup {_BackupId} cancelled");
+                            logger.LogWarning("Backup {Id} cancelled", backupId);
                             return;
                         }
                     }
