@@ -1,9 +1,10 @@
 ﻿using Coravel.Queuing.Interfaces;
 using Coravel.Scheduling.Schedule.Interfaces;
+using Coravel.Scheduling.Schedule.Event;
 
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Domain.Models;
-using Microsoft.Extensions.DependencyInjection;
+
 
 namespace Booth.DockerVolumeBackup.Infrastructure.Scheduler
 {
@@ -31,7 +32,16 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Scheduler
             if (schedule.Wednesday) scheduledJob.Wednesday();
             if (schedule.Thursday) scheduledJob.Thursday();
             if (schedule.Friday) scheduledJob.Friday();
-            if (schedule.Saturday) scheduledJob.Saturday();  
+            if (schedule.Saturday) scheduledJob.Saturday();
+
+            (scheduledJob as ScheduledEvent)?.AssignUniqueIndentifier(schedule.ScheduleId.ToString());
         }
+
+        public void RemoveScheduledBackup(int scheduleId)
+        {
+            (scheduler as Coravel.Scheduling.Schedule.Scheduler)?.TryUnschedule(scheduleId.ToString());
+        }
+
+
     }
 }

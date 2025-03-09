@@ -7,6 +7,8 @@ using ErrorOr;
 using Booth.DockerVolumeBackup.Application.Schedules.Dtos;
 using Booth.DockerVolumeBackup.Domain.Models;
 using Booth.DockerVolumeBackup.Application.Interfaces;
+using Booth.DockerVolumeBackup.Application.BackgroundJobs;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
@@ -18,7 +20,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
         public bool Enabled { get; set; }
         public ScheduleDaysDto Days { get; set; } = new ScheduleDaysDto();
         public TimeOnly Time { get; set; }
-        public List<string> Volumes { get; set; } = new List<string>();
+        public List<string> Volumes { get; set; } = [];
     }
 
     public class CreateScheduleCommandValidator : AbstractValidator<CreateScheduleCommand>
@@ -32,7 +34,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
     }
 
 
-    internal class CreateScheduleCommandHandler(IDataContext dataContext) : IRequestHandler<CreateScheduleCommand, ErrorOr<int>>
+    internal class CreateScheduleCommandHandler(IDataContext dataContext, IBackupScheduler scheduler, IServiceScopeFactory scopeFactory) : IRequestHandler<CreateScheduleCommand, ErrorOr<int>>
     {
         public async Task<ErrorOr<int>> Handle(CreateScheduleCommand request, CancellationToken cancellationToken)
         {
@@ -53,6 +55,9 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
 
             dataContext.Schedules.Add(schedule);
             await dataContext.SaveChangesAsync(cancellationToken);
+
+            var scheduledJob = new ScheduledBackupJob(schedule.ScheduleId, scopeFactory);
+            scheduler.ScheduleBackup(schedule, scheduledJob);
 
             return schedule.ScheduleId;
 

@@ -16,6 +16,8 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
         {
             using (var transaction = await dataContext.BeginTransactionAsync())
             {
+
+
                 await dataContext.Backups
                     .Where(x => x.ScheduleId == request.ScheduleId)
                     .ExecuteDeleteAsync(cancellationToken);
