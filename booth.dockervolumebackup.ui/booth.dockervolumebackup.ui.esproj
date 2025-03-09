@@ -9,7 +9,4 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
 
-	<Target Name="NpmRunBuild" BeforeTargets="BeforeBuild">
-		<Exec Command="npm run build" />
-	</Target>
 </Project>
