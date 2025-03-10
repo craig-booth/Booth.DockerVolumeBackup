@@ -42,7 +42,8 @@ namespace Booth.DockerVolumeBackup.WebApi
 
             app.MapFallbackToFile("/index.html");
 
-            // Setup database
+            // Configure application
+            app.SetupScheduler();
             await app.SetupDatabase();
             await app.AddScheduledBackups();
 

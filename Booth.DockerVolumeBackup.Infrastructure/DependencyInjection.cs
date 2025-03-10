@@ -11,6 +11,8 @@ using Booth.DockerVolumeBackup.Infrastructure.Docker;
 using Booth.DockerVolumeBackup.Infrastructure.Database;
 using Booth.DockerVolumeBackup.Infrastructure.Services;
 using Booth.DockerVolumeBackup.Infrastructure.Scheduler;
+using System.Runtime.CompilerServices;
+using Coravel.Scheduling.Schedule.Interfaces;
 
 
 namespace Booth.DockerVolumeBackup.Application
@@ -40,6 +42,16 @@ namespace Booth.DockerVolumeBackup.Application
             builder.Services.AddScheduler();
 
             return builder;
+        }
+
+        public static void SetupScheduler(this IHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var schedulerConfiguration = scope.ServiceProvider.GetRequiredService<ISchedulerConfiguration>();
+
+                schedulerConfiguration.LogScheduledTaskProgress();
+            }
         }
 
         public static async Task SetupDatabase(this IHost host)
