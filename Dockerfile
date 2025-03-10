@@ -8,5 +8,7 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 WORKDIR /app
 COPY /deploy .
 
+RUN mkdir ./database
+
 WORKDIR /app
 ENTRYPOINT ["dotnet", "Booth.DockerVolumeBackup.WebApi.dll"]
