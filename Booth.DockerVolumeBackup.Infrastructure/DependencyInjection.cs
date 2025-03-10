@@ -11,7 +11,6 @@ using Booth.DockerVolumeBackup.Infrastructure.Docker;
 using Booth.DockerVolumeBackup.Infrastructure.Database;
 using Booth.DockerVolumeBackup.Infrastructure.Services;
 using Booth.DockerVolumeBackup.Infrastructure.Scheduler;
-using Microsoft.Extensions.Logging;
 
 
 namespace Booth.DockerVolumeBackup.Application
@@ -47,12 +46,8 @@ namespace Booth.DockerVolumeBackup.Application
         {
             using (var scope = host.Services.CreateScope())
             {
-                var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
-
-                logger.LogInformation("Migrating database");
                 var context = scope.ServiceProvider.GetRequiredService<DataContext>();
                 context.Database.Migrate();
-                logger.LogInformation("Migration complete"); 
 
                 var config = scope.ServiceProvider.GetRequiredService<IOptions<AppConfig>>();
                 if (config.Value.SeedDatabase)
