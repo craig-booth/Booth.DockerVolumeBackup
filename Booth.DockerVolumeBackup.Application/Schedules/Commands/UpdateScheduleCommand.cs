@@ -7,6 +7,8 @@ using FluentValidation;
 using Booth.DockerVolumeBackup.Application.Schedules.Dtos;
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
+using Booth.DockerVolumeBackup.Application.BackgroundJobs;
 
 
 namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
@@ -32,7 +34,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
         }
     }
 
-    internal class UpdateScheduleCommandHandler(IDataContext dataContext) : IRequestHandler<UpdateScheduleCommand, ErrorOr<bool>>
+    internal class UpdateScheduleCommandHandler(IDataContext dataContext, IBackupScheduler scheduler, IServiceScopeFactory scopeFactory) : IRequestHandler<UpdateScheduleCommand, ErrorOr<bool>>
     {
         public async Task<ErrorOr<bool>> Handle(UpdateScheduleCommand request, CancellationToken cancellationToken)
         {
@@ -60,6 +62,11 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
             schedule.BackupDefinition.Volumes.AddRange(request.Volumes.Where(x => !schedule.BackupDefinition.Volumes.Any(v => v.Volume == x)).Select(x => new BackupDefinitionVolume { Volume = x }));
 
             await dataContext.SaveChangesAsync(cancellationToken);
+
+            scheduler.RemoveScheduledBackup(schedule.ScheduleId);
+            var scheduledJob = new ScheduledBackupJob(schedule.ScheduleId, scopeFactory);
+            scheduler.ScheduleBackup(schedule, scheduledJob);
+
             return true;
         }
     }

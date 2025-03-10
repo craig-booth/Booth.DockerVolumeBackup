@@ -24,7 +24,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Scheduler
             var scheduledJob = scheduler.ScheduleAsync(async () =>
             {
                 await backupJob.Execute(CancellationToken.None);
-            }).DailyAt(schedule.Time.Hour, schedule.Time.Minute);
+            }).DailyAt(schedule.Time.Hour, schedule.Time.Minute).Zoned(TimeZoneInfo.Local);
 
             if (schedule.Sunday) scheduledJob.Sunday();
             if (schedule.Monday) scheduledJob.Monday();

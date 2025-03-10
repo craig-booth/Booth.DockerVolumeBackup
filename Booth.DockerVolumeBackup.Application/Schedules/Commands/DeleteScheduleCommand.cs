@@ -10,13 +10,13 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
 {
     public record DeleteScheduleCommand(int ScheduleId) : IRequest<ErrorOr<bool>>;
 
-    internal class DeleteScheduleCommandHandler(IDataContext dataContext) : IRequestHandler<DeleteScheduleCommand, ErrorOr<bool>>
+    internal class DeleteScheduleCommandHandler(IDataContext dataContext, IBackupScheduler scheduler) : IRequestHandler<DeleteScheduleCommand, ErrorOr<bool>>
     {
         public async Task<ErrorOr<bool>> Handle(DeleteScheduleCommand request, CancellationToken cancellationToken)
         {
             using (var transaction = await dataContext.BeginTransactionAsync())
             {
-
+                scheduler.RemoveScheduledBackup(request.ScheduleId);
 
                 await dataContext.Backups
                     .Where(x => x.ScheduleId == request.ScheduleId)
