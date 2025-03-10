@@ -4,6 +4,7 @@ import { DataTable, DataTableColumn } from '@/components/DataTable';
 import { useParams, useNavigate } from 'react-router';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useApi } from '@/api/api';
+import { QueuedBackupToast } from '@/components/QueuedBackupToast';
 import { ScheduleDetail } from '@/models/Schedule';
 import { Volume } from '@/models/Volume';
 
@@ -25,8 +26,11 @@ function ScheduleDetails() {
 	const [ schedule, setSchedule] = useState<ScheduleDetail>(); 
 	const [ selection, setSelection] = useState<Set<string|number>>(new Set()); 
 	const [ changeMade, setChangeMade] = useState(false); 
+	const [ backupRequested, setBackupRequested] = useState(false); 
+	const [ backupId, setBackupId] = useState(0); 
+	const [ showToast, setShowToast] = useState(false);
 
-	const { getSchedule, getVolumes, createSchedule, updateSchedule, deleteSchedule } = useApi();
+	const { getSchedule, getVolumes, createSchedule, updateSchedule, deleteSchedule, runBackup } = useApi();
 	const navigate = useNavigate();
 
 
@@ -81,6 +85,17 @@ function ScheduleDetails() {
 		}
 	});
 
+	const runScheduleRequest = useMutation({
+		mutationFn: (scheduleId: number) => {
+			return runBackup(scheduleId);
+		},
+		onSuccess: (data: number) => {
+			setBackupRequested(false);
+			setBackupId(data);
+			setShowToast(true);
+		}
+	});
+
 	if (isPending1 || isPending2) {
 		return <div>Loading...</div>;
 	}
@@ -103,6 +118,13 @@ function ScheduleDetails() {
 	const onDelete = () => {
 		if (schedule) {
 			deleteScheduleRequest.mutate(schedule.scheduleId);
+		}
+	}
+
+	const onRunNow = () => {
+		if (schedule) {
+			setBackupRequested(true);
+			runScheduleRequest.mutate(schedule.scheduleId);
 		}
 	}
 
@@ -148,10 +170,12 @@ function ScheduleDetails() {
 
 	return (
 		<>
+			<QueuedBackupToast backupId={backupId} open={showToast} onOpenChange={setShowToast} />
 			<Flex direction="column" gap="4">
 				<Flex justify="center" gap="4">
-					<Button onClick={() => onSave()} disabled={!changeMade}>Save</Button>
-					<Button onClick={() => onDelete()} disabled={isNew} color="red">Delete</Button>
+					<Button onClick={() => onSave()} disabled={!changeMade || backupRequested}>Save</Button>
+					<Button onClick={() => onDelete()} disabled={isNew || backupRequested} color="red">Delete</Button>
+					<Button onClick={() => onRunNow()} disabled={isNew || backupRequested}>Run Now</Button>
 				</Flex>
 				<Grid columns="2" rows="4" gap="2">
 					<Text as="label" align="left">Name</Text>

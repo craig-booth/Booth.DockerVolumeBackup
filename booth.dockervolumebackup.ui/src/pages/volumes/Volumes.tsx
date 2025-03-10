@@ -1,10 +1,9 @@
 import { useState, useMemo } from 'react';
 import { Flex, Box, Button, TextField } from '@radix-ui/themes';
 import { MagnifyingGlassIcon, Cross2Icon } from '@radix-ui/react-icons';
-import * as Toast from '@radix-ui/react-toast';
+import { QueuedBackupToast } from '@/components/QueuedBackupToast';
 import { DataTable, DataTableColumn } from '@/components/DataTable';
 import { Volume } from '@/models/Volume';
-import { Link } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useApi } from '@/api/api';
 import { formatStorageSize } from '@/utils/Formatting';
@@ -65,13 +64,7 @@ function Volumes() {
 
 	return (
 		<>
-			<Toast.Provider>
-				<Toast.Root className="ToastRoot" open={showToast} onOpenChange={setShowToast}>
-					Backup Queued. Click to <Link to={'/backups/' + backupId}>view</Link>
-					<Toast.Close><Cross2Icon height="16" width="16" cursor="default" /></Toast.Close>
-				</Toast.Root>
-				<Toast.Viewport className="ToastViewport" />
-			</Toast.Provider>
+			<QueuedBackupToast backupId={backupId} open={showToast} onOpenChange={setShowToast} />
 			<Flex direction="row" justify="end" gap="5" py="20px">
 				<Box width="300px">
 					<TextField.Root value={filter} onChange={(e) => filterChanged(e.target.value)} placeholder="Search...">

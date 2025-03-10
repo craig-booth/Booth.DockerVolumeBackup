@@ -11,6 +11,7 @@ export interface UseApiResult {
 
     getBackups(): Promise<Backup[]>;
     getBackup(backupId: number): Promise<BackupDetail>;
+    runBackup(scheduleId: number): Promise<number>;
 
     getSchedules(): Promise<Schedule[]>;
     getSchedule(scheduleId: number): Promise<ScheduleDetail>;
@@ -105,6 +106,29 @@ export const useApi = (): UseApiResult => {
 
         return backups;
     }
+
+    const runBackup = async (scheduleId: number): Promise<number> => {
+
+        const backupId = fetch('/api/backups/' + scheduleId + '/run',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: null
+            })
+            .then(response => {
+                if (!response.ok)
+                    throw new Error(response.statusText)
+
+                return response.text();
+            })
+            .then(response => Number.parseInt(response))
+
+        return backupId;
+    }
+
 
     const getSchedules = async (): Promise<Schedule[]> => {
 
@@ -215,6 +239,7 @@ export const useApi = (): UseApiResult => {
         backupVolumes,
         getBackups,
         getBackup,
+        runBackup,
         getSchedules,
         getSchedule,
         createSchedule,
