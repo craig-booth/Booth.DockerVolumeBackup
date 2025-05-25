@@ -9,11 +9,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Booth.DockerVolumeBackup.Application\Booth.DockerVolumeBackup.Application.csproj" />
     <ProjectReference Include="..\Booth.DockerVolumeBackup.Infrastructure\Booth.DockerVolumeBackup.Infrastructure.csproj" />
-    <ProjectReference Include="..\booth.dockervolumebackup.ui\booth.dockervolumebackup.ui.esproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

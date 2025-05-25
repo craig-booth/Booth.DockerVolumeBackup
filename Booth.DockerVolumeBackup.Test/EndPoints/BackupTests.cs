@@ -36,7 +36,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 backups.Should().HaveCountGreaterThan(100);
                 backups?[0].BackupId.Should().Be(1);
                 backups?[0].ScheduleId.Should().Be(1);
-                backups?[0].ScheduleName.Should().Be("Caleigh");
+                backups?[0].ScheduleName.Should().Be("HandmadeBacon");
                 backups?[0].Status.Should().Be(StatusDto.Complete);
             }
         }
@@ -51,7 +51,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             using (var scope = new AssertionScope())
             {
                 backups.Should().NotBeNull();
-                backups.Should().HaveCount(35);
+                backups.Should().HaveCount(15);
                 backups.Should().AllSatisfy(x => x.ScheduleId.Should().Be(2));
             }
         }
@@ -68,11 +68,11 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 backup.Should().NotBeNull();
                 backup?.BackupId.Should().Be(1);
                 backup?.ScheduleId.Should().Be(1);
-                backup?.ScheduleName.Should().Be("Caleigh");
+                backup?.ScheduleName.Should().Be("HandmadeBacon");
                 backup?.Status.Should().Be(StatusDto.Complete);
                 backup?.StartTime.Should().BeBefore(DateTimeOffset.UtcNow);
                 backup?.EndTime.Should().BeBefore(DateTimeOffset.UtcNow);
-                backup?.Volumes.Should().HaveCount(9);
+                backup?.Volumes.Should().HaveCount(1);
             }
         }
 
@@ -98,7 +98,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 status.Should().NotBeNull();
                 status?.BackupId.Should().Be(1);
                 status?.Status.Should().Be(StatusDto.Complete);
-                status?.Volumes.Should().HaveCount(9);
+                status?.Volumes.Should().HaveCount(1);
             }
         }
 
@@ -179,7 +179,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 status.Should().NotBeNull();
                 status?.BackupId.Should().Be(id);
                 status?.Status.Should().Be(StatusDto.Queued);
-                status?.Volumes.Should().HaveCount(9);
+                status?.Volumes.Should().HaveCount(1);
             }
         }
 

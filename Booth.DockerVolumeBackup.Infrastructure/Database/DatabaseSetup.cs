@@ -10,16 +10,14 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
 {
     internal class DatabaseSetup(DataContext dataContext, IDockerClient dockerClient)
     {
-     
+
+        private const int SEED = 34643;
         public async Task SeedDatabase()
         {
-            Randomizer.Seed = new Random(1312);
-            var faker = new Faker();
-
             var volumes = await dockerClient.Volumes.ListAsync();
             var volumeNames = volumes.Select(x => x.Name).ToList(); 
-            var schedules = GenerateSchedules(volumeNames, faker);
-            var backups = GenerateBackups(schedules, faker);
+            var schedules = GenerateSchedules(volumeNames);
+            var backups = GenerateBackups(schedules);
 
             // Clear existing data
             await dataContext.ExecuteSqlCommandAsync("DELETE FROM BackupVolume;", [], CancellationToken.None);
@@ -35,7 +33,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
             await dataContext.SaveChangesAsync();
         }
 
-        private List<BackupSchedule> GenerateSchedules(List<string> volumeNames, Faker faker)
+        private List<BackupSchedule> GenerateSchedules(List<string> volumeNames)
         {
             // Add schedules
             var backupScheduleFaker = new Faker<BackupSchedule>()
@@ -45,8 +43,8 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
 
                     var schedule = new BackupSchedule()
                     {
-                        Name = f.Name.FirstName(),
-                        Enabled = f.Random.Bool(0.75f),
+                        Name = f.Commerce.ProductAdjective() + f.Commerce.Product(),
+                        Enabled = f.Random.Bool(0.90f),
                         Sunday = f.Random.Bool(0.25f),
                         Monday = f.Random.Bool(0.25f),
                         Tuesday = f.Random.Bool(0.25f),
@@ -61,7 +59,9 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
                     return schedule;
                 });
 
-            var schedules = backupScheduleFaker.Generate(5);
+            var schedules = backupScheduleFaker.UseSeed(SEED).Generate(5);
+
+            var faker = new Faker() {  Random = new Randomizer(SEED) };  
             foreach (var schedule in schedules)
             {
                 var volumeCount = faker.Random.Number(volumeNames.Count);
@@ -72,10 +72,11 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
             return schedules;
         }
 
-        private List<Backup> GenerateBackups(List<BackupSchedule> schedules, Faker faker)
+        private List<Backup> GenerateBackups(List<BackupSchedule> schedules)
         {
             var backups = new List<Backup>();
 
+            var faker = new Faker() { Random = new Randomizer(SEED) };
             var now = DateTimeOffset.UtcNow;
             foreach (var schedule in schedules)
             {
