@@ -27,7 +27,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 schedules.Should().NotBeNull();
                 schedules.Should().HaveCountGreaterThanOrEqualTo(5);
                 schedules?[0].ScheduleId.Should().Be(1);
-                schedules?[0].Name.Should().Be("HandmadeBacon");
+                schedules?[0].Name.Should().Be("ErgonomicFish");
                 schedules?[0].Enabled.Should().BeTrue();
             }
         }
@@ -43,10 +43,10 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             {
                 schedule.Should().NotBeNull();
                 schedule?.ScheduleId.Should().Be(1);
-                schedule?.Name.Should().Be("HandmadeBacon");
+                schedule?.Name.Should().Be("ErgonomicFish");
                 schedule?.Enabled.Should().BeTrue();
-                schedule?.Days.Should().BeEquivalentTo(new { Sunday = true, Monday = true, Tuesday = false, Wednesday = false, Thursday = false, Friday = false, Saturday = false });
-                schedule?.Time.Should().BeCloseTo(new TimeOnly(2, 33, 00), TimeSpan.FromSeconds(1));
+                schedule?.Days.Should().BeEquivalentTo(new { Sunday = false, Monday = true, Tuesday = true, Wednesday = false, Thursday = false, Friday = false, Saturday = false });
+                schedule?.Time.Should().BeCloseTo(new TimeOnly(20, 20, 00), TimeSpan.FromSeconds(1));
                 schedule?.Volumes.Should().HaveCount(1);
             }
         }

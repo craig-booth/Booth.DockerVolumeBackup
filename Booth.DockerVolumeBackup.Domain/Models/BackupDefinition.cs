@@ -11,6 +11,7 @@ namespace Booth.DockerVolumeBackup.Domain.Models
     {
         public int BackupDefinitionId { get; set; }
         public int ScheduleId { get; set; }
+        public int? KeepLast {  get; set; }
         public List<BackupDefinitionVolume> Volumes { get; set; } = [];
     }
 

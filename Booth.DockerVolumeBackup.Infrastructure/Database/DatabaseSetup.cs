@@ -1,9 +1,9 @@
-﻿using System.Data;
-
-using Bogus;
-
-using Booth.DockerVolumeBackup.Infrastructure.Docker;
+﻿using Bogus;
+using Bogus.DataSets;
 using Booth.DockerVolumeBackup.Domain.Models;
+using Booth.DockerVolumeBackup.Infrastructure.Docker;
+using System.Data;
+using System.Net.WebSockets;
 
 
 namespace Booth.DockerVolumeBackup.Infrastructure.Database
@@ -35,48 +35,47 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
 
         private List<BackupSchedule> GenerateSchedules(List<string> volumeNames)
         {
-            // Add schedules
+            var backupDefinitionFaker = new Faker<BackupDefinition>()
+            .UseSeed(SEED)
+            .RuleFor(x => x.Volumes, f =>
+            {
+                var volumeCount = f.Random.Number(volumeNames.Count);
+                var scheduleVolumes = f.PickRandom(volumeNames, volumeCount);
+
+                var backupVolumes = scheduleVolumes.Select(x => new BackupDefinitionVolume { Volume = x });
+                return backupVolumes.ToList();
+            })
+            .RuleFor(x => x.KeepLast, f => f.Random.Number(1, 10));
+
             var backupScheduleFaker = new Faker<BackupSchedule>()
-                .CustomInstantiator(f =>
+                .UseSeed(SEED)
+                .RuleFor(x => x.Name, f => f.Commerce.ProductAdjective() + f.Commerce.Product())
+                .RuleFor(x => x.Enabled, f => f.Random.Bool(0.90f))
+                .RuleFor(x => x.Sunday, f => f.Random.Bool(0.25f))
+                .RuleFor(x => x.Monday, f => f.Random.Bool(0.25f))
+                .RuleFor(x => x.Tuesday, f => f.Random.Bool(0.25f))
+                .RuleFor(x => x.Wednesday, f => f.Random.Bool(0.25f))
+                .RuleFor(x => x.Thursday, f => f.Random.Bool(0.25f))
+                .RuleFor(x => x.Friday, f => f.Random.Bool(0.25f))
+                .RuleFor(x => x.Saturday, f => f.Random.Bool(0.25f))
+                .RuleFor(x => x.Time, f =>
                 {
                     var time = f.Date.BetweenTimeOnly(TimeOnly.MinValue, TimeOnly.MaxValue);
-
-                    var schedule = new BackupSchedule()
-                    {
-                        Name = f.Commerce.ProductAdjective() + f.Commerce.Product(),
-                        Enabled = f.Random.Bool(0.90f),
-                        Sunday = f.Random.Bool(0.25f),
-                        Monday = f.Random.Bool(0.25f),
-                        Tuesday = f.Random.Bool(0.25f),
-                        Wednesday = f.Random.Bool(0.25f),
-                        Thursday = f.Random.Bool(0.25f),
-                        Friday = f.Random.Bool(0.25f),
-                        Saturday = f.Random.Bool(0.25f),
-                        Time = new TimeOnly(time.Hour, time.Minute)
-                    };
-
-
-                    return schedule;
-                });
+                    return new TimeOnly(time.Hour, time.Minute);
+                })
+                .RuleFor(x => x.BackupDefinition, f => backupDefinitionFaker.Generate());
 
             var schedules = backupScheduleFaker.UseSeed(SEED).Generate(5);
-
-            var faker = new Faker() {  Random = new Randomizer(SEED) };  
-            foreach (var schedule in schedules)
-            {
-                var volumeCount = faker.Random.Number(volumeNames.Count);
-                var scheduleVolumes = faker.PickRandom(volumeNames, volumeCount);
-                schedule.BackupDefinition.Volumes.AddRange(scheduleVolumes.Select(x => new BackupDefinitionVolume { Volume = x }));
-            }
 
             return schedules;
         }
 
         private List<Backup> GenerateBackups(List<BackupSchedule> schedules)
         {
+            var faker = new Faker() { Random = new Randomizer(SEED) };
+
             var backups = new List<Backup>();
 
-            var faker = new Faker() { Random = new Randomizer(SEED) };
             var now = DateTimeOffset.UtcNow;
             foreach (var schedule in schedules)
             {

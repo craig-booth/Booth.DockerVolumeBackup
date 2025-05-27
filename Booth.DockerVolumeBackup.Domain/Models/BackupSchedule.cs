@@ -18,7 +18,7 @@ namespace Booth.DockerVolumeBackup.Domain.Models
         public TimeOnly Time { get; set; }
 
         public int BackupDefinitionId { get; set; }
-        public BackupDefinition BackupDefinition { get; } = new BackupDefinition();
+        public BackupDefinition BackupDefinition { get; set; } = new BackupDefinition();
 
         public ICollection<Backup> Backups { get; } = [];
 

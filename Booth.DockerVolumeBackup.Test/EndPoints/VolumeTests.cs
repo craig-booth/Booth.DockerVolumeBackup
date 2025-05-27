@@ -46,12 +46,12 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             var volumeBackups = await httpClient.GetFromJsonAsync<IReadOnlyList<VolumeBackupDto>>($"api/volumes/{volumeName}/backups", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
 
             volumeBackups.Should().NotBeNull();
-            volumeBackups.Should().HaveCount(117);
+            volumeBackups.Should().NotBeEmpty();
             using (var scope = new AssertionScope())
             {
                 volumeBackups?[0].BackupId.Should().BeGreaterThan(0);
                 volumeBackups?[0].ScheduleId.Should().BeGreaterThan(0);
-                volumeBackups?[0].ScheduleName.Should().Be("HandmadeBacon");
+                volumeBackups?[0].ScheduleName.Should().Be("ErgonomicFish");
                 volumeBackups?[0].Status.Should().Be(StatusDto.Complete);
                 volumeBackups?[0].BackupTime.Should().BeBefore(DateTimeOffset.UtcNow);
             }

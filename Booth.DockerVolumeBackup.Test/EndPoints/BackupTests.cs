@@ -36,7 +36,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 backups.Should().HaveCountGreaterThan(100);
                 backups?[0].BackupId.Should().Be(1);
                 backups?[0].ScheduleId.Should().Be(1);
-                backups?[0].ScheduleName.Should().Be("HandmadeBacon");
+                backups?[0].ScheduleName.Should().Be("ErgonomicFish");
                 backups?[0].Status.Should().Be(StatusDto.Complete);
             }
         }
@@ -68,7 +68,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 backup.Should().NotBeNull();
                 backup?.BackupId.Should().Be(1);
                 backup?.ScheduleId.Should().Be(1);
-                backup?.ScheduleName.Should().Be("HandmadeBacon");
+                backup?.ScheduleName.Should().Be("ErgonomicFish");
                 backup?.Status.Should().Be(StatusDto.Complete);
                 backup?.StartTime.Should().BeBefore(DateTimeOffset.UtcNow);
                 backup?.EndTime.Should().BeBefore(DateTimeOffset.UtcNow);
