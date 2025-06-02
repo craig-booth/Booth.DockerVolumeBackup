@@ -11,6 +11,7 @@ export interface ScheduleDetail {
     enabled: boolean;
     days: ScheduleDays;
     time: string;
+    keepLast: number;
     volumes: string[];
 }
 

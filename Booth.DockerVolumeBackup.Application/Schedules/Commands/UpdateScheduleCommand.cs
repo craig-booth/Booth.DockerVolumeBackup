@@ -21,6 +21,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
         public bool Enabled { get; set; }
         public ScheduleDaysDto Days { get; set; } = new ScheduleDaysDto();
         public TimeOnly Time { get; set; }
+        public int KeepLast { get; set; }
         public List<string> Volumes { get; set; } = new List<string>();
     }
 
@@ -31,6 +32,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
             RuleFor(x => x.Name).NotEmpty();
             RuleFor(x => x.Days).Must(x => x.Sunday || x.Monday || x.Tuesday || x.Wednesday || x.Thursday || x.Friday || x.Saturday).WithMessage("Atleast one day must be selected.");
             RuleFor(x => x.Volumes).NotEmpty().WithMessage("Atleast one volume must be selected.");
+            RuleFor(x => x.KeepLast).GreaterThanOrEqualTo(0).WithMessage("Keep Last must be zero or a positive number.");
         }
     }
 
@@ -58,6 +60,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
             schedule.Saturday = request.Days.Saturday;
             schedule.Time = request.Time;
 
+            schedule.BackupDefinition.KeepLast = request.KeepLast;
             schedule.BackupDefinition.Volumes.RemoveAll(x => !request.Volumes.Contains(x.Volume));
             schedule.BackupDefinition.Volumes.AddRange(request.Volumes.Where(x => !schedule.BackupDefinition.Volumes.Any(v => v.Volume == x)).Select(x => new BackupDefinitionVolume { Volume = x }));
 

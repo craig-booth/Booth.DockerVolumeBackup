@@ -18,6 +18,7 @@ const newSchedule: ScheduleDetail = {
 	enabled: true,
 	days: { sunday: false, monday: false, tuesday: false, wednesday: false, thursday: false, friday: false, saturday: false},
 	time: '',
+    keepLast: 0,
 	volumes: []
 };
 
@@ -168,6 +169,13 @@ function ScheduleDetails() {
 		setChangeMade(true);
 	}
 
+	const keepLastChanged = (value: string) => {
+		const newSchedule = { ...schedule } as ScheduleDetail;
+		newSchedule.keepLast = value ? Number.parseInt(value) : 0;
+		setSchedule(newSchedule);
+		setChangeMade(true);
+    }
+
 	return (
 		<>
 			<QueuedBackupToast backupId={backupId} open={showToast} onOpenChange={setShowToast} />
@@ -177,7 +185,7 @@ function ScheduleDetails() {
 					<Button onClick={() => onDelete()} disabled={isNew || backupRequested} color="red">Delete</Button>
 					<Button onClick={() => onRunNow()} disabled={isNew || backupRequested}>Run Now</Button>
 				</Flex>
-				<Grid columns="2" rows="4" gap="2">
+				<Grid columns="200px 200px" rows="5" gap="2">
 					<Text as="label" align="left">Name</Text>
 					<TextField.Root name="name" value={schedule?.name} onChange={(e) => nameChanged(e.target.value)} />
 					<Text as="label" align="left">Enabled</Text>
@@ -194,6 +202,8 @@ function ScheduleDetails() {
 					</Flex>
 					<Text as="label" align="left">Time</Text>
 					<TextField.Root type="time" value={schedule?.time} onChange={(e) => timeChanged(e.target.value)} />
+					<Text as="label" align="left">Backups to Keep</Text>
+					<TextField.Root type="number" value={schedule?.keepLast} onChange={(e) => keepLastChanged(e.target.value)} />
 				</Grid>
 				<DataTable includeCheckBox columns={columns} data={volumes} keyField='name' selection={selection} onSelectionChange={selectionChanged} defaultSortColumn={1} />
 			</Flex>

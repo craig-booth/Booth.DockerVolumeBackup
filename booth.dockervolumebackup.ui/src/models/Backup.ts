@@ -24,4 +24,5 @@ export interface BackupVolumeDetail {
     status: Status;
     startTime?: Date;
     endTime?: Date;
+    backupSize?: number;
 }

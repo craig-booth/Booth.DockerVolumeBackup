@@ -39,13 +39,13 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
             .UseSeed(SEED)
             .RuleFor(x => x.Volumes, f =>
             {
-                var volumeCount = f.Random.Number(volumeNames.Count);
+                var volumeCount = f.Random.Number(3, volumeNames.Count);
                 var scheduleVolumes = f.PickRandom(volumeNames, volumeCount);
 
                 var backupVolumes = scheduleVolumes.Select(x => new BackupDefinitionVolume { Volume = x });
                 return backupVolumes.ToList();
             })
-            .RuleFor(x => x.KeepLast, f => f.Random.Number(1, 10));
+            .RuleFor(x => x.KeepLast, f => f.Random.Number(0, 10));
 
             var backupScheduleFaker = new Faker<BackupSchedule>()
                 .UseSeed(SEED)

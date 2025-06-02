@@ -39,6 +39,7 @@ namespace Booth.DockerVolumeBackup.WebApi.EndPoints
                     Enabled = schedule.Enabled,
                     Days = schedule.Days,
                     Time = schedule.Time,
+                    KeepLast = schedule.KeepLast,
                     Volumes = schedule.Volumes,
                 });
                 return result.Match(value => Results.Ok(value), errors => ErrorResult.Error(errors));
@@ -55,6 +56,7 @@ namespace Booth.DockerVolumeBackup.WebApi.EndPoints
                     Enabled = schedule.Enabled,
                     Days = schedule.Days,
                     Time = schedule.Time,
+                    KeepLast = schedule.KeepLast,
                     Volumes = schedule.Volumes
                 });
                 return result.Match(x => Results.NoContent(), errors => ErrorResult.Error(errors));

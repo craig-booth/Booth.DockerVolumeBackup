@@ -19,6 +19,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Queries.GetSchedule
         public bool Enabled { get; set; }
         public ScheduleDaysDto Days { get; set; } = new ScheduleDaysDto();
         public TimeOnly Time { get; set; }
+        public int KeepLast { get; set; }
         public List<string> Volumes { get; set; } = [];
     }
 
@@ -55,6 +56,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Queries.GetSchedule
                         Saturday = x.Saturday
                     },
                     Time = x.Time,
+                    KeepLast = x.BackupDefinition.KeepLast,
                     Volumes = x.BackupDefinition.Volumes.Select(x => x.Volume).ToList()
                 });
 

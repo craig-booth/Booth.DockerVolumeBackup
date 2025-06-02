@@ -16,6 +16,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Dtos
         public bool Enabled { get; set; }
         public ScheduleDaysDto Days { get; set; } = new ScheduleDaysDto();
         public TimeOnly Time { get; set; }
+        public int KeepLast { get; set; }
         public List<string> Volumes { get; set; } = new List<string>();
 
 

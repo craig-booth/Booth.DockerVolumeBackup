@@ -7,7 +7,7 @@ import { useApi } from '@/api/api';
 import { parseJson } from '@/api/jsonParser';
 import { BackupDetail, BackupVolumeDetail } from '@/models/Backup';
 import { BackupStatus } from '@/models/BackupStatus';
-import { formatLongDateTime, formatDuration } from '@/utils/Formatting';
+import { formatLongDateTime, formatDuration, formatStorageSize } from '@/utils/Formatting';
 
 interface BackupAction {
 	type: string;
@@ -17,8 +17,9 @@ interface BackupAction {
 const columns: DataTableColumn<BackupVolumeDetail>[] = [
 	{ id: 1, heading: 'Volume', value: (x) => x.volume },
 	{ id: 2, heading: 'Status', value: (x) => x.status, render: (backup) => { return (<StatusBadge status={backup.status} />) } },
-	{ id: 3, heading: 'Backup Start', value: (x) => x.startTime },
-	{ id: 3, heading: 'Duration', value: (x) => x.startTime && x.endTime ? x.endTime.getTime() - x.startTime.getTime() : undefined, formatter: (x) => formatDuration(x as number) }
+	{ id: 3, heading: 'Size', value: (x) => x.backupSize, align: 'right', formatter: (x) => formatStorageSize(x as number) },
+	{ id: 4, heading: 'Backup Time', value: (x) => x.startTime },
+	{ id: 5, heading: 'Duration', value: (x) => x.startTime && x.endTime ? x.endTime.getTime() - x.startTime.getTime() : undefined, formatter: (x) => formatDuration(x as number) }
 ];
 
 

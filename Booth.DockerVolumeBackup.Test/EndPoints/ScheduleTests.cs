@@ -47,7 +47,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 schedule?.Enabled.Should().BeTrue();
                 schedule?.Days.Should().BeEquivalentTo(new { Sunday = false, Monday = true, Tuesday = true, Wednesday = false, Thursday = false, Friday = false, Saturday = false });
                 schedule?.Time.Should().BeCloseTo(new TimeOnly(20, 20, 00), TimeSpan.FromSeconds(1));
-                schedule?.Volumes.Should().HaveCount(1);
+                schedule?.Volumes.Should().HaveCount(3);
             }
         }
 
@@ -71,6 +71,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 Enabled = true,
                 Days = new ScheduleDaysDto() { Sunday = true, Monday = false, Tuesday = false, Wednesday = false, Thursday = false, Friday = false, Saturday = false },
                 Time = new TimeOnly(15, 30),
+                KeepLast = 5,
                 Volumes = ["Volume1", "Volume2"]
             };
             var response = await httpClient.PostAsJsonAsync<ScheduleDto>("api/schedules", schedule, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
@@ -87,6 +88,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 addedSchedule?.Enabled.Should().BeTrue();
                 addedSchedule?.Days.Should().BeEquivalentTo(new { Sunday = true, Monday = false, Tuesday = false, Wednesday = false, Thursday = false, Friday = false, Saturday = false });
                 addedSchedule?.Time.Should().Be(new TimeOnly(15, 30));
+                addedSchedule?.KeepLast.Should().Be(5);
                 addedSchedule?.Volumes.Should().HaveCount(2);
                 addedSchedule?.Volumes.Should().Contain("Volume1");
                 addedSchedule?.Volumes.Should().Contain("Volume2");
@@ -132,6 +134,27 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
         }
 
         [Fact]
+        public async Task CreateScheduleWithNegativeKeepLast()
+        {
+            var httpClient = fixture.CreateClient();
+
+            var schedule = new ScheduleDto()
+            {
+                Name = "test",
+                Enabled = true,
+                Days = new ScheduleDaysDto() { Sunday = true, Monday = false, Tuesday = false, Wednesday = false, Thursday = false, Friday = false, Saturday = false },
+                Time = new TimeOnly(15, 30),
+                KeepLast = -1,
+                Volumes = ["Volume1", "Volume2"],
+            };
+            var response = await httpClient.PostAsJsonAsync<ScheduleDto>("api/schedules", schedule, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+
+            response.Should().Be400BadRequest()
+                    .And.OnlyHaveError("KeepLast", "Keep Last must be zero or a positive number.");
+        }
+
+
+        [Fact]
         public async Task CreateScheduleWithNoVolumes()
         {
             var httpClient = fixture.CreateClient();
@@ -161,6 +184,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 Enabled = true,
                 Days = new ScheduleDaysDto() { Sunday = true, Monday = false, Tuesday = false, Wednesday = false, Thursday = false, Friday = false, Saturday = false },
                 Time = new TimeOnly(15, 30),
+                KeepLast = 5,
                 Volumes = ["Volume1", "Volume2"]
             };
             var response = await httpClient.PostAsJsonAsync<ScheduleDto>("api/schedules", schedule, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
@@ -173,6 +197,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             schedule.Days.Monday = true;
             schedule.Time = new TimeOnly(23, 45);
             schedule.Volumes = ["Volume3"];
+            schedule.KeepLast = 0;
             response = await httpClient.PutAsJsonAsync<ScheduleDto>($"api/schedules/{id}", schedule, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
             var updatedSchedule = await httpClient.GetFromJsonAsync<ScheduleDto>($"api/schedules/{id}", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
             
@@ -183,6 +208,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 updatedSchedule?.Name.Should().Be("New Test");
                 updatedSchedule?.Enabled.Should().BeFalse();
                 updatedSchedule?.Days.Should().BeEquivalentTo(new { Sunday = true, Monday = true, Tuesday = false, Wednesday = false, Thursday = false, Friday = false, Saturday = false });
+               updatedSchedule?.KeepLast.Should().Be(0);
                 updatedSchedule?.Time.Should().Be(new TimeOnly(23, 45));
                 updatedSchedule?.Volumes.Should().HaveCount(1);
                 updatedSchedule?.Volumes.Should().Contain("Volume3");
@@ -253,6 +279,33 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
 
             response.Should().Be400BadRequest()
                 .And.OnlyHaveError("Days", "Atleast one day must be selected.");
+        }
+
+        [Fact]
+        public async Task UpdateScheduleWithNegativeKeepLast()
+        {
+            var httpClient = fixture.CreateClient();
+
+            var schedule = new ScheduleDto()
+            {
+                Name = "test",
+                Enabled = true,
+                Days = new ScheduleDaysDto() { Sunday = true, Monday = false, Tuesday = false, Wednesday = false, Thursday = false, Friday = false, Saturday = false },
+                Time = new TimeOnly(15, 30),
+                KeepLast = 5,
+                Volumes = ["Volume1", "Volume2"]
+            };
+            var response = await httpClient.PostAsJsonAsync<ScheduleDto>("api/schedules", schedule, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            response.Should().Be200Ok();
+
+            var id = await response.Content.ReadFromJsonAsync<int>(fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+
+            schedule.KeepLast = -1; 
+            response = await httpClient.PutAsJsonAsync<ScheduleDto>($"api/schedules/{id}", schedule, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+
+            response.Should().Be400BadRequest()
+                    .And.OnlyHaveError("KeepLast", "Keep Last must be zero or a positive number.");
+
         }
 
         [Fact]

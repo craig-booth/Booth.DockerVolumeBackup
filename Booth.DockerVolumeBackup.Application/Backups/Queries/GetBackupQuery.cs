@@ -18,6 +18,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackup
         public StatusDto Status { get; set; }
         public DateTimeOffset? StartTime { get; set; }
         public DateTimeOffset? EndTime { get; set; }
+        public string BackupDirectory { get; set; } = string.Empty;
         public List<BackupVolumeDto> Volumes { get; set; } = new List<BackupVolumeDto>();
     }
 
@@ -28,6 +29,8 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackup
         public StatusDto Status { get; set; }
         public DateTimeOffset? StartTime { get; set; }
         public DateTimeOffset? EndTime { get; set; }
+        public string BackupFile { get; set; } = string.Empty;
+        public long? BackupSize { get; set; }
     }
 
     internal class GetBackupQueryHandler(IDataContext dataContext) : IRequestHandler<GetBackupQuery, ErrorOr<BackupDto>>
@@ -44,12 +47,15 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackup
                     StartTime = x.StartTime,
                     EndTime = x.EndTime,
                     Status = (StatusDto)x.Status,
+                    BackupDirectory = x.BackupDirectory ?? string.Empty,
                     Volumes = x.Volumes.Select(x => new BackupVolumeDto() {
                         BackupVolumeId = x.BackupVolumeId,
                         Volume = x.Volume,
                         Status = (StatusDto)x.Status,
                         StartTime = x.StartTime,
-                        EndTime = x.EndTime
+                        EndTime = x.EndTime,
+                        BackupFile = x.BackupFile ?? string.Empty,
+                        BackupSize = x.BackupSize
                     }).ToList()
                 });
 

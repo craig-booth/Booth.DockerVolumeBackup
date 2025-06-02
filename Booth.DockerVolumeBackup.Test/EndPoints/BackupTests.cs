@@ -51,7 +51,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             using (var scope = new AssertionScope())
             {
                 backups.Should().NotBeNull();
-                backups.Should().HaveCount(24);
+                backups.Should().HaveCount(46);
                 backups.Should().AllSatisfy(x => x.ScheduleId.Should().Be(2));
             }
         }
@@ -72,7 +72,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 backup?.Status.Should().Be(StatusDto.Complete);
                 backup?.StartTime.Should().BeBefore(DateTimeOffset.UtcNow);
                 backup?.EndTime.Should().BeBefore(DateTimeOffset.UtcNow);
-                backup?.Volumes.Should().HaveCount(1);
+                backup?.Volumes.Should().HaveCount(3);
             }
         }
 
@@ -98,7 +98,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 status.Should().NotBeNull();
                 status?.BackupId.Should().Be(1);
                 status?.Status.Should().Be(StatusDto.Complete);
-                status?.Volumes.Should().HaveCount(1);
+                status?.Volumes.Should().HaveCount(3);
             }
         }
 
@@ -179,7 +179,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 status.Should().NotBeNull();
                 status?.BackupId.Should().Be(id);
                 status?.Status.Should().Be(StatusDto.Queued);
-                status?.Volumes.Should().HaveCount(1);
+                status?.Volumes.Should().HaveCount(3);
             }
         }
 
