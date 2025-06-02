@@ -34,17 +34,13 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                     .Include(x => x.Volumes)
                     .SingleAsync(cancellationToken);
 
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    logger.LogWarning("Backup {Id} cancelled", backupId);
-                    return;
-                }
-
                 if (backup == null)
                 {
                     logger.LogError("Error loading backup definition with ID {Id}", backupId);
                     return;
                 }
+
+                cancellationToken.ThrowIfCancellationRequested();
 
                 logger.LogInformation("Starting backup {Id}", backupId);
 
@@ -53,44 +49,37 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
 
                 backup.StartBackup();
                 await dataContext.SaveChangesAsync(cancellationToken);
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    logger.LogWarning("Backup {Id} cancelled", backupId);
-                    return;
-                }
-
+                
                 var volumeNames = backup.Volumes.Select(x => x.Volume);
-
                 var allVolumes = await dockerService.GetVolumesAsync();
                 var volumeDefinitions = allVolumes.Where(x => volumeNames.Contains(x.Name));
 
                 var dependentServices = await dockerService.GetDependentServices(volumeDefinitions);
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    logger.LogWarning("Backup {Id} cancelled", backupId);
-                    return;
-                }
 
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var backupSuccessful = false;
                 try
                 {
-                    logger.LogInformation("Stopping dependent services");
-                    await dockerService.StopServices(dependentServices, cancellationToken);
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        logger.LogWarning("Backup {Id} cancelled", backupId);
-                        return;
-                    }
-
                     // Create backup folder
                     var backupFolder = $"/backup/{DateTime.Now:yyyy-MM-dd}_{backup.BackupId}";
-                    await mountPointBackupService.CreateDirectoryAsync(backupFolder);
-                    logger.LogInformation("Backup destination folder {Folder} created", backupFolder);
-
-                    if (cancellationToken.IsCancellationRequested)
+                    var folderCreated = await mountPointBackupService.CreateDirectoryAsync(backupFolder);
+                    if (folderCreated)
                     {
-                        logger.LogWarning("Backup {Id} cancelled", backupId);
+                        logger.LogInformation("Backup destination folder {Folder} created", backupFolder);
+                    }
+                    else
+                    {
+                        logger.LogError("Error creating backup destination folder {Folder}", backupFolder);
                         return;
                     }
+
+                    logger.LogInformation("Stopping dependent services");
+                    await dockerService.StopServices(dependentServices, cancellationToken);
+
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var allVolumesBackedUp = true;
 
                     foreach (var backupVolume in backup.Volumes)
                     {
@@ -99,31 +88,35 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                             continue;
 
                         logger.LogInformation("Starting backup of volume {Volumne}", volumeDefinition.Name);
-                        backup.StartVolumeBackup(backupVolume.Volume);
+
+                        var fileName = $"{volumeDefinition.Name}.tar.gz";
+                        backup.StartVolumeBackup(backupVolume.Volume, fileName);
                         await dataContext.SaveChangesAsync(cancellationToken);
 
-                        await mountPointBackupService.BackupDirectoryAsync(volumeDefinition.MountPoint, $"{backupFolder}/{volumeDefinition.Name}.tar.gz");
+                        var backupSize = await mountPointBackupService.BackupDirectoryAsync(volumeDefinition.MountPoint, $"{backupFolder}/{fileName}");
+                        var volumeBackedUp = backupSize > 0;
 
-                        backup.EndVolumeBackup(backupVolume.Volume);
+                        backup.EndVolumeBackup(backupVolume.Volume, volumeBackedUp, backupSize);
                         await dataContext.SaveChangesAsync(cancellationToken);
                         logger.LogInformation("Backup of {Volume} complete", volumeDefinition.Name);
 
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            logger.LogWarning("Backup {Id} cancelled", backupId);
-                            return;
-                        }
+                        allVolumesBackedUp &= volumeBackedUp;
+
+                        cancellationToken.ThrowIfCancellationRequested();
                     }
+
+                    backupSuccessful = allVolumesBackedUp;
                 }
                 finally
                 {
                     logger.LogInformation("Restarting dependent services");
                     await dockerService.StartServices(dependentServices, cancellationToken);
+
+                    backup.EndBackup(backupSuccessful);
+                    await dataContext.SaveChangesAsync(cancellationToken);
+                    logger.LogInformation("Backup complete");
                 }
 
-                backup.EndBackup();
-                await dataContext.SaveChangesAsync(cancellationToken);
-                logger.LogInformation("Backup complete");
             }
         }
 

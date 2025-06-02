@@ -37,7 +37,7 @@ namespace Booth.DockerVolumeBackup.Application
             builder.Services.AddSingleton<IDockerClient>((services) => services.GetRequiredService<IDockerClientFactory>().CreateClient());
             builder.Services.AddSingleton<IDockerService, DockerService>();
             builder.Services.AddScoped<IBackupScheduler, BackupScheduler>();
-            builder.Services.AddTransient<IMountPointBackupService,MountPointBackupService>();
+            builder.Services.AddTransient<IMountPointBackupService, MountPointBackupService>();
 
             builder.Services.AddQueue();
             builder.Services.AddScheduler();

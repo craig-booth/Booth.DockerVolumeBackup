@@ -5,7 +5,7 @@ using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Domain.Events;
 
 
-namespace Booth.DockerVolumeBackup.Infrastructure.Services
+namespace Booth.DockerVolumeBackup.Application.Services
 {
     public interface IBackupNotificationService
     {

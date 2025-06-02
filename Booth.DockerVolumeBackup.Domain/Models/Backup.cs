@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
+using System.Net.NetworkInformation;
 
 namespace Booth.DockerVolumeBackup.Domain.Models
 {
@@ -15,6 +16,7 @@ namespace Booth.DockerVolumeBackup.Domain.Models
         public BackupSchedule? Schedule { get; set; }
         public DateTimeOffset? StartTime { get; set; }
         public DateTimeOffset? EndTime { get; set; }
+        public string? BackupDirectory { get; set; }
         public List<BackupVolume> Volumes { get; set; } = new List<BackupVolume>();
 
         public event EventHandler<BackupStatusChangedEvent>? BackupStatusChanged;
@@ -29,20 +31,21 @@ namespace Booth.DockerVolumeBackup.Domain.Models
             OnBackupStatusChanged();
         }
 
-        public void EndBackup()
+        public void EndBackup(bool successful)
         {
-            Status = Status.Complete;
+            Status = successful ? Status.Complete : Status.Error;
             EndTime = DateTimeOffset.Now;
 
             OnBackupStatusChanged();
         }
 
-        public void StartVolumeBackup(string volume)
+        public void StartVolumeBackup(string volume, string fileName)
         {
             var volumeBackup = Volumes.FirstOrDefault(x => x.Volume == volume);
             if (volumeBackup != null)
             {
                 volumeBackup.Status = Status.Active;
+                volumeBackup.BackupFile = fileName;
                 volumeBackup.StartTime = DateTimeOffset.Now;
                 volumeBackup.EndTime = null;
 
@@ -50,12 +53,13 @@ namespace Booth.DockerVolumeBackup.Domain.Models
             }
         }
 
-        public void EndVolumeBackup(string volume)
+        public void EndVolumeBackup(string volume, bool successful, long? size)
         {
             var volumeBackup = Volumes.FirstOrDefault(x => x.Volume == volume);
             if (volumeBackup != null)
             {
-                volumeBackup.Status = Status.Complete;
+                volumeBackup.Status = successful ? Status.Complete : Status.Error;
+                volumeBackup.BackupSize = size;
                 volumeBackup.EndTime = DateTimeOffset.Now;
 
                 OnBackupVolumeStatusChanged(volumeBackup);
@@ -86,5 +90,7 @@ namespace Booth.DockerVolumeBackup.Domain.Models
         public Status Status { get; set; }
         public DateTimeOffset? StartTime { get; set; }
         public DateTimeOffset? EndTime { get; set; }
+        public string? BackupFile { get; set; }    
+        public long? BackupSize { get; set; }
     }
 }

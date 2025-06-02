@@ -80,15 +80,19 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
             foreach (var schedule in schedules)
             {
                 var scheduledTime = new DateTimeOffset(faker.Date.PastDateOnly(1), schedule.Time, new TimeSpan(0));
+                var backupCount = 0;
 
                 while (scheduledTime < now)
                 {
+                    backupCount++;
+
                     var backup = new Backup()
                     {
                         Status = Status.Complete,
                         Schedule = schedule,
                         StartTime = scheduledTime,
-                        EndTime = scheduledTime.AddHours(1)
+                        EndTime = scheduledTime.AddHours(1),
+                        BackupDirectory = $"/backup/{scheduledTime:yyyy-MM-dd}_{backupCount}",
                     };
 
                     backup.Volumes.AddRange(schedule.BackupDefinition.Volumes.Select(x => new BackupVolume()
@@ -96,7 +100,9 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
                         Volume = x.Volume,
                         Status = Status.Complete,
                         StartTime = backup.StartTime,
-                        EndTime = backup.EndTime?.AddMinutes(12)
+                        EndTime = backup.EndTime?.AddMinutes(12),
+                        BackupFile = $"{x.Volume}.tar.gz",
+                        BackupSize = faker.Random.Number(10000, 1000000)
                     }));
 
                     backups.Add(backup);

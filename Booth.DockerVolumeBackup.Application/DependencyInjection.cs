@@ -1,17 +1,15 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
 
 using MediatR;
 using FluentValidation;
 
 using Booth.DockerVolumeBackup.Application.Behavoirs;
-using Booth.DockerVolumeBackup.Infrastructure.Services;
+using Booth.DockerVolumeBackup.Application.Services;
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Application.BackgroundJobs;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Booth.DockerVolumeBackup.Application.Services;
 
 namespace Booth.DockerVolumeBackup.Application
 {

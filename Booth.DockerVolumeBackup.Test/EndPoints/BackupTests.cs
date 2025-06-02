@@ -51,7 +51,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             using (var scope = new AssertionScope())
             {
                 backups.Should().NotBeNull();
-                backups.Should().HaveCount(15);
+                backups.Should().HaveCount(24);
                 backups.Should().AllSatisfy(x => x.ScheduleId.Should().Be(2));
             }
         }

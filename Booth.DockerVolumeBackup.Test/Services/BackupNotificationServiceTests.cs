@@ -3,10 +3,10 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using MediatR;
 
-using Booth.DockerVolumeBackup.Infrastructure.Services;
 using Booth.DockerVolumeBackup.Domain.Events;
 using Booth.DockerVolumeBackup.Domain.Models;
 using Booth.DockerVolumeBackup.Application.Backups.Notifications;
+using Booth.DockerVolumeBackup.Application.Services;
 
 namespace Booth.DockerVolumeBackup.Test.Services
 {
