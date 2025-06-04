@@ -117,7 +117,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             var httpClient = fixture.CreateClient();
 
             var response = await httpClient.GetAsync("api/backups/1/statusevents", TestContext.Current.CancellationToken);
-            response.Should().BeSuccessful();
+            response.Should().Be200Ok();
 
             List<Application.Backups.Queries.GetBackupStatusEvents.BackupStatusDto> statuses = [];
             var stream = await response.Content.ReadAsStreamAsync(TestContext.Current.CancellationToken);
