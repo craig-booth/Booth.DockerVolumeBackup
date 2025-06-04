@@ -49,5 +49,20 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
                 return 0;
             }
         }
+
+        public Task<bool> DeleteDirectoryAsync(string directoryName)
+        {
+            try
+            {
+                Directory.Delete(directoryName, true);
+            }
+            catch (Exception ex)
+            {
+                _Logger.LogError(ex, "Failed to delete directory '{directoryName}'", directoryName);
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
     }
 }

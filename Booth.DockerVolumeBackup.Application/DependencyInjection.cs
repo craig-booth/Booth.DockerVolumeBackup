@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 
-using MediatR;
 using FluentValidation;
 
 using Booth.DockerVolumeBackup.Application.Behavoirs;
@@ -20,6 +19,7 @@ namespace Booth.DockerVolumeBackup.Application
         {
             builder.Services.AddSingleton<IBackupNotificationService, BackupNotificationService>();
             builder.Services.AddScoped<IScheduleUtils, ScheduleUtils>();
+            builder.Services.AddScoped<CleanOldBackupsJob>();
 
             var applicationAssembly = typeof(DependencyInjection).Assembly;
             builder.Services.AddMediatR(config =>
@@ -51,6 +51,18 @@ namespace Booth.DockerVolumeBackup.Application
                     var scheduledJob = new ScheduledBackupJob(schedule.ScheduleId, scopeFactory);
                     scheduler.ScheduleBackup(schedule, scheduledJob);
                 } 
+            }
+        }
+
+        public static void ConfigureSystemJobs(this IHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var scheduler = scope.ServiceProvider.GetRequiredService<ISystemJobScheduler>();
+
+
+                scheduler.ScheduleJob(scope.ServiceProvider.GetRequiredService<CleanOldBackupsJob>());
+           
             }
         }
     }

@@ -9,6 +9,7 @@ namespace Booth.DockerVolumeBackup.Application.Interfaces
     public interface IMountPointBackupService
     {
         Task<bool> CreateDirectoryAsync(string directoryName);
+        Task<bool> DeleteDirectoryAsync(string directoryName);
         Task<long> BackupDirectoryAsync(string directoryName, string destinationPath);
     }
 }
