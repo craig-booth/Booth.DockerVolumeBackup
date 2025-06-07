@@ -1,7 +1,10 @@
 
+export type BackupType = 'Scheduled' | 'Adhoc' | 'Unmanaged';
 export type Status = 'Queued' | 'Active' | 'Complete' | 'Error';
+
 export interface Backup {
     backupId: number;
+    backupType: BackupType;
     scheduleId: number;
     scheduleName: string;
     status: Status;
@@ -9,7 +12,8 @@ export interface Backup {
 }
 
 export interface BackupDetail {
-    backupId: number;
+    backupId: number
+    backupType: BackupType;
     scheduleId?: number;
     scheduleName: string;
     status: Status;

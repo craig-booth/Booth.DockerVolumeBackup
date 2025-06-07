@@ -13,6 +13,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackup
     public class BackupDto
     {
         public int BackupId { get; set; }
+        public BackupTypeDto BackupType { get; set; }
         public int? ScheduleId { get; set; }
         public string ScheduleName { get; set; } = string.Empty;
         public StatusDto Status { get; set; }
@@ -42,6 +43,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackup
                 .Select(x => new BackupDto()
                 {
                     BackupId = x.BackupId,
+                    BackupType = (x.Schedule != null) ? BackupTypeDto.Scheduled : BackupTypeDto.Adhoc,
                     ScheduleId = x.ScheduleId,
                     ScheduleName = (x.Schedule != null) ? x.Schedule.Name : "",
                     StartTime = x.StartTime,
