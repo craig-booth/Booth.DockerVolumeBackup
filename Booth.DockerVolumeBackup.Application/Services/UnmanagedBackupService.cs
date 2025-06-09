@@ -73,6 +73,15 @@ namespace Booth.DockerVolumeBackup.Application.Services
             return backups;
         }
 
+        public Backup? GetBackup(int backupId)
+        {
+            _Lock.EnterReadLock();
+            var backup = _Backups.FirstOrDefault(x => x.Value.BackupId == backupId);
+            _Lock.ExitReadLock();
+
+            return backup.Value;
+        }
+
         private string GetVolumeName(string fileName)
         {
             var index = fileName.IndexOf('.');
@@ -85,5 +94,6 @@ namespace Booth.DockerVolumeBackup.Application.Services
                 return fileName;
             }
         }
+
     }
 }
