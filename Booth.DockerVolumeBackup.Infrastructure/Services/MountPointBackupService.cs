@@ -64,5 +64,15 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
 
             return Task.FromResult(true);
         }
+
+        public Task<List<BackupDirectoryInfo>> GetBackupDirectoriesAsync(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<BackupFileInfo>> GetBackupFilesAsync(string path)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
