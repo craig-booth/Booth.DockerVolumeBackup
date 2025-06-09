@@ -23,7 +23,7 @@ const columns: DataTableColumn<BackupVolumeDetail>[] = [
 ];
 
 
-const initialBackup: BackupDetail = { backupId: -1, scheduleName: '', status: 'Queued', volumes: [] };
+const initialBackup: BackupDetail = { backupId: -1, backupType: 'Unmanaged', scheduleName: '', status: 'Queued', volumes: [] };
 function reducer(state: BackupDetail, action: BackupAction): BackupDetail {
 	switch (action.type) {
 		case 'set':
