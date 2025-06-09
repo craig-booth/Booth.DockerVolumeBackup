@@ -12,7 +12,7 @@ namespace Booth.DockerVolumeBackup.Application.Services
         private readonly Dictionary<string, Backup> _Backups = [];
         private readonly ReaderWriterLockSlim _Lock = new();
 
-        public async Task<List<Backup>> GetBackupsAsync()
+        public async Task<List<Backup>> GetBackupsAsync(CancellationToken cancellationToken)
         {
             var backups = new List<Backup>();
 
@@ -31,7 +31,7 @@ namespace Booth.DockerVolumeBackup.Application.Services
                 }
                 else
                 {
-                    var backupFiles = await mountPointService.GetBackupFilesAsync(backupDirectory.Name);
+                    var backupFiles = await mountPointService.GetBackupFilesAsync(Path.Combine("/backup", backupDirectory.Name));
 
                     if (backupFiles.Count > 0)
                     {
@@ -65,10 +65,8 @@ namespace Booth.DockerVolumeBackup.Application.Services
                         }
                         _Lock.ExitWriteLock();
 
-                        
+                    cancellationToken.ThrowIfCancellationRequested();
                     }
-
-
                 }
             }
 

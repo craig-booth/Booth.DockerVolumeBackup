@@ -23,7 +23,7 @@ namespace Booth.DockerVolumeBackup.Test.Services
             var service = new UnmanagedBackupService(mountPointService);
 
             // Act
-            var backups = await service.GetBackupsAsync();
+            var backups = await service.GetBackupsAsync(CancellationToken.None);
 
             // Assert
             using (new AssertionScope())
@@ -56,7 +56,7 @@ namespace Booth.DockerVolumeBackup.Test.Services
             var service = new UnmanagedBackupService(mountPointService);
 
             // Act
-            var backups = await service.GetBackupsAsync();
+            var backups = await service.GetBackupsAsync(CancellationToken.None);
 
            
             // Assert
@@ -107,8 +107,8 @@ namespace Booth.DockerVolumeBackup.Test.Services
             var service = new UnmanagedBackupService(mountPointService);
 
             // Act
-            var backups1 = await service.GetBackupsAsync(); 
-            var backups2 = await service.GetBackupsAsync();
+            var backups1 = await service.GetBackupsAsync(CancellationToken.None); 
+            var backups2 = await service.GetBackupsAsync(CancellationToken.None);
 
             // Assert
             using (new AssertionScope())
@@ -151,8 +151,8 @@ namespace Booth.DockerVolumeBackup.Test.Services
             var service = new UnmanagedBackupService(mountPointService);
 
             // Act
-            var backups1 = await service.GetBackupsAsync();
-            var backups2 = await service.GetBackupsAsync();
+            var backups1 = await service.GetBackupsAsync(CancellationToken.None);
+            var backups2 = await service.GetBackupsAsync(CancellationToken.None);
 
             // Assert
             using (new AssertionScope())
@@ -187,7 +187,7 @@ namespace Booth.DockerVolumeBackup.Test.Services
             var service = new UnmanagedBackupService(mountPointService);
 
             // Act
-            var backups = await service.GetBackupsAsync();
+            var backups = await service.GetBackupsAsync(CancellationToken.None);
 
 
             // Assert
@@ -230,7 +230,7 @@ namespace Booth.DockerVolumeBackup.Test.Services
             var service = new UnmanagedBackupService(mountPointService);
 
             // Act
-            var backups = await service.GetBackupsAsync();
+            var backups = await service.GetBackupsAsync(CancellationToken.None);
 
 
             // Assert

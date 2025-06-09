@@ -18,6 +18,7 @@ namespace Booth.DockerVolumeBackup.Application
         public static IHostApplicationBuilder AddApplication(this IHostApplicationBuilder builder)
         {
             builder.Services.AddSingleton<IBackupNotificationService, BackupNotificationService>();
+            builder.Services.AddSingleton<IUnmanagedBackupService, UnmanagedBackupService>();
             builder.Services.AddScoped<IScheduleUtils, ScheduleUtils>();
             builder.Services.AddScoped<CleanOldBackupsJob>();
 

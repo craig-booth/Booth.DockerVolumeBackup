@@ -67,12 +67,28 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
 
         public Task<List<BackupDirectoryInfo>> GetBackupDirectoriesAsync(string path)
         {
-            throw new NotImplementedException();
+            var directoryInfo = new DirectoryInfo(path);
+            if (directoryInfo == null || !directoryInfo.Exists)
+                return Task.FromResult(new List<BackupDirectoryInfo>());
+
+            var backupDirectories = directoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly)
+                .Select(x => new BackupDirectoryInfo(x.Name, x.CreationTime))
+                .ToList();
+
+            return Task.FromResult(backupDirectories);
         }
 
         public Task<List<BackupFileInfo>> GetBackupFilesAsync(string path)
         {
-            throw new NotImplementedException();
+            var directoryInfo = new DirectoryInfo(path);
+            if (directoryInfo == null || !directoryInfo.Exists)
+                return Task.FromResult(new List<BackupFileInfo>());
+
+            var backupFiles = directoryInfo.EnumerateFiles("*.tar.gz", SearchOption.TopDirectoryOnly)
+                .Select(x => new BackupFileInfo(x.Name, x.Length, x.CreationTime))
+                .ToList();
+
+            return Task.FromResult(backupFiles);
         }
     }
 }
