@@ -13,6 +13,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackup
     public class BackupDto
     {
         public int BackupId { get; set; }
+        public BackupTypeDto BackupType { get; set; }
         public int? ScheduleId { get; set; }
         public string ScheduleName { get; set; } = string.Empty;
         public StatusDto Status { get; set; }
@@ -33,7 +34,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackup
         public long? BackupSize { get; set; }
     }
 
-    internal class GetBackupQueryHandler(IDataContext dataContext) : IRequestHandler<GetBackupQuery, ErrorOr<BackupDto>>
+    internal class GetBackupQueryHandler(IDataContext dataContext, IUnmanagedBackupService unmanagedBackupService) : IRequestHandler<GetBackupQuery, ErrorOr<BackupDto>>
     {
         public async Task<ErrorOr<BackupDto>> Handle(GetBackupQuery request, CancellationToken cancellationToken)
         {
@@ -42,6 +43,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackup
                 .Select(x => new BackupDto()
                 {
                     BackupId = x.BackupId,
+                    BackupType = (x.Schedule != null) ? BackupTypeDto.Scheduled : BackupTypeDto.Adhoc,
                     ScheduleId = x.ScheduleId,
                     ScheduleName = (x.Schedule != null) ? x.Schedule.Name : "",
                     StartTime = x.StartTime,
@@ -60,6 +62,37 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackup
                 });
 
             var backup = await query.FirstOrDefaultAsync(cancellationToken);
+
+            // If backup is not found the check if it is an unmanaged backup
+            if (backup == null)
+            {
+                var unmanagedbackup = unmanagedBackupService.GetBackup(request.BackupId);
+                if (unmanagedbackup != null)
+                {
+                    backup = new BackupDto
+                    {
+                        BackupId = unmanagedbackup.BackupId,
+                        BackupType = BackupTypeDto.Unmanaged,
+                        ScheduleId = null,
+                        ScheduleName = string.Empty,
+                        StartTime = unmanagedbackup.StartTime,
+                        EndTime = unmanagedbackup.EndTime,
+                        Status = (StatusDto)unmanagedbackup.Status, 
+                        BackupDirectory = unmanagedbackup.BackupDirectory ?? string.Empty,
+                        Volumes = unmanagedbackup.Volumes.Select(x => new BackupVolumeDto
+                        {
+                            BackupVolumeId = x.BackupVolumeId,
+                            Volume = x.Volume,
+                            Status = (StatusDto)x.Status,
+                            StartTime = x.StartTime,
+                            EndTime = x.EndTime,
+                            BackupFile = x.BackupFile ?? string.Empty,
+                            BackupSize = x.BackupSize
+                        }).ToList()
+                    };
+                }
+
+            }
 
             return backup != null ? backup : Error.NotFound();
         }

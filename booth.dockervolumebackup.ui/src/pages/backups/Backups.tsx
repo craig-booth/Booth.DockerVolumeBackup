@@ -5,6 +5,18 @@ import { useQuery } from '@tanstack/react-query';
 import { useApi } from '@/api/api';
 import { Backup } from '@/models/Backup';
 
+const getBackupScheduleName = (backup: Backup): string => {
+	if (backup.backupType == 'Scheduled')
+		return backup.scheduleName
+	else if (backup.backupType == 'Adhoc')
+		return '(adhoc)'
+	else if (backup.backupType == 'Unmanaged')
+		return '(unmanaged)'
+	else
+        return '(unmanaged)'
+}
+
+
 function Backups() {
 
 
@@ -12,7 +24,7 @@ function Backups() {
 
 	const { isPending, isError, data: backups } = useQuery({
 		queryKey: ['backups'],
-		queryFn: () => getBackups().then((x) => x.map((backup) => { if (!backup.scheduleId) backup.scheduleName = '(adhoc)'; return backup; }))
+		queryFn: () => getBackups()
 	});
 
 
@@ -25,7 +37,7 @@ function Backups() {
 	}
 
 	const columns: DataTableColumn<Backup>[] = [
-		{ id: 1, heading: 'Schedule', value: (x) => x.scheduleName, sortable: true, render: (backup) => { return (<Link to={'/backups/' + backup.backupId}>{backup.scheduleName}</Link>) } },
+		{ id: 1, heading: 'Schedule', value: (x) => x.scheduleName, sortable: true, render: (backup) => { return (<Link to={'/backups/' + backup.backupId}>{getBackupScheduleName(backup)}</Link>) } },
 		{ id: 2, heading: 'Status', value: (x) => x.status, sortable: true, render: (backup) => { return (<StatusBadge status={backup.status}/>) } },
 		{ id: 3, heading: 'Backup Time', value: (x) => x.backupTime, sortable: true }
 	];

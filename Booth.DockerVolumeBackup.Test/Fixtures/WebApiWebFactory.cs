@@ -28,6 +28,7 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures
                     x.SeedDatabase = true;
                 });
                 services.AddSingleton<IDockerClientFactory, DockerFactoryMock>();
+                services.AddSingleton<IMountPointBackupService, MountPointBackupServiceMock>();
                 services.RemoveAll<IHostedService>();
             });
         }
