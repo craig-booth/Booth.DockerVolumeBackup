@@ -28,9 +28,10 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                     .Where(x => x.ScheduleId.HasValue && (x.Status == Status.Complete || x.Status == Status.Error));
                 var backups = await backupsQuery.ToListAsync(cancellationToken);
 
-                var shcedulesQuery = dataContext.Schedules
+                var schedulesQuery = dataContext.Schedules
+                    .Include(x => x.BackupDefinition)
                     .Where(x => x.BackupDefinition.KeepLast > 0);
-                var schedules = await shcedulesQuery.ToListAsync(cancellationToken);
+                var schedules = await schedulesQuery.ToListAsync(cancellationToken);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
