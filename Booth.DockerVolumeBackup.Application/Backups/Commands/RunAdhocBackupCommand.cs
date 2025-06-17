@@ -27,7 +27,8 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Commands.RunAdhocBackup
         {
             var backup = new Backup
             {
-                Status = Status.Queued
+                Status = Status.Queued,
+                BackupType = BackupType.Adhoc
             };
             backup.Volumes.AddRange(request.Volumes.Select(x => new BackupVolume { Volume = x, Status = Status.Queued }));
             dataContext.Backups.Add(backup);
