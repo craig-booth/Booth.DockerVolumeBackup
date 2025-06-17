@@ -28,7 +28,8 @@ namespace Booth.DockerVolumeBackup.Application.Services
             var backup = new Backup
             {
                 ScheduleId = scheduleId,
-                Status = Status.Queued
+                Status = Status.Queued,
+                BackupType = BackupType.Scheduled
             };
             backup.Volumes.AddRange(backupDefinition.Volumes.Select(x => new BackupVolume { Volume = x.Volume, Status = Status.Queued }));
 

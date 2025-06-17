@@ -8,9 +8,11 @@ namespace Booth.DockerVolumeBackup.Domain.Models
 {
     public enum Status { Queued, Active, Complete, Error }
 
+    public enum BackupType { Scheduled, Adhoc, Unmanaged }
     public class Backup
     {
         public int BackupId { get; set; }
+        public BackupType BackupType { get; set; }
         public Status Status { get; set; }
         public int? ScheduleId { get; set; }
         public BackupSchedule? Schedule { get; set; }

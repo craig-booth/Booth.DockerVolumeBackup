@@ -89,6 +89,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
                     var backup = new Backup()
                     {
                         Status = Status.Complete,
+                        BackupType = BackupType.Scheduled,
                         Schedule = schedule,
                         StartTime = scheduledTime,
                         EndTime = scheduledTime.AddHours(1),

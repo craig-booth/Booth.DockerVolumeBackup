@@ -18,9 +18,10 @@ namespace Booth.DockerVolumeBackup.Application
         public static IHostApplicationBuilder AddApplication(this IHostApplicationBuilder builder)
         {
             builder.Services.AddSingleton<IBackupNotificationService, BackupNotificationService>();
-            builder.Services.AddSingleton<IUnmanagedBackupService, UnmanagedBackupService>();
             builder.Services.AddScoped<IScheduleUtils, ScheduleUtils>();
+
             builder.Services.AddScoped<CleanOldBackupsJob>();
+            builder.Services.AddScoped<LoadUnmanagedBackupsJob>();
 
             var applicationAssembly = typeof(DependencyInjection).Assembly;
             builder.Services.AddMediatR(config =>
@@ -63,7 +64,7 @@ namespace Booth.DockerVolumeBackup.Application
 
 
                 scheduler.ScheduleJob(scope.ServiceProvider.GetRequiredService<CleanOldBackupsJob>());
-           
+                scheduler.ScheduleJob(scope.ServiceProvider.GetRequiredService<LoadUnmanagedBackupsJob>());
             }
         }
     }
