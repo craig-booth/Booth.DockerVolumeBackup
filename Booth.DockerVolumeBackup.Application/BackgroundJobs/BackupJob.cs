@@ -47,7 +47,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                 backup.BackupStatusChanged += Backup_BackupStatusChanged;
                 backup.BackupVolumeStatusChanged += Backup_BackupVolumeStatusChanged;
 
-                backup.StartBackup();
+                backup.StartBackup($"/backup/{DateTime.Now:yyyy-MM-dd}_{backup.BackupId}");
                 await dataContext.SaveChangesAsync(cancellationToken);
                 
                 var volumeNames = backup.Volumes.Select(x => x.Volume);
@@ -62,15 +62,14 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                 try
                 {
                     // Create backup folder
-                    var backupFolder = $"/backup/{DateTime.Now:yyyy-MM-dd}_{backup.BackupId}";
-                    var folderCreated = await mountPointBackupService.CreateDirectoryAsync(backupFolder);
+                    var folderCreated = await mountPointBackupService.CreateDirectoryAsync(backup.BackupDirectory ?? string.Empty);
                     if (folderCreated)
                     {
-                        logger.LogInformation("Backup destination folder {Folder} created", backupFolder);
+                        logger.LogInformation("Backup destination folder {Folder} created", backup.BackupDirectory);
                     }
                     else
                     {
-                        logger.LogError("Error creating backup destination folder {Folder}", backupFolder);
+                        logger.LogError("Error creating backup destination folder {Folder}", backup.BackupDirectory);
                         return;
                     }
 
@@ -93,7 +92,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                         backup.StartVolumeBackup(backupVolume.Volume, fileName);
                         await dataContext.SaveChangesAsync(cancellationToken);
 
-                        var backupSize = await mountPointBackupService.BackupDirectoryAsync(volumeDefinition.MountPoint, $"{backupFolder}/{fileName}");
+                        var backupSize = await mountPointBackupService.BackupDirectoryAsync(volumeDefinition.MountPoint, $"{backup.BackupDirectory}/{fileName}");
                         var volumeBackedUp = backupSize > 0;
 
                         backup.EndVolumeBackup(backupVolume.Volume, volumeBackedUp, backupSize);

@@ -24,10 +24,11 @@ namespace Booth.DockerVolumeBackup.Domain.Models
         public event EventHandler<BackupStatusChangedEvent>? BackupStatusChanged;
         public event EventHandler<BackupVolumeStatusChangedEvent>? BackupVolumeStatusChanged;
 
-        public void StartBackup()
+        public void StartBackup(string backupDirectory)
         {
             Status = Status.Active;
-            StartTime = DateTimeOffset.Now;
+            BackupDirectory = backupDirectory;
+            StartTime = DateTimeOffset.Now;       
             EndTime = null;
 
             OnBackupStatusChanged();
