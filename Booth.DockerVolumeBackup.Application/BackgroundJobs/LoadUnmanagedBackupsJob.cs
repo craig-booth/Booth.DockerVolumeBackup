@@ -35,17 +35,19 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
 
                 foreach (var backupDirectory in backupDirectories)
                 {
+                    var backupPath ="/backup/" + backupDirectory.Name;
+
                     // Only include unmanaged backups that do not have the same name as an existing backup
-                    if (!allBackups.Any(x => x.BackupDirectory == backupDirectory.Name))
+                    if (!allBackups.Any(x => x.BackupDirectory == backupPath))
                     {
-                        var backupFiles = await mountPointService.GetBackupFilesAsync(Path.Combine("/backup", backupDirectory.Name));
+                        var backupFiles = await mountPointService.GetBackupFilesAsync(backupPath);
 
                         if (backupFiles.Count > 0)
                         {
                             var newBackup = new Backup
                             {
                                 BackupType = BackupType.Unmanaged,
-                                BackupDirectory = backupDirectory.Name,
+                                BackupDirectory = backupPath,
                                 StartTime = backupDirectory.CreationDate,
                                 EndTime = backupDirectory.CreationDate,
                                 Status = Status.Complete

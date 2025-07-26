@@ -51,8 +51,8 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             await loadBackupsJob.Execute(CancellationToken.None);
 
             dataContext.Backups.Received(2).Add(Arg.Any<Backup>());
-            dataContext.Backups.Received(1).Add(Arg.Is<Backup>(x => x.BackupDirectory == "unmanaged-backup-1"));
-            dataContext.Backups.Received(1).Add(Arg.Is<Backup>(x => x.BackupDirectory == "unmanaged-backup-2")); 
+            dataContext.Backups.Received(1).Add(Arg.Is<Backup>(x => x.BackupDirectory == "/backup/unmanaged-backup-1"));
+            dataContext.Backups.Received(1).Add(Arg.Is<Backup>(x => x.BackupDirectory == "/backup/unmanaged-backup-2")); 
             await dataContext.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
             
         }
@@ -103,7 +103,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                     Status = Status.Complete,
                     ScheduleId = 1,
                     Schedule = new BackupSchedule { Name = "Test Schedule" },
-                    BackupDirectory = "managed-backup-1",
+                    BackupDirectory = "/backup/managed-backup-1",
                 },
                 new Backup
                 {
@@ -111,7 +111,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                     Status = Status.Complete,
                     ScheduleId = 1,
                     Schedule = new BackupSchedule { Name = "Test Schedule" },
-                    BackupDirectory = "managed-backup-2",
+                    BackupDirectory = "/backup/managed-backup-2",
                 }
             };
             var managedBackupsDataSet = managedBackups.AsQueryable().BuildMockDbSet();
@@ -146,7 +146,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             await loadBackupsJob.Execute(CancellationToken.None);
 
             dataContext.Backups.Received(1).Add(Arg.Any<Backup>());
-            dataContext.Backups.Received(1).Add(Arg.Is<Backup>(x => x.BackupDirectory == "unmanaged-backup-1"));
+            dataContext.Backups.Received(1).Add(Arg.Is<Backup>(x => x.BackupDirectory == "/backup/unmanaged-backup-1"));
             await dataContext.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
         }
 
