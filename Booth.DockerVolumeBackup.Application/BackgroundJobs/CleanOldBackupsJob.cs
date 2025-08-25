@@ -39,7 +39,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                 foreach (var schedule in schedules)
                 {
                     var scheduleBackups = backups.Where(x => x.ScheduleId == schedule.ScheduleId)
-                                                    .OrderBy(x => x.StartTime)
+                                                    .OrderByDescending(x => x.StartTime)
                                                     .ToList();
                     var successfulBackups = 0;
                     foreach (var backup in scheduleBackups)

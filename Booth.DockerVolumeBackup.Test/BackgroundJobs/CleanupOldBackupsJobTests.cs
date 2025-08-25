@@ -1,14 +1,15 @@
-﻿using Xunit;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using NSubstitute;
-using MockQueryable.NSubstitute;
-using FluentAssertions;
-
-using Booth.DockerVolumeBackup.Application.BackgroundJobs;
+﻿using Booth.DockerVolumeBackup.Application.BackgroundJobs;
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Domain.Models;
 using Booth.DockerVolumeBackup.Test.Fixtures.Mocks;
+using FluentAssertions;
+using FluentAssertions.Common;
+using MediatR;
+using Microsoft.Extensions.Logging;
+using MockQueryable.NSubstitute;
+using NSubstitute;
+using System.Security.Cryptography.Xml;
+using Xunit;
 
 
 namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
@@ -26,13 +27,14 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             var schedules = new[] { schedule };
             var scheduleDataSet = schedules.AsQueryable().BuildMockDbSet();
 
+            var today = new DateTimeOffset(DateTime.UtcNow.Date);   
             var backups = new[] {
-                new Backup {BackupId = 1, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup1"},
-                new Backup {BackupId = 2, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup2"},
-                new Backup {BackupId = 3, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup3"},
-                new Backup {BackupId = 4, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup4"},
-                new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup5"},
-                new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup6"}
+                new Backup {BackupId = 1, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-6), BackupDirectory = "/backups/backup1"},
+                new Backup {BackupId = 2, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-5), BackupDirectory = "/backups/backup2"},
+                new Backup {BackupId = 3, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-4), BackupDirectory = "/backups/backup3"},
+                new Backup {BackupId = 4, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-3), BackupDirectory = "/backups/backup4"},
+                new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-2), BackupDirectory = "/backups/backup5"},
+                new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-1), BackupDirectory = "/backups/backup6"}
             };
             var backupDataSet = backups.AsQueryable().BuildMockDbSet();
 
@@ -68,13 +70,14 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             var schedules = new[] { schedule };
             var scheduleDataSet = schedules.AsQueryable().BuildMockDbSet();
 
+            var today = new DateTimeOffset(DateTime.UtcNow.Date);
             var backups = new[] {
-                new Backup {BackupId = 1, ScheduleId = 1, Status = Status.Active, BackupDirectory = "/backups/backup1"},
-                new Backup {BackupId = 2, ScheduleId = 1, Status = Status.Queued, BackupDirectory = "/backups/backup2"},
-                new Backup {BackupId = 3, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup3"},
-                new Backup {BackupId = 4, ScheduleId = 1, Status = Status.Error, BackupDirectory = "/backups/backup4"},
-                new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup5"},
-                new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup6"}
+                new Backup {BackupId = 1, ScheduleId = 1, Status = Status.Active, StartTime = today.AddDays(-6), BackupDirectory = "/backups/backup1"},
+                new Backup {BackupId = 2, ScheduleId = 1, Status = Status.Queued, StartTime = today.AddDays(-5), BackupDirectory = "/backups/backup2"},
+                new Backup {BackupId = 3, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-4), BackupDirectory = "/backups/backup3"},
+                new Backup {BackupId = 4, ScheduleId = 1, Status = Status.Error, StartTime = today.AddDays(-3), BackupDirectory = "/backups/backup4"},
+                new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-2), BackupDirectory = "/backups/backup5"},
+                new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-1), BackupDirectory = "/backups/backup6"}
             };
             var backupDataSet = backups.AsQueryable().BuildMockDbSet();
 
@@ -96,8 +99,8 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             await cleanupJob.Execute(CancellationToken.None);
 
             backupDataSet.Received(1).Remove(Arg.Any<Backup>());
-            backupDataSet.Received().Remove(Arg.Is<Backup>(x => x.BackupId == 6));      
-            await mountPointBackupService.Received(1).DeleteDirectoryAsync("/backups/backup6");
+            backupDataSet.Received().Remove(Arg.Is<Backup>(x => x.BackupId == 3));      
+            await mountPointBackupService.Received(1).DeleteDirectoryAsync("/backups/backup3");
         }
 
         [Fact]
@@ -111,13 +114,14 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             var schedules = new[] { schedule };
             var scheduleDataSet = schedules.AsQueryable().BuildMockDbSet();
 
+            var today = new DateTimeOffset(DateTime.UtcNow.Date);
             var backups = new[] {
-                new Backup {BackupId = 1, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup1"},
-                new Backup {BackupId = 2, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup2"},
-                new Backup {BackupId = 3, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup3"},
-                new Backup {BackupId = 4, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup4"},
-                new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup5"},
-                new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup6"}
+                new Backup {BackupId = 1, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-6), BackupDirectory = "/backups/backup1"},
+                new Backup {BackupId = 2, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-5), BackupDirectory = "/backups/backup2"},
+                new Backup {BackupId = 3, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-4), BackupDirectory = "/backups/backup3"},
+                new Backup {BackupId = 4, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-3), BackupDirectory = "/backups/backup4"},
+                new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-2), BackupDirectory = "/backups/backup5"},
+                new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-1), BackupDirectory = "/backups/backup6"}
             };
             var backupDataSet = backups.AsQueryable().BuildMockDbSet();
 
@@ -145,11 +149,6 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
         [Fact]
         public async Task CleanupJobHandlesMulitpleSchedules()
         {
-            var schedule = new BackupSchedule
-            {
-                ScheduleId = 1,
-                BackupDefinition = new BackupDefinition { KeepLast = 4 }
-            };
             var schedules = new[] { 
                 new BackupSchedule { ScheduleId = 1, BackupDefinition = new BackupDefinition { KeepLast = 2 } },
                 new BackupSchedule { ScheduleId = 2, BackupDefinition = new BackupDefinition { KeepLast = 0 } },
@@ -157,13 +156,14 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             };
             var scheduleDataSet = schedules.AsQueryable().BuildMockDbSet();
 
+            var today = new DateTimeOffset(DateTime.UtcNow.Date);
             var backups = new[] {
-                new Backup {BackupId = 1, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup1"},
-                new Backup {BackupId = 2, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup2"},
-                new Backup {BackupId = 3, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup3"},
-                new Backup {BackupId = 4, ScheduleId = 2, Status = Status.Complete, BackupDirectory = "/backups/backup4"},
-                new Backup {BackupId = 5, ScheduleId = 3, Status = Status.Complete, BackupDirectory = "/backups/backup5"},
-                new Backup {BackupId = 6, ScheduleId = 3, Status = Status.Complete, BackupDirectory = "/backups/backup6"}
+                new Backup {BackupId = 1, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-6), BackupDirectory = "/backups/backup1"},
+                new Backup {BackupId = 2, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-5), BackupDirectory = "/backups/backup2"},
+                new Backup {BackupId = 3, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-4), BackupDirectory = "/backups/backup3"},
+                new Backup {BackupId = 4, ScheduleId = 2, Status = Status.Complete, StartTime = today.AddDays(-3), BackupDirectory = "/backups/backup4"},
+                new Backup {BackupId = 5, ScheduleId = 3, Status = Status.Complete, StartTime = today.AddDays(-2), BackupDirectory = "/backups/backup5"},
+                new Backup {BackupId = 6, ScheduleId = 3, Status = Status.Complete, StartTime = today.AddDays(-1), BackupDirectory = "/backups/backup6"}
             };
             var backupDataSet = backups.AsQueryable().BuildMockDbSet();
 
@@ -185,8 +185,8 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             await cleanupJob.Execute(CancellationToken.None);
 
             backupDataSet.Received(2).Remove(Arg.Any<Backup>());
-            backupDataSet.Received().Remove(Arg.Is<Backup>(x => x.BackupId == 3));
-            backupDataSet.Received().Remove(Arg.Is<Backup>(x => x.BackupId == 6));
+            backupDataSet.Received().Remove(Arg.Is<Backup>(x => x.BackupId == 1));
+            backupDataSet.Received().Remove(Arg.Is<Backup>(x => x.BackupId == 5));
             await mountPointBackupService.Received(2).DeleteDirectoryAsync(Arg.Any<string>());
         }
 
@@ -201,13 +201,14 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             var schedules = new[] { schedule };
             var scheduleDataSet = schedules.AsQueryable().BuildMockDbSet();
 
+            var today = new DateTimeOffset(DateTime.UtcNow.Date);
             var backups = new[] {
-                new Backup {BackupId = 1, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup1"},
-                new Backup {BackupId = 2, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup2"},
-                new Backup {BackupId = 3, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup3"},
-                new Backup {BackupId = 4, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup4"},
-                new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup5"},
-                new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup6"}
+                new Backup {BackupId = 1, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-6), BackupDirectory = "/backups/backup1"},
+                new Backup {BackupId = 2, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-5), BackupDirectory = "/backups/backup2"},
+                new Backup {BackupId = 3, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-4), BackupDirectory = "/backups/backup3"},
+                new Backup {BackupId = 4, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-3), BackupDirectory = "/backups/backup4"},
+                new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-2), BackupDirectory = "/backups/backup5"},
+                new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-1), BackupDirectory = "/backups/backup6"}
             };
             var backupDataSet = backups.AsQueryable().BuildMockDbSet();
 
@@ -229,10 +230,11 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             await cleanupJob.Execute(CancellationToken.None);
 
             backupDataSet.Received(2).Remove(Arg.Any<Backup>());
-            backupDataSet.Received().Remove(Arg.Is<Backup>(x => x.BackupId == 5));
-            backupDataSet.Received().Remove(Arg.Is<Backup>(x => x.BackupId == 6));
+            backupDataSet.Received().Remove(Arg.Is<Backup>(x => x.BackupId == 1));
+            backupDataSet.Received().Remove(Arg.Is<Backup>(x => x.BackupId == 2));
             await mountPointBackupService.Received(2).DeleteDirectoryAsync(Arg.Any<string>());
         }
+
 
         [Fact]
         public async Task CleanupJobDoesNotDeleteFoldersThatAreNull()
@@ -245,13 +247,14 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             var schedules = new[] { schedule };
             var scheduleDataSet = schedules.AsQueryable().BuildMockDbSet();
 
+            var today = new DateTimeOffset(DateTime.UtcNow.Date);
             var backups = new[] {
-                new Backup {BackupId = 1, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup1"},
-                new Backup {BackupId = 2, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup2"},
-                new Backup {BackupId = 3, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup3"},
-                new Backup {BackupId = 4, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup4"},
-                new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, BackupDirectory = "/backups/backup5"},
-                new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, BackupDirectory = null}
+                new Backup {BackupId = 1, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-6), BackupDirectory = null},
+                new Backup {BackupId = 2, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-5), BackupDirectory = "/backups/backup2"},
+                new Backup {BackupId = 3, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-4), BackupDirectory = "/backups/backup3"},
+                new Backup {BackupId = 4, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-3), BackupDirectory = "/backups/backup4"},
+                new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-2), BackupDirectory = "/backups/backup5"},
+                new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-1), BackupDirectory = "/backups/backup6"}
             };
             var backupDataSet = backups.AsQueryable().BuildMockDbSet();
 
@@ -273,7 +276,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             await cleanupJob.Execute(CancellationToken.None);
 
             backupDataSet.Received(1).Remove(Arg.Any<Backup>());
-            backupDataSet.Received().Remove(Arg.Is<Backup>(x => x.BackupId == 6));
+            backupDataSet.Received().Remove(Arg.Is<Backup>(x => x.BackupId == 1));
             await mountPointBackupService.DidNotReceive().DeleteDirectoryAsync(Arg.Any<string>());
         }
     }
