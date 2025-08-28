@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Grid, Flex, Text, TextField, Switch, Checkbox, Button } from '@radix-ui/themes';
+import { Grid, Flex, Text, TextField, Switch, Checkbox, Button, AlertDialog } from '@radix-ui/themes';
 import { DataTable, DataTableColumn } from '@/components/DataTable';
 import { useParams, useNavigate } from 'react-router';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { TrashIcon } from '@radix-ui/react-icons';
 import { useApi } from '@/api/api';
 import { QueuedBackupToast } from '@/components/QueuedBackupToast';
 import { ScheduleDetail } from '@/models/Schedule';
@@ -182,7 +183,30 @@ function ScheduleDetails() {
 			<Flex direction="column" gap="4">
 				<Flex justify="center" gap="4">
 					<Button onClick={() => onSave()} disabled={!changeMade || backupRequested}>Save</Button>
-					<Button onClick={() => onDelete()} disabled={isNew || backupRequested} color="red">Delete</Button>
+					<AlertDialog.Root>
+						<AlertDialog.Trigger>
+							<Button disabled={isNew || backupRequested} color="red"><TrashIcon height="16" width="16" />Delete</Button>
+						</AlertDialog.Trigger>
+						<AlertDialog.Content maxWidth="450px">
+							<AlertDialog.Title>Delete Schedule</AlertDialog.Title>
+							<AlertDialog.Description size="2">
+								Are you sure you want to delete schedule {schedule?.name}?
+							</AlertDialog.Description>
+
+							<Flex gap="3" mt="4" justify="end">
+								<AlertDialog.Cancel>
+									<Button variant="soft" color="gray">
+										Cancel
+									</Button>
+								</AlertDialog.Cancel>
+								<AlertDialog.Action>
+									<Button variant="solid" color="red" onClick={() => onDelete()}>
+										Delete
+									</Button>
+								</AlertDialog.Action>
+							</Flex>
+						</AlertDialog.Content>
+					</AlertDialog.Root>		
 					<Button onClick={() => onRunNow()} disabled={isNew || backupRequested}>Run Now</Button>
 				</Flex>
 				<Grid columns="200px 200px" rows="5" gap="2">

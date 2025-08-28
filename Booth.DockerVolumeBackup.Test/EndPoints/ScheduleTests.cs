@@ -208,7 +208,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
                 updatedSchedule?.Name.Should().Be("New Test");
                 updatedSchedule?.Enabled.Should().BeFalse();
                 updatedSchedule?.Days.Should().BeEquivalentTo(new { Sunday = true, Monday = true, Tuesday = false, Wednesday = false, Thursday = false, Friday = false, Saturday = false });
-               updatedSchedule?.KeepLast.Should().Be(0);
+                updatedSchedule?.KeepLast.Should().Be(0);
                 updatedSchedule?.Time.Should().Be(new TimeOnly(23, 45));
                 updatedSchedule?.Volumes.Should().HaveCount(1);
                 updatedSchedule?.Volumes.Should().Contain("Volume3");

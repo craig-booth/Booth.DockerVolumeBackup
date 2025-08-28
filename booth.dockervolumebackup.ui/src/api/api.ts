@@ -1,6 +1,7 @@
 import { parseJson } from '@/api/jsonParser';
 import { Volume } from '@/models/Volume';
 import { VolumeBackupRequest } from '@/models/VolumeBackupRequest';
+import { BackupDeleteRequest } from '@/models/BackupDeleteRequest';
 import { Backup, BackupDetail } from '@/models/Backup';
 import { Schedule, ScheduleDetail } from '@/models/Schedule';
 
@@ -11,6 +12,8 @@ export interface UseApiResult {
 
     getBackups(): Promise<Backup[]>;
     getBackup(backupId: number): Promise<BackupDetail>;
+    deleteBackup(backupId: number): Promise<boolean>;
+    deleteBackups(backupIds: number[]): Promise<number>;
     runBackup(scheduleId: number): Promise<number>;
 
     getSchedules(): Promise<Schedule[]>;
@@ -105,6 +108,50 @@ export const useApi = (): UseApiResult => {
             .then(response => parseJson<Backup[]>(response))
 
         return backups;
+    }
+
+    const deleteBackup = async (backupId: number): Promise<boolean> => {
+
+        const result = fetch('/api/backups/' + backupId,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+            })
+            .then(response => {
+                if (!response.ok)
+                    throw new Error(response.statusText)
+
+                return true;
+            })
+
+        return result;
+    }
+
+    const deleteBackups = async (backupIds: number[]): Promise<number> => {
+
+        const backupDeleteRequest: BackupDeleteRequest = { backupIds: backupIds };
+
+        const result = fetch('/api/backups/delete',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(backupDeleteRequest)
+            })
+            .then(response => {
+                if (!response.ok)
+                    throw new Error(response.statusText)
+
+                return response.text();
+            })
+            .then(response => Number.parseInt(response))
+
+        return result;
     }
 
     const runBackup = async (scheduleId: number): Promise<number> => {
@@ -239,6 +286,8 @@ export const useApi = (): UseApiResult => {
         backupVolumes,
         getBackups,
         getBackup,
+        deleteBackup,
+        deleteBackups,
         runBackup,
         getSchedules,
         getSchedule,

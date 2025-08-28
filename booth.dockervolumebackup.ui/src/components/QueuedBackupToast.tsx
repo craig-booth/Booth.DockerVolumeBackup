@@ -7,10 +7,12 @@ export interface QueuedBackupToastProps extends Toast.ToastProps {
 }
 
 export function QueuedBackupToast(props: QueuedBackupToastProps) {
-	
+
+	const { backupId, ...otherProps } = props;
+
 	return (
-		<Toast.Root className="ToastRoot" {...props}>
-			Backup Queued. Click to <Link to={'/backups/' + props.backupId}>view</Link>
+		<Toast.Root className="ToastRoot" {...otherProps}>
+			Backup Queued. Click to <Link to={'/backups/' + backupId}>view</Link>
 			<Toast.Close><Cross2Icon height="16" width="16" cursor="default" /></Toast.Close>
 		</Toast.Root>
 	);

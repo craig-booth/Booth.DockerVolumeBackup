@@ -150,18 +150,129 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             var response = await httpClient.GetAsync("api/backups/9687/statusevents", TestContext.Current.CancellationToken);
             response.Should().Be404NotFound();
         }
-/*
+        /*
+                [Fact]
+                public async Task GetBackupLog()
+                {
+                    throw new NotImplementedException();
+                }
+
+                [Fact]
+                public async Task GetBackupLogNotFound()
+                {
+                    throw new NotImplementedException();
+                } */
+
         [Fact]
-        public async Task GetBackupLog()
+        public async Task DeleteBackupNotFound()
         {
-            throw new NotImplementedException();
+            var httpClient = fixture.CreateClient();
+
+            var response = await httpClient.DeleteAsync("api/backups/9687", TestContext.Current.CancellationToken);
+            response.Should().Be404NotFound();
         }
 
         [Fact]
-        public async Task GetBackupLogNotFound()
+        public async Task DeleteBackup()
         {
-            throw new NotImplementedException();
-        } */
+            var httpClient = fixture.CreateClient();
+
+            // Create a backup to delete
+            var request = new VolumeBackupRequestDto()
+            {
+                Volumes = ["Volume1", "Volume2"]
+            };
+            var response = await httpClient.PostAsJsonAsync<VolumeBackupRequestDto>("api/backups/run", request, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            response.Should().Be200Ok();
+
+            var id = await response.Content.ReadFromJsonAsync<int>(fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+
+            response = await httpClient.DeleteAsync($"api/backups/{id}", TestContext.Current.CancellationToken);
+            response.Should().Be204NoContent();
+
+            response = await httpClient.GetAsync($"api/backups/{id}", TestContext.Current.CancellationToken);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        public async Task DeleteMulipleBackupsNoBackupIds()
+        {
+            var httpClient = fixture.CreateClient();
+
+            var request = new BackupDeleteRequestDto() { };
+
+            var response = await httpClient.PostAsJsonAsync<BackupDeleteRequestDto>("api/backups/delete", request, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            response.Should().Be400BadRequest()
+                .And.OnlyHaveError("BackupIds", "Atleast one backup must be selected.");
+        }
+
+        [Fact]
+        public async Task DeleteMulipleBackups()
+        {
+            var httpClient = fixture.CreateClient();
+
+            // Create a backup to delete
+            var request = new VolumeBackupRequestDto()
+            {
+                Volumes = ["Volume1", "Volume2"]
+            };
+            var response = await httpClient.PostAsJsonAsync<VolumeBackupRequestDto>("api/backups/run", request, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            response.Should().Be200Ok();
+
+            var id1 = await response.Content.ReadFromJsonAsync<int>(fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+
+            // Create a second backup to delete
+            request = new VolumeBackupRequestDto()
+            {
+                Volumes = ["Volume1"]
+            };
+            response = await httpClient.PostAsJsonAsync<VolumeBackupRequestDto>("api/backups/run", request, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            response.Should().Be200Ok();
+
+            var id2 = await response.Content.ReadFromJsonAsync<int>(fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+
+
+            var deleteRequest = new BackupDeleteRequestDto()
+            {
+                BackupIds = [id1, id2]
+            };
+
+            response = await httpClient.PostAsJsonAsync<BackupDeleteRequestDto>("api/backups/delete", deleteRequest, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            response.Should().Be200Ok();
+
+            var count = await response.Content.ReadFromJsonAsync<int>(fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            count.Should().Be(2);
+        }
+
+        [Fact]
+        public async Task DeleteMulipleBackupsPartialSuccess()
+        {
+            var httpClient = fixture.CreateClient();
+
+            // Create a backup to delete
+            var request = new VolumeBackupRequestDto()
+            {
+                Volumes = ["Volume1", "Volume2"]
+            };
+            var response = await httpClient.PostAsJsonAsync<VolumeBackupRequestDto>("api/backups/run", request, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            response.Should().Be200Ok();
+
+            var id1 = await response.Content.ReadFromJsonAsync<int>(fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+
+
+            var id2 = 9875;
+
+            var deleteRequest = new BackupDeleteRequestDto()
+            {
+                BackupIds = [id1, id2]
+            };
+
+            response = await httpClient.PostAsJsonAsync<BackupDeleteRequestDto>("api/backups/delete", deleteRequest, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            response.Should().Be200Ok();
+
+            var count = await response.Content.ReadFromJsonAsync<int>(fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
+            count.Should().Be(1);
+        }
 
         [Fact]
         public async Task RunScheduledBackup()
