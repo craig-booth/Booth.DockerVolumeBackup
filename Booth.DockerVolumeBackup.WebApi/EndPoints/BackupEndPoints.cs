@@ -13,6 +13,8 @@ using Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupStatus;
 using Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupStatusEvents;
 using Booth.DockerVolumeBackup.Application.Backups.Commands.RunScheduledBackup;
 using Booth.DockerVolumeBackup.Application.Backups.Commands.RunAdhocBackup;
+using Booth.DockerVolumeBackup.Application.Backups.Commands.DeleteBackup;
+using Booth.DockerVolumeBackup.Application.Backups.Commands.DeleteMultipleBackups;
 using Booth.DockerVolumeBackup.Application.Services;
 
 
@@ -72,6 +74,20 @@ namespace Booth.DockerVolumeBackup.WebApi.EndPoints
             app.MapGet("api/backups/{id:int}/log", (int id) =>
             {
                 throw new NotSupportedException();
+            });
+
+            app.MapDelete("api/backups/{id:int}", async (int id, IMediator mediator) =>
+            {
+                var result = await mediator.Send(new DeleteBackupCommand(id));
+
+                return result.Match(value => Results.NoContent(), errors => ErrorResult.Error(errors));
+            });
+
+            app.MapPost("api/backups/delete", async (BackupDeleteRequestDto request, IMediator mediator) =>
+            {
+                var result = await mediator.Send(new DeleteMultipleBackupsCommand(request.BackupIds));
+
+                return result.Match(value => Results.Ok(value), errors => ErrorResult.Error(errors));
             });
 
             app.MapPost("api/backups/{id:int}/run", async (int id, IMediator mediator) =>
