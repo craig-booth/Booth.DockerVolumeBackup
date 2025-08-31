@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Booth.DockerVolumeBackup.Application.Interfaces;
+using Booth.DockerVolumeBackup.Domain.Events;
 using Booth.DockerVolumeBackup.Infrastructure.Docker;
 
 namespace Booth.DockerVolumeBackup.Infrastructure.Services
 {
     internal class DockerService(IDockerClient dockerClient) : IDockerService
     {
+        private static List<string> _DependentVolumes = null;
 
         public async Task<List<Volume>> GetVolumesAsync()
         {
@@ -68,6 +70,24 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
 
                 await dockerClient.Services.ScaleAsync(service.Id, service.Replicas);
             }
+        }
+
+        public async Task<List<string>> GetDependentVolumes()
+        {
+            if (_DependentVolumes == null)
+            { 
+                var containers = await dockerClient.Containers.ListAsync();
+                if (containers == null)
+                    return new List<string>();
+
+                var thisContainer = containers.FirstOrDefault(x => x.Command == "dotnet Booth.DockerVolumeBackup.WebApi.dll");
+                if (thisContainer == null)
+                    return new List<string>();
+
+                _DependentVolumes = thisContainer.Mounts.Where(x => x.Type == "volume").Select(x => x.Name).ToList();
+            }
+
+            return _DependentVolumes;
         }
     }
 }
