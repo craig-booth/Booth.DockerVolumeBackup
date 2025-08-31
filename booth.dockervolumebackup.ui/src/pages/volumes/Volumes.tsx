@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Flex, Box, Button, TextField } from '@radix-ui/themes';
+import { Flex, Box, Button, TextField, Badge, Text } from '@radix-ui/themes';
 import { MagnifyingGlassIcon, Cross2Icon } from '@radix-ui/react-icons';
 import { QueuedBackupToast } from '@/components/QueuedBackupToast';
 import { DataTable, DataTableColumn } from '@/components/DataTable';
@@ -9,7 +9,7 @@ import { useApi } from '@/api/api';
 import { formatStorageSize } from '@/utils/Formatting';
 
 const columns: DataTableColumn<Volume>[] = [
-	{ id: 1, heading: 'Volume', value: (x) => x.name, sortable: true },
+	{ id: 1, heading: 'Volume', value: (x) => x.name, render: (x) => { return (x.active ? x.name : <Flex gap="2">{x.name}<Badge color="gray" variant="outline">missing</Badge></Flex>) }, sortable: true },
 	{ id: 2, heading: 'Size', value: (x) => x.size, align: 'right', formatter: (x) => formatStorageSize(x as number), sortable: true },
 	{ id: 3, heading: 'Last Backup', value: (x) => x.lastBackup, sortable: true }
 ];

@@ -11,6 +11,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Docker
     {
         IVolumeResource Volumes { get; }
         IServiceResource Services { get; }
+        IContainerResource Containers { get; }
     }
 
     public interface IVolumeResource
@@ -22,5 +23,10 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Docker
     {
         Task<IList<Service>> ListAsync();
         Task ScaleAsync(string id, int scale);
+    }
+
+    public interface IContainerResource
+    {
+        Task<IList<Container>> ListAsync();
     }
 }
