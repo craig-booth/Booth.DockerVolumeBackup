@@ -1,5 +1,6 @@
 import { parseJson } from '@/api/jsonParser';
 import { Volume } from '@/models/Volume';
+import { VolumeBackup } from '@/models/VolumeBackup';
 import { VolumeBackupRequest } from '@/models/VolumeBackupRequest';
 import { BackupDeleteRequest } from '@/models/BackupDeleteRequest';
 import { Backup, BackupDetail } from '@/models/Backup';
@@ -8,6 +9,7 @@ import { Schedule, ScheduleDetail } from '@/models/Schedule';
 
 export interface UseApiResult {
     getVolumes(): Promise<Volume[]>;
+    getVolumeBackups(volume: string): Promise<VolumeBackup[]>;
     backupVolumes(backupRequest: VolumeBackupRequest): Promise<number>;
 
     getBackups(): Promise<Backup[]>;
@@ -45,6 +47,27 @@ export const useApi = (): UseApiResult => {
             .then(response => parseJson<Volume[]>(response))
 
         return volumes;
+    }
+
+    const getVolumeBackups = async (volume: string): Promise<VolumeBackup[]> => {
+
+        const backups = fetch('/api/volumes/' + volume + '/backups',
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok)
+                    throw new Error(response.statusText)
+
+                return response.text();
+            })
+            .then(response => parseJson<VolumeBackup[]>(response))
+
+        return backups;
     }
 
     const backupVolumes = async (backupRequest: VolumeBackupRequest): Promise<number> => {
@@ -283,6 +306,7 @@ export const useApi = (): UseApiResult => {
 
     return {
         getVolumes,
+        getVolumeBackups,
         backupVolumes,
         getBackups,
         getBackup,

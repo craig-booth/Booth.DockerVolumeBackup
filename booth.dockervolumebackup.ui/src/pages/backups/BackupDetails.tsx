@@ -1,4 +1,5 @@
 import { useEffect, useReducer } from 'react';
+import { Text, Flex, Grid, Strong } from '@radix-ui/themes';
 import { DataTable, DataTableColumn } from '@/components/DataTable';
 import { StatusBadge } from '@/components/StatusBadge';
 import { useParams } from 'react-router';
@@ -104,11 +105,16 @@ function BackupDetails() {
 
 	return (
 		<>
-			<div>{backup.backupId}</div>
-			<div>{backup.scheduleName}</div>
-			<div>{backup.status}</div>
-			<div>{formatLongDateTime(backup.startTime)}</div>
-			<div>{formatLongDateTime(backup.endTime)}</div>
+			<Flex direction="column" gap="2" px="20px" py="20px">
+				<Flex direction="row" gap="5" >
+					<Text>Backup: <Strong>{backup.scheduleName}</Strong> (#{backup.backupId})</Text>
+					<StatusBadge status={backup.status}></StatusBadge>
+				</Flex>
+				<Grid columns="2">
+					<Text align="left"> Started: {formatLongDateTime(backup.startTime)}</Text >
+					<Text align="left"> Duration: {backup.startTime && backup.endTime ? formatDuration(backup.endTime.getTime() - backup.startTime.getTime()) : undefined}</Text >
+				</Grid>
+			</Flex>
 			<DataTable columns={columns} data={backup.volumes} keyField='backupVolumeId' />
 		</>
 
