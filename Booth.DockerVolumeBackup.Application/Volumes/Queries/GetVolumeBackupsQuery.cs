@@ -15,11 +15,13 @@ namespace Booth.DockerVolumeBackup.Application.Volumes.Queries.GetVolumeBackups
 
     public class VolumeBackupDto
     {
+        public string VolumeName { get; set; } = string.Empty;
         public int BackupId { get; set; }
         public int? ScheduleId { get; set; }
         public string ScheduleName { get; set; } = string.Empty;
         public StatusDto Status { get; set; }
         public DateTimeOffset? BackupTime { get; set; }
+        public long? Size { get; set; }
     }
 
     public record GetVolumeBackupsQuery(string VolumeName) : IRequest<ErrorOr<IReadOnlyList<VolumeBackupDto>>>;
@@ -32,11 +34,13 @@ namespace Booth.DockerVolumeBackup.Application.Volumes.Queries.GetVolumeBackups
                 .Where(x => x.Volumes.Any(v => v.Volume == request.VolumeName))
                 .Select(x => new VolumeBackupDto()
                 {
+                    VolumeName = request.VolumeName,
                     BackupId = x.BackupId,
                     ScheduleId = x.ScheduleId,
                     ScheduleName = (x.Schedule != null) ? x.Schedule.Name : "",
                     Status = (StatusDto)x.Volumes.First(v => v.Volume == request.VolumeName).Status,
                     BackupTime = x.Volumes.First(v => v.Volume == request.VolumeName).EndTime,
+                    Size = x.Volumes.First(v => v.Volume == request.VolumeName).BackupSize
                 });
 
             var backups = await query.ToListAsync(cancellationToken);

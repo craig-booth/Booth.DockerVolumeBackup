@@ -1,4 +1,5 @@
 import Volumes from './Volumes.tsx';
+import VolumeBackups from './VolumeBackups.tsx';
 
 const VolumeRoutes = {
 	path: 'volumes',
@@ -6,6 +7,10 @@ const VolumeRoutes = {
 		{
 			index: true,
 			element: <Volumes />,
+		},
+		{
+			path: ':volume/backups',
+			element: <VolumeBackups />,
 		}
 	]
 };
