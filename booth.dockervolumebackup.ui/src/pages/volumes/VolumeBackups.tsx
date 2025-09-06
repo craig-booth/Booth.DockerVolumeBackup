@@ -34,9 +34,9 @@ function VolumeBackups() {
 	const { volume } = useParams();
 	const { getVolumeBackups } = useApi();
 
-	const { isPending, isError, isSuccess, data: backups } = useQuery({
+	const { isPending, isError, data: backups } = useQuery({
 		queryKey: ['volumebackups'],
-		queryFn: () => getVolumeBackups(volume),
+		queryFn: () => getVolumeBackups(volume ? volume: ''),
 	});
 
 	if (isPending) {
