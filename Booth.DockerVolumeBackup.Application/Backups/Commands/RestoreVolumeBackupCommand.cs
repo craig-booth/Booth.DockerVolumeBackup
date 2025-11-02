@@ -45,8 +45,9 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Commands.RestoreVolumeBac
             }
 
             // Restore from backup
-            logger.LogInformation("Restoring volume '{VolumeName}' ({MountPoint}) from backup file '{BackupFile}'", request.VolumeName, dockerVolume.MountPoint, volume.BackupFile);
-            await mountPointBackupService.RestoreDirectoryAsync(dockerVolume.MountPoint, volume.BackupFile);
+            var backupPath = Path.Combine(backup.BackupDirectory, volume.BackupFile);
+            logger.LogInformation("Restoring volume '{VolumeName}' ({MountPoint}) from backup file '{BackupFile}'", request.VolumeName, dockerVolume.MountPoint, backupPath);
+            await mountPointBackupService.RestoreDirectoryAsync(dockerVolume.MountPoint, backupPath);
 
             return true;
         }
