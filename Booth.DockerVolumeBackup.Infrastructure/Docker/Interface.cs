@@ -17,6 +17,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Docker
     public interface IVolumeResource
     {
         Task<IList<Volume>> ListAsync();
+        Task<Volume?> CreateAsync(string name);
     }
 
     public interface IServiceResource

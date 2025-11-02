@@ -33,5 +33,15 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures.Mocks
         {
             return Task.FromResult(new List<BackupFileInfo>());
         }
+
+        public Stream GetBackupFile(string filePath)
+        {
+            return new MemoryStream(Encoding.UTF8.GetBytes("Test Data"));
+        }
+
+        public Task<bool> RestoreDirectoryAsync(string directoryName, string backupFile)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -9,6 +9,7 @@ namespace Booth.DockerVolumeBackup.Application.Interfaces
     public interface IDockerService
     {
         Task<List<Volume>> GetVolumesAsync();
+        Task<Volume?> CreateVolumeAsync(string name);
         Task<List<string>> GetDependentVolumes();
         Task<List<Service>> GetDependentServices(IEnumerable<Volume> volumes);
         Task StopServices(IEnumerable<Service> services, CancellationToken stoppingToken);

@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Bogus;
+using Booth.DockerVolumeBackup.Infrastructure.Docker.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net.Http.Json;
-using Booth.DockerVolumeBackup.Infrastructure.Docker.Models;
 
 
 namespace Booth.DockerVolumeBackup.Infrastructure.Docker
@@ -28,6 +29,22 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Docker
         {
             var response = await _HttpClient.GetFromJsonAsync<VolumeResponse>("/system/df?type=volume");
             return response != null ? response.Volumes : [];
+        }
+
+        public async Task<Volume?> CreateAsync(string name)
+        {
+            var volumeConfig = new VolumeConfiguration
+            { 
+                Name = name,
+                Driver = "local"
+            };
+            var response = await _HttpClient.PostAsJsonAsync("/volumes/create", volumeConfig);
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var volume = await response.Content.ReadFromJsonAsync<Volume>();
+            return volume;
         }
     }
 }

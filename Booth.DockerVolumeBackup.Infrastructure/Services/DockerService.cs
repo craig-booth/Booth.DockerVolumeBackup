@@ -11,7 +11,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
 {
     internal class DockerService(IDockerClient dockerClient) : IDockerService
     {
-        private static List<string> _DependentVolumes = null;
+        private static List<string>? _DependentVolumes = null;
 
         public async Task<List<Volume>> GetVolumesAsync()
         {
@@ -88,6 +88,15 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
             }
 
             return _DependentVolumes;
+        }
+
+        public async Task<Volume?> CreateVolumeAsync(string name)
+        {
+            var volume = await dockerClient.Volumes.CreateAsync(name);
+            if (volume == null)
+                return null;
+
+            return new Volume { Name = volume.Name, MountPoint = volume.Mountpoint, Size = volume.UsageData != null ? volume.UsageData.Size : 0 };
         }
     }
 }

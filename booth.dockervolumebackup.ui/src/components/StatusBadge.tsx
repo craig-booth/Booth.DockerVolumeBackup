@@ -24,7 +24,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
 
 	return (
 		<>
-			<Badge color={statusColor(status)} size="2" variant="solid">{status}</Badge>
+			<Badge color={statusColor(status)} size="2" variant="outline">{status}</Badge>
 		</>
 	);
 }

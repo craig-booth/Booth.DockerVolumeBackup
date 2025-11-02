@@ -38,6 +38,7 @@ namespace Booth.DockerVolumeBackup.WebApi
 
             app.AddVolumeEndPoints();
             app.AddBackupEndPoints();
+            app.AddVolumeBackupEndPoints();
             app.AddScheduleEndPoints();
 
             app.MapFallbackToFile("/index.html");
