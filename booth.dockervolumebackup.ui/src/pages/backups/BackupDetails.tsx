@@ -2,6 +2,8 @@ import { useEffect, useReducer } from 'react';
 import { Text, Flex, Grid, Strong } from '@radix-ui/themes';
 import { DataTable, DataTableColumn } from '@/components/DataTable';
 import { StatusBadge } from '@/components/StatusBadge';
+import { DownloadButton } from '@/components/DownloadButton';
+import { RestoreButton } from '@/components/RestoreButton';
 import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useApi } from '@/api/api';
@@ -20,7 +22,8 @@ const columns: DataTableColumn<BackupVolumeDetail>[] = [
 	{ id: 2, heading: 'Status', value: (x) => x.status, render: (backup) => { return (<StatusBadge status={backup.status} />) } },
 	{ id: 3, heading: 'Size', value: (x) => x.backupSize, align: 'right', formatter: (x) => formatStorageSize(x as number) },
 	{ id: 4, heading: 'Backup Time', value: (x) => x.startTime },
-	{ id: 5, heading: 'Duration', value: (x) => x.startTime && x.endTime ? x.endTime.getTime() - x.startTime.getTime() : undefined, formatter: (x) => formatDuration(x as number) }
+	{ id: 5, heading: 'Duration', value: (x) => x.startTime && x.endTime ? x.endTime.getTime() - x.startTime.getTime() : undefined, formatter: (x) => formatDuration(x as number) },
+	{ id: 6, heading: 'Actions', value: (x) => x.backupVolumeId, render: (backup) => { return (<Flex gap="3"><DownloadButton backupvolumeid={backup.backupVolumeId} /><RestoreButton backupvolumeid={backup.backupVolumeId} volume={backup.volume} backuptime={backup.startTime} /></Flex >) } }
 ];
 
 
@@ -92,6 +95,7 @@ function BackupDetails() {
 		return;
 	}, [backup, backupId]);
 
+
 	if (isPending) {
 		return <div>Loading...</div>;
 	}
@@ -100,8 +104,6 @@ function BackupDetails() {
 		return <div>Error</div>;
 	}
 
-
-	
 
 	return (
 		<>

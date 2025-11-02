@@ -2,15 +2,18 @@ import { parseJson } from '@/api/jsonParser';
 import { Volume } from '@/models/Volume';
 import { VolumeBackup } from '@/models/VolumeBackup';
 import { VolumeBackupRequest } from '@/models/VolumeBackupRequest';
+import { VolumeRestoreRequest } from '@/models/VolumeRestoreRequest';
 import { BackupDeleteRequest } from '@/models/BackupDeleteRequest';
 import { Backup, BackupDetail } from '@/models/Backup';
 import { Schedule, ScheduleDetail } from '@/models/Schedule';
 
 
 export interface UseApiResult {
+    getVolume(volumeName: string): Promise<Volume|null>;
     getVolumes(): Promise<Volume[]>;
     getVolumeBackups(volume: string): Promise<VolumeBackup[]>;
     backupVolumes(backupRequest: VolumeBackupRequest): Promise<number>;
+    restoreVolume(backupVolumeId: number, volumeName: string): Promise<boolean>;
 
     getBackups(): Promise<Backup[]>;
     getBackup(backupId: number): Promise<BackupDetail>;
@@ -47,6 +50,30 @@ export const useApi = (): UseApiResult => {
             .then(response => parseJson<Volume[]>(response))
 
         return volumes;
+    }
+
+    const getVolume = async (volumeName: string): Promise<Volume|null> => {
+
+        const volume = fetch('/api/volumes/' + volumeName,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+
+                if (response.status == 404)
+                    return null;
+                else if (!response.ok)
+                    throw new Error(response.statusText)
+
+                return response.text();
+            })
+            .then(response => response ? parseJson<Volume>(response): null) 
+
+        return volume;
     }
 
     const getVolumeBackups = async (volume: string): Promise<VolumeBackup[]> => {
@@ -89,6 +116,29 @@ export const useApi = (): UseApiResult => {
             .then(response => Number.parseInt(response))
 
         return backupId;
+    }
+
+    const restoreVolume = async (backupVolumeId: number, volumeName: string): Promise<boolean> => {
+
+        const restoreRequest: VolumeRestoreRequest = { volumeName: volumeName };
+
+        const result = fetch('/api/volumebackups/' + backupVolumeId + '/restore',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(restoreRequest)
+            })
+            .then(response => {
+                if (!response.ok)
+                    throw new Error(response.statusText)
+
+                return true;
+            });
+
+        return result;
     }
 
     const getBackup = async (backupId: number): Promise<BackupDetail> => {
@@ -305,9 +355,11 @@ export const useApi = (): UseApiResult => {
     }
 
     return {
+        getVolume,
         getVolumes,
         getVolumeBackups,
         backupVolumes,
+        restoreVolume,
         getBackups,
         getBackup,
         deleteBackup,

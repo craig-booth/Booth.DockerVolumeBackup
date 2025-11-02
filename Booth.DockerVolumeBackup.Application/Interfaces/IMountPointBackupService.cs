@@ -16,6 +16,8 @@ namespace Booth.DockerVolumeBackup.Application.Interfaces
         Task<bool> DeleteDirectoryAsync(string directoryName);
         Task<List<BackupDirectoryInfo>> GetBackupDirectoriesAsync(string path);
         Task<List<BackupFileInfo>> GetBackupFilesAsync(string path);
-        Task<long> BackupDirectoryAsync(string directoryName, string destinationPath);
+        Task<long> BackupDirectoryAsync(string directoryName, string backupFile);
+        Task<bool> RestoreDirectoryAsync(string directoryName, string backupFile);
+        Stream GetBackupFile(string filePath);
     }
 }

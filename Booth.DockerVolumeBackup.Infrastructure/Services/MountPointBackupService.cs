@@ -8,18 +8,18 @@ using System.Diagnostics;
 namespace Booth.DockerVolumeBackup.Infrastructure.Services
 {
     internal class MountPointBackupService : IMountPointBackupService
-    {   
+    {
         private readonly ILogger _Logger;
 
-        public MountPointBackupService(ILogger<MountPointBackupService> logger) 
+        public MountPointBackupService(ILogger<MountPointBackupService> logger)
         {
             _Logger = logger;
         }
 
         public Task<bool> CreateDirectoryAsync(string directoryName)
         {
-            try 
-            { 
+            try
+            {
                 Directory.CreateDirectory(directoryName);
             }
             catch (Exception ex)
@@ -34,7 +34,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
         public async Task<long> BackupDirectoryAsync(string directoryName, string destinationPath)
         {
             var result = await Cli.Wrap("tar")
-                .WithArguments(["-czf", destinationPath, "-C", directoryName, "./"])
+                .WithArguments(["-czpf", destinationPath, "-C", directoryName, "./"])
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync();
 
@@ -89,6 +89,25 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
                 .ToList();
 
             return Task.FromResult(backupFiles);
+        }
+
+        public Stream GetBackupFile(string filePath)
+        {
+            var fileInfo = new FileInfo(filePath);
+            if (fileInfo == null || !fileInfo.Exists)
+                throw new FileNotFoundException("Backup file not found", filePath);
+
+            return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        }
+
+        public async Task<bool> RestoreDirectoryAsync(string directoryName, string backupFile)
+        {
+            var result = await Cli.Wrap("tar")
+                .WithArguments(["-xpf", backupFile, "-C", directoryName])
+                .WithValidation(CommandResultValidation.None)
+                .ExecuteBufferedAsync();
+
+            return result.IsSuccess;
         }
     }
 }
