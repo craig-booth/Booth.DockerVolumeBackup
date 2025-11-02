@@ -4,13 +4,14 @@ using ErrorOr;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 
 namespace Booth.DockerVolumeBackup.Application.Backups.Commands.RestoreVolumeBackup
 {
     public record RestoreVolumeBackupCommand(int VolumeBackupId, string VolumeName) : IRequest<ErrorOr<bool>>;
 
-    internal class RestoreVolumeBackupCommandHandler(IDataContext dataContext, IDockerService dockerService, IMountPointBackupService mountPointBackupService) : IRequestHandler<RestoreVolumeBackupCommand, ErrorOr<bool>>
+    internal class RestoreVolumeBackupCommandHandler(IDataContext dataContext, IDockerService dockerService, IMountPointBackupService mountPointBackupService, ILogger<RestoreVolumeBackupCommandHandler> logger) : IRequestHandler<RestoreVolumeBackupCommand, ErrorOr<bool>>
     {
         public async Task<ErrorOr<bool>> Handle(RestoreVolumeBackupCommand request, CancellationToken cancellationToken)
         {
@@ -43,6 +44,8 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Commands.RestoreVolumeBac
                     return Error.Failure("VolumeNotCreated", "An error occurred created volume");
             }
 
+            // Restore from backup
+            logger.LogInformation("Restoring volume '{VolumeName}' ({MountPoint}) from backup file '{BackupFile}'", request.VolumeName, dockerVolume.MountPoint, volume.BackupFile);
             await mountPointBackupService.RestoreDirectoryAsync(dockerVolume.MountPoint, volume.BackupFile);
 
             return true;
