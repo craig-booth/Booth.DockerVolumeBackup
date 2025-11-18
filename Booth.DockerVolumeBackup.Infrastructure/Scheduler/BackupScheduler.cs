@@ -11,7 +11,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Scheduler
     internal class BackupScheduler(IQueue queue, IScheduler scheduler) : IBackupScheduler
     {
 
-        public void QueueBackup(IBackgroundJob backupJob)
+        public void QueueJob(IBackgroundJob backupJob)
         {
             queue.QueueAsyncTask(async () =>
             {

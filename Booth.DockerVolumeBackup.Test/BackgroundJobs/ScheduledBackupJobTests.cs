@@ -43,7 +43,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             await job.Execute(CancellationToken.None);
 
 
-            scheduler.Received().QueueBackup(Arg.Is<BackupJob>(x => x.Id == 12));
+            scheduler.Received().QueueJob(Arg.Is<BackupJob>(x => x.Id == 12));
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             await job.Execute(CancellationToken.None);
 
 
-            scheduler.DidNotReceive().QueueBackup(Arg.Any<IBackgroundJob>());
+            scheduler.DidNotReceive().QueueJob(Arg.Any<IBackgroundJob>());
         }
 
     }

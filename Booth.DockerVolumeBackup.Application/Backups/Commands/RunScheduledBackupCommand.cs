@@ -27,7 +27,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Commands.RunScheduledBack
 
             var backupJob = new BackupJob(backup.BackupId, serviceScopeFactory);
 
-            scheduler.QueueBackup(backupJob);
+            scheduler.QueueJob(backupJob);
 
             return backupJob.Id;
         }

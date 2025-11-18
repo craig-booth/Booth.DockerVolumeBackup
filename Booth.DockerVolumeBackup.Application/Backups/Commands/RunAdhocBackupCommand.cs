@@ -35,7 +35,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Commands.RunAdhocBackup
             await dataContext.SaveChangesAsync(cancellationToken);
 
             var backupJob = new BackupJob(backup.BackupId, serviceScopeFactory);
-            scheduler.QueueBackup(backupJob);
+            scheduler.QueueJob(backupJob);
 
             return backup.BackupId; 
         }

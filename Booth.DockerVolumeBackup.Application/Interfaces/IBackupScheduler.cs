@@ -4,7 +4,7 @@ namespace Booth.DockerVolumeBackup.Application.Interfaces
 {
     public interface IBackupScheduler
     {
-        void QueueBackup(IBackgroundJob backupJob);
+        void QueueJob(IBackgroundJob backupJob);
         void ScheduleBackup(BackupSchedule schedule, IBackgroundJob backupJob);
         void RemoveScheduledBackup(int scheduleId);
     }

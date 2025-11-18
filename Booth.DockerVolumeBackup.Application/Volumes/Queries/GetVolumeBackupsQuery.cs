@@ -17,6 +17,7 @@ namespace Booth.DockerVolumeBackup.Application.Volumes.Queries.GetVolumeBackups
     {
         public string VolumeName { get; set; } = string.Empty;
         public int BackupId { get; set; }
+        public int BackupVolumeId { get; set; }
         public int? ScheduleId { get; set; }
         public string ScheduleName { get; set; } = string.Empty;
         public StatusDto Status { get; set; }
@@ -36,6 +37,7 @@ namespace Booth.DockerVolumeBackup.Application.Volumes.Queries.GetVolumeBackups
                 {
                     VolumeName = request.VolumeName,
                     BackupId = x.BackupId,
+                    BackupVolumeId = x.Volumes.First(v => v.Volume == request.VolumeName).BackupVolumeId,
                     ScheduleId = x.ScheduleId,
                     ScheduleName = (x.Schedule != null) ? x.Schedule.Name : "",
                     Status = (StatusDto)x.Volumes.First(v => v.Volume == request.VolumeName).Status,

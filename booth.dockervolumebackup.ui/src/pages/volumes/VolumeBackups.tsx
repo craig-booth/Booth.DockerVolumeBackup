@@ -3,6 +3,8 @@ import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useApi } from '@/api/api';
 import { DataTable, DataTableColumn } from '@/components/DataTable';
+import { DownloadButton } from '@/components/DownloadButton';
+import { RestoreButton } from '@/components/RestoreButton';
 import { StatusBadge } from '@/components/StatusBadge';
 import { VolumeBackup } from '@/models/VolumeBackup';
 import { formatStorageSize } from '@/utils/Formatting';
@@ -27,6 +29,18 @@ const columns: DataTableColumn<VolumeBackup>[] = [
 		align: 'right',
 		formatter: (x) => formatStorageSize(x as number)
 	},
+	{
+		id: 4,
+		heading: 'Actions',
+		value: (x) => x.backupVolumeId, render: (backup) => {
+			return (
+				<Flex gap="3">
+					<DownloadButton backupvolumeid={backup.backupVolumeId} />
+					<RestoreButton backupvolumeid={backup.backupVolumeId} volume={backup.volumeName} backuptime={backup.backupTime} />
+				</Flex >)
+		}
+	}
+
 ];
 
 function VolumeBackups() {

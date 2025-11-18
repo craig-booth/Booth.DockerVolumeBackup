@@ -39,7 +39,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                 
                 var backupJob = new BackupJob(backup.BackupId, serviceScopeFactory);
                 if (backupJob != null) 
-                    scheduler.QueueBackup(backupJob);
+                    scheduler.QueueJob(backupJob);
             }
 
         }
