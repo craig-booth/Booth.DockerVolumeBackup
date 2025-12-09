@@ -29,7 +29,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             };
             var backups = new[] { backup };
                 
-            var backupDataSet = backups.AsQueryable().BuildMockDbSet();
+            var backupDataSet = backups.BuildMockDbSet();
 
             var dataContext = Substitute.For<IDataContext>();  
             dataContext.Backups.Returns(backupDataSet);
@@ -97,7 +97,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             };
             var backups = new[] { backup };
 
-            var backupDataSet = backups.AsQueryable().BuildMockDbSet();
+            var backupDataSet = backups.BuildMockDbSet();
 
             var dataContext = Substitute.For<IDataContext>();
             dataContext.Backups.Returns(backupDataSet);
@@ -152,7 +152,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             };
             var backups = new[] { backup };
 
-            var backupDataSet = backups.AsQueryable().BuildMockDbSet();
+            var backupDataSet = backups.BuildMockDbSet();
 
             var dataContext = Substitute.For<IDataContext>();
             dataContext.Backups.Returns(backupDataSet);

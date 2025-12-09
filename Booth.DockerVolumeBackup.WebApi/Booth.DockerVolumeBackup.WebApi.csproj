@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -9,14 +9,14 @@
   <ItemGroup>
     <ProjectReference Include="..\Booth.DockerVolumeBackup.Application\Booth.DockerVolumeBackup.Application.csproj" />
     <ProjectReference Include="..\Booth.DockerVolumeBackup.Infrastructure\Booth.DockerVolumeBackup.Infrastructure.csproj" />
-	  <ProjectReference Include="..\booth.dockervolumebackup.ui\booth.dockervolumebackup.ui.esproj" >
+	  <ProjectReference Include="..\booth.dockervolumebackup.ui\booth.dockervolumebackup.ui.esproj">
 		  <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 	  </ProjectReference>
 		
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

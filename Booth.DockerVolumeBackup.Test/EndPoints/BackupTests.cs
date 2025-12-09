@@ -123,17 +123,14 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             var stream = await response.Content.ReadAsStreamAsync(TestContext.Current.CancellationToken);
             using (var streamReader = new StreamReader(stream))
             {
-                while (!streamReader.EndOfStream)
+                string? line;
+                while ((line = await streamReader.ReadLineAsync(TestContext.Current.CancellationToken)) != null )
                 {
-                    var line = await streamReader.ReadLineAsync(TestContext.Current.CancellationToken);
-                    if (!String.IsNullOrEmpty(line))
+                    if (line.StartsWith("data: "))
                     {
-                        if (line.StartsWith("data: "))
-                        {
-                            var status = JsonSerializer.Deserialize<Application.Backups.Queries.GetBackupStatusEvents.BackupStatusDto>(line.Substring(6), fixture.JsonSerializerOptions);
-                            if (status != null)
-                                statuses.Add(status);
-                        }
+                        var status = JsonSerializer.Deserialize<Application.Backups.Queries.GetBackupStatusEvents.BackupStatusDto>(line.Substring(6), fixture.JsonSerializerOptions);
+                        if (status != null)
+                            statuses.Add(status);
                     }
                 }
             }
