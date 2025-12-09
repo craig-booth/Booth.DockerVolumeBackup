@@ -19,7 +19,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
         public async Task LoadUnmanagedBackupsJob_LoadsBackups()
         {
             var managedBackups = new List<Backup>();
-            var managedBackupsDataSet = managedBackups.AsQueryable().BuildMockDbSet();
+            var managedBackupsDataSet = managedBackups.BuildMockDbSet();
 
             var dataContext = Substitute.For<IDataContext>();
             dataContext.Backups.Returns(managedBackupsDataSet);
@@ -61,7 +61,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
         public async Task LoadUnmanagedBackupsJob_IgnoresEmptyFolders()
         {
             var managedBackups = new List<Backup>();
-            var managedBackupsDataSet = managedBackups.AsQueryable().BuildMockDbSet();
+            var managedBackupsDataSet = managedBackups.BuildMockDbSet();
 
             var dataContext = Substitute.For<IDataContext>();
             dataContext.Backups.Returns(managedBackupsDataSet);
@@ -114,7 +114,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                     BackupDirectory = "/backup/managed-backup-2",
                 }
             };
-            var managedBackupsDataSet = managedBackups.AsQueryable().BuildMockDbSet();
+            var managedBackupsDataSet = managedBackups.BuildMockDbSet();
 
             var dataContext = Substitute.For<IDataContext>();
             dataContext.Backups.Returns(managedBackupsDataSet);

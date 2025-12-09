@@ -25,7 +25,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 BackupDefinition = new BackupDefinition { KeepLast = 0 }
             };
             var schedules = new[] { schedule };
-            var scheduleDataSet = schedules.AsQueryable().BuildMockDbSet();
+            var scheduleDataSet = schedules.BuildMockDbSet();
 
             var today = new DateTimeOffset(DateTime.UtcNow.Date);   
             var backups = new[] {
@@ -36,7 +36,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-2), BackupDirectory = "/backups/backup5"},
                 new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-1), BackupDirectory = "/backups/backup6"}
             };
-            var backupDataSet = backups.AsQueryable().BuildMockDbSet();
+            var backupDataSet = backups.BuildMockDbSet();
 
 
             var dataContext = Substitute.For<IDataContext>();
@@ -68,7 +68,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 BackupDefinition = new BackupDefinition { KeepLast = 2 }
             };
             var schedules = new[] { schedule };
-            var scheduleDataSet = schedules.AsQueryable().BuildMockDbSet();
+            var scheduleDataSet = schedules.BuildMockDbSet();
 
             var today = new DateTimeOffset(DateTime.UtcNow.Date);
             var backups = new[] {
@@ -79,7 +79,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-2), BackupDirectory = "/backups/backup5"},
                 new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-1), BackupDirectory = "/backups/backup6"}
             };
-            var backupDataSet = backups.AsQueryable().BuildMockDbSet();
+            var backupDataSet = backups.BuildMockDbSet();
 
 
             var dataContext = Substitute.For<IDataContext>();
@@ -112,7 +112,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 BackupDefinition = new BackupDefinition { KeepLast = 10 }
             };
             var schedules = new[] { schedule };
-            var scheduleDataSet = schedules.AsQueryable().BuildMockDbSet();
+            var scheduleDataSet = schedules.BuildMockDbSet();
 
             var today = new DateTimeOffset(DateTime.UtcNow.Date);
             var backups = new[] {
@@ -123,7 +123,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-2), BackupDirectory = "/backups/backup5"},
                 new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-1), BackupDirectory = "/backups/backup6"}
             };
-            var backupDataSet = backups.AsQueryable().BuildMockDbSet();
+            var backupDataSet = backups.BuildMockDbSet();
 
 
             var dataContext = Substitute.For<IDataContext>();
@@ -154,7 +154,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 new BackupSchedule { ScheduleId = 2, BackupDefinition = new BackupDefinition { KeepLast = 0 } },
                 new BackupSchedule { ScheduleId = 3, BackupDefinition = new BackupDefinition { KeepLast = 1 } },
             };
-            var scheduleDataSet = schedules.AsQueryable().BuildMockDbSet();
+            var scheduleDataSet = schedules.BuildMockDbSet();
 
             var today = new DateTimeOffset(DateTime.UtcNow.Date);
             var backups = new[] {
@@ -165,7 +165,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 new Backup {BackupId = 5, ScheduleId = 3, Status = Status.Complete, StartTime = today.AddDays(-2), BackupDirectory = "/backups/backup5"},
                 new Backup {BackupId = 6, ScheduleId = 3, Status = Status.Complete, StartTime = today.AddDays(-1), BackupDirectory = "/backups/backup6"}
             };
-            var backupDataSet = backups.AsQueryable().BuildMockDbSet();
+            var backupDataSet = backups.BuildMockDbSet();
 
 
             var dataContext = Substitute.For<IDataContext>();
@@ -199,7 +199,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 BackupDefinition = new BackupDefinition { KeepLast = 4 }
             };
             var schedules = new[] { schedule };
-            var scheduleDataSet = schedules.AsQueryable().BuildMockDbSet();
+            var scheduleDataSet = schedules.BuildMockDbSet();
 
             var today = new DateTimeOffset(DateTime.UtcNow.Date);
             var backups = new[] {
@@ -210,7 +210,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-2), BackupDirectory = "/backups/backup5"},
                 new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-1), BackupDirectory = "/backups/backup6"}
             };
-            var backupDataSet = backups.AsQueryable().BuildMockDbSet();
+            var backupDataSet = backups.BuildMockDbSet();
 
 
             var dataContext = Substitute.For<IDataContext>();
@@ -245,7 +245,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 BackupDefinition = new BackupDefinition { KeepLast = 5 }
             };
             var schedules = new[] { schedule };
-            var scheduleDataSet = schedules.AsQueryable().BuildMockDbSet();
+            var scheduleDataSet = schedules.BuildMockDbSet();
 
             var today = new DateTimeOffset(DateTime.UtcNow.Date);
             var backups = new[] {
@@ -256,7 +256,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 new Backup {BackupId = 5, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-2), BackupDirectory = "/backups/backup5"},
                 new Backup {BackupId = 6, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-1), BackupDirectory = "/backups/backup6"}
             };
-            var backupDataSet = backups.AsQueryable().BuildMockDbSet();
+            var backupDataSet = backups.BuildMockDbSet();
 
 
             var dataContext = Substitute.For<IDataContext>();
