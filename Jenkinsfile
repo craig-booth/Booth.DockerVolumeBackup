@@ -4,6 +4,7 @@ pipeline {
 
 	environment {
 		PROJECT           = './Booth.DockerVolumeBackup.WebApi/Booth.DockerVolumeBackup.WebApi.csproj'
+		TEST_PROJECT      = './Booth.DockerVolumeBackup.WebApi/Booth.DockerVolumeBackup.Test.csproj'
 		PORTAINER_WEBHOOK = credentials('dockervolumebackup_webhook')
     }
 
@@ -20,6 +21,22 @@ pipeline {
 				stage('Build') {
 					steps {
 						sh "dotnet build ${PROJECT} --configuration Release"
+					}
+				}
+
+				stage('Test') {
+					steps {
+						sh "dotnet test ${TEST_PROJECT} --configuration Release --logger trx  --collect "XPlat Code Coverage" --results-directory ./testresults"
+					}
+					post {
+						always {
+							xunit (
+								thresholds: [ skipped(failureThreshold: '0'), failed(failureThreshold: '0') ],
+								tools: [ MSTest(pattern: 'testresults/*.trx') ]
+								)
+
+							recordCoverage(tools: [[parser: 'COBERTURA', pattern: '**/*.xml']], sourceDirectories: [[path: './testresults']])
+						}
 					}
 				}
 
