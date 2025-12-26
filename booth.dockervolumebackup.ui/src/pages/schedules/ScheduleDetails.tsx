@@ -5,7 +5,7 @@ import { useParams, useNavigate } from 'react-router';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { TrashIcon } from '@radix-ui/react-icons';
 import { useApi } from '@/api/api';
-import { QueuedBackupToast } from '@/components/QueuedBackupToast';
+import { useToast } from '@/utils/Toast';
 import { ScheduleDetail } from '@/models/Schedule';
 import { Volume } from '@/models/Volume';
 
@@ -29,11 +29,11 @@ function ScheduleDetails() {
 	const [ selection, setSelection] = useState<Set<string|number>>(new Set()); 
 	const [ changeMade, setChangeMade] = useState(false); 
 	const [ backupRequested, setBackupRequested] = useState(false); 
-	const [ backupId, setBackupId] = useState(0); 
-	const [ showToast, setShowToast] = useState(false);
 
-	const { getSchedule, getVolumes, createSchedule, updateSchedule, deleteSchedule, runBackup } = useApi();
+	const { showToast } = useToast();
 	const navigate = useNavigate();
+	const { getSchedule, getVolumes, createSchedule, updateSchedule, deleteSchedule, runBackup } = useApi();
+	
 
 
 	const { scheduleId } = useParams();
@@ -92,9 +92,10 @@ function ScheduleDetails() {
 			return runBackup(scheduleId);
 		},
 		onSuccess: (data: number) => {
+			const backupId = data;
+
 			setBackupRequested(false);
-			setBackupId(data);
-			setShowToast(true);
+			showToast({ type: 'info', title: 'Backup Queued', description: 'Backup has been queued', actions: [{ label: 'View', action: () => { navigate('/backups/' + backupId) } }] });
 		}
 	});
 
@@ -179,7 +180,6 @@ function ScheduleDetails() {
 
 	return (
 		<>
-			<QueuedBackupToast backupId={backupId} open={showToast} onOpenChange={setShowToast} />
 			<Flex direction="column" gap="4">
 				<Flex justify="center" gap="4">
 					<Button onClick={() => onSave()} disabled={!changeMade || backupRequested}>Save</Button>

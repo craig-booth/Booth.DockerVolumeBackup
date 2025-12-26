@@ -4,6 +4,7 @@ import { ExclamationTriangleIcon, InfoCircledIcon } from '@radix-ui/react-icons'
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useApi } from '@/api/api';
 import { formatLongDateTime } from '@/utils/Formatting';
+import { useToast } from '@/utils/Toast';
 
 interface RestoreButtonProps {
 	backupvolumeid: number;
@@ -23,6 +24,7 @@ export function RestoreButton({ backupvolumeid, volume, backuptime }: RestoreBut
 	const [existingVolume, setExistingVolume] = useState(true);
 
 	const { getVolume, restoreVolume } = useApi();
+	const { showToast } = useToast();
 
 	const { isSuccess, data: volumeDetail } = useQuery({
 		queryKey: ['volume', restoreVolumeName],
@@ -35,9 +37,7 @@ export function RestoreButton({ backupvolumeid, volume, backuptime }: RestoreBut
 			return restoreVolume(params.backupVolumeId, params.restoreVolumeName);
 		},
 		onSuccess: () => {
-		//	setBackupRequested(false);
-		//	setBackupId(data);
-		//	setShowToast(true);
+			showToast({ type: 'info', title: 'Rerstore Queued', description: 'Retore has been queued' });
 		}
 	});
 
