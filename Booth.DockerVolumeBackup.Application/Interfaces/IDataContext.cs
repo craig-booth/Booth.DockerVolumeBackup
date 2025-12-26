@@ -1,10 +1,6 @@
-﻿
-using System;
-using System.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 using Booth.DockerVolumeBackup.Domain.Models;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Booth.DockerVolumeBackup.Application.Interfaces
 {
@@ -21,7 +17,7 @@ namespace Booth.DockerVolumeBackup.Application.Interfaces
 
     }
 
-    public interface ITransaction: IDisposable
+    public interface ITransaction : IDisposable
     {
         Task CommitAsync(CancellationToken cancellationToken);
         Task RollbackAsync(CancellationToken cancellationToken);

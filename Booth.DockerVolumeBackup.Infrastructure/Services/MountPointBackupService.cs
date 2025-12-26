@@ -2,7 +2,6 @@
 using CliWrap;
 using CliWrap.Buffered;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 
 namespace Booth.DockerVolumeBackup.Infrastructure.Services

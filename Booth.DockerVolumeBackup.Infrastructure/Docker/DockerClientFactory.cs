@@ -1,10 +1,6 @@
 ﻿using Booth.DockerVolumeBackup.Application;
 using Microsoft.Extensions.Options;
-using System;
-using System.IO;
-using System.Net.Http;
 using System.Net.Sockets;
-using System.Threading;
 
 
 namespace Booth.DockerVolumeBackup.Infrastructure.Docker
@@ -15,11 +11,11 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Docker
     }
 
 
-    internal class DockerClientFactory: IDockerClientFactory
+    internal class DockerClientFactory : IDockerClientFactory
     {
         private readonly IOptions<AppConfig> _AppConfig;
-        public DockerClientFactory(IOptions<AppConfig> config) 
-        { 
+        public DockerClientFactory(IOptions<AppConfig> config)
+        {
             _AppConfig = config;
         }
 

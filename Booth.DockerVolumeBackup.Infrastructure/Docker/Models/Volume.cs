@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Booth.DockerVolumeBackup.Infrastructure.Docker.Models
+﻿namespace Booth.DockerVolumeBackup.Infrastructure.Docker.Models
 {
     public class Volume
     {

@@ -2,16 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 
 using Booth.DockerVolumeBackup.Application.Interfaces;
-using Booth.DockerVolumeBackup.Domain.Models;
-using MediatR;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Booth.DockerVolumeBackup.Application.Services;
 
 
 namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
 {
-    internal class ScheduledBackupJob: IBackgroundJob
+    internal class ScheduledBackupJob : IBackgroundJob
     {
         private readonly int _ScheduleId;
         private readonly IServiceScopeFactory _ScopeFactory;
@@ -36,9 +33,9 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                 var backup = await scheduleUtils.CreateBackupFromScheduleAsync(_ScheduleId, cancellationToken);
                 if (backup == null)
                     return;
-                
+
                 var backupJob = new BackupJob(backup.BackupId, serviceScopeFactory);
-                if (backupJob != null) 
+                if (backupJob != null)
                     scheduler.QueueJob(backupJob);
             }
 

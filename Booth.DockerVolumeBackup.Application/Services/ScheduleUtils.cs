@@ -2,7 +2,6 @@
 
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Domain.Models;
-using System.Threading;
 
 namespace Booth.DockerVolumeBackup.Application.Services
 {
@@ -19,7 +18,7 @@ namespace Booth.DockerVolumeBackup.Application.Services
                 .Where(x => x.ScheduleId == scheduleId)
                 .Include(x => x.BackupDefinition)
                 .ThenInclude(x => x.Volumes)
-                .Select(x => x.BackupDefinition)             
+                .Select(x => x.BackupDefinition)
                 .FirstOrDefaultAsync(cancellationToken);
             if (backupDefinition == null)
                 return null;

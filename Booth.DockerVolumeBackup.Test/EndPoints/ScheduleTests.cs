@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Json;
 
 using Xunit;
@@ -200,7 +199,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             schedule.KeepLast = 0;
             response = await httpClient.PutAsJsonAsync<ScheduleDto>($"api/schedules/{id}", schedule, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
             var updatedSchedule = await httpClient.GetFromJsonAsync<ScheduleDto>($"api/schedules/{id}", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
-            
+
             using (var scope = new AssertionScope())
             {
                 updatedSchedule.Should().NotBeNull();
@@ -300,7 +299,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
 
             var id = await response.Content.ReadFromJsonAsync<int>(fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
 
-            schedule.KeepLast = -1; 
+            schedule.KeepLast = -1;
             response = await httpClient.PutAsJsonAsync<ScheduleDto>($"api/schedules/{id}", schedule, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
 
             response.Should().Be400BadRequest()
@@ -328,7 +327,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
 
             schedule.Volumes.Clear();
             response = await httpClient.PutAsJsonAsync<ScheduleDto>($"api/schedules/{id}", schedule, fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
-           
+
             response.Should().Be400BadRequest()
                     .And.OnlyHaveError("Volumes", "Atleast one volume must be selected.");
         }

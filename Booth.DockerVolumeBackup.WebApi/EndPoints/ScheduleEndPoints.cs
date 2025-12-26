@@ -2,7 +2,6 @@
 using MediatR;
 
 using Booth.DockerVolumeBackup.Application.Schedules.Commands;
-using Booth.DockerVolumeBackup.Application.Schedules.Dtos;
 using Booth.DockerVolumeBackup.Application.Schedules.Queries.GetSchedule;
 using Booth.DockerVolumeBackup.Application.Schedules.Queries.GetAllSchedules;
 using Booth.DockerVolumeBackup.WebApi.Extensions;

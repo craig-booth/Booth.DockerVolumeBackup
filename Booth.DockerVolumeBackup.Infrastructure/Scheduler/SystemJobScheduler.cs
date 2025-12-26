@@ -1,8 +1,4 @@
 ﻿using Booth.DockerVolumeBackup.Application.Interfaces;
-using Booth.DockerVolumeBackup.Domain.Models;
-using Coravel.Queuing.Interfaces;
-using Coravel.Scheduling.Schedule;
-using Coravel.Scheduling.Schedule.Event;
 using Coravel.Scheduling.Schedule.Interfaces;
 
 

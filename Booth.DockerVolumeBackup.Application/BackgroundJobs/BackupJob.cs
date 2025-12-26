@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
 {
 
-     internal class BackupJob(int backupId, IServiceScopeFactory scopeFactory) : IBackgroundJob
-     {       
+    internal class BackupJob(int backupId, IServiceScopeFactory scopeFactory) : IBackgroundJob
+    {
         private IPublisher? _Publisher = null;
 
         public int Id => backupId;
@@ -49,7 +49,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
 
                 backup.StartBackup($"/backup/{DateTime.Now:yyyy-MM-dd}_{backup.BackupId}");
                 await dataContext.SaveChangesAsync(cancellationToken);
-                
+
                 var volumeNames = backup.Volumes.Select(x => x.Volume);
                 var allVolumes = await dockerService.GetVolumesAsync();
                 var volumeDefinitions = allVolumes.Where(x => volumeNames.Contains(x.Name));
@@ -128,6 +128,6 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
         private void Backup_BackupVolumeStatusChanged(object? sender, BackupVolumeStatusChangedEvent e)
         {
             _Publisher?.Publish(e);
-        } 
+        }
     }
 }

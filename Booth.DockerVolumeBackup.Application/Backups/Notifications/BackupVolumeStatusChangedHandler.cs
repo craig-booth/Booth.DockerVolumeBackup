@@ -1,11 +1,6 @@
 ﻿using Booth.DockerVolumeBackup.Domain.Events;
 using Booth.DockerVolumeBackup.Application.Services;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Booth.DockerVolumeBackup.Application.Backups.Notifications
 {

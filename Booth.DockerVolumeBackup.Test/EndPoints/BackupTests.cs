@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -10,10 +9,6 @@ using FluentAssertions.Execution;
 using Booth.DockerVolumeBackup.Test.Fixtures;
 using Booth.DockerVolumeBackup.Application.Backups.Common;
 using Booth.DockerVolumeBackup.WebApi.Dtos;
-using Booth.DockerVolumeBackup.Application.Backups.Queries.GetAllBackups;
-using Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackup;
-using Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupStatus;
-using Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupStatusEvents;
 
 
 namespace Booth.DockerVolumeBackup.Test.EndPoints
@@ -124,7 +119,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             using (var streamReader = new StreamReader(stream))
             {
                 string? line;
-                while ((line = await streamReader.ReadLineAsync(TestContext.Current.CancellationToken)) != null )
+                while ((line = await streamReader.ReadLineAsync(TestContext.Current.CancellationToken)) != null)
                 {
                     if (line.StartsWith("data: "))
                     {

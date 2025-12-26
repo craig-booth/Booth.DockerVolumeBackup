@@ -65,7 +65,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupStatusEv
                     backupUpdateEvent.WaitOne();
 
                     backupStatus = await query.FirstOrDefaultAsync(cancellationToken);
-                    if (backupStatus == null) 
+                    if (backupStatus == null)
                         break;
 
                     if ((backupStatus.Status == StatusDto.Complete) || (backupStatus.Status == StatusDto.Error))
@@ -76,7 +76,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupStatusEv
 
                 notificationService.UnsubscribeToUpdates(onBackupUpdate);
             }
-            yield return backupStatus;           
+            yield return backupStatus;
         }
     }
 }

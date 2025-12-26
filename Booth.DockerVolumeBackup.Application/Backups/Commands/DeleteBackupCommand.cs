@@ -1,7 +1,5 @@
 ﻿using Booth.DockerVolumeBackup.Application.Interfaces;
-using Booth.DockerVolumeBackup.Domain.Models;
 using ErrorOr;
-using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +13,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Commands.DeleteBackup
         {
             var backup = await dataContext.Backups.AsTracking().FirstOrDefaultAsync(x => x.BackupId == request.BackupId);
             if (backup == null)
-                return Error.NotFound();    
+                return Error.NotFound();
 
             // Delete the backup
             if (backup.BackupDirectory != null)

@@ -3,12 +3,9 @@ using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Domain.Models;
 using Booth.DockerVolumeBackup.Test.Fixtures.Mocks;
 using FluentAssertions;
-using FluentAssertions.Common;
-using MediatR;
 using Microsoft.Extensions.Logging;
 using MockQueryable.NSubstitute;
 using NSubstitute;
-using System.Security.Cryptography.Xml;
 using Xunit;
 
 
@@ -27,7 +24,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             var schedules = new[] { schedule };
             var scheduleDataSet = schedules.BuildMockDbSet();
 
-            var today = new DateTimeOffset(DateTime.UtcNow.Date);   
+            var today = new DateTimeOffset(DateTime.UtcNow.Date);
             var backups = new[] {
                 new Backup {BackupId = 1, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-6), BackupDirectory = "/backups/backup1"},
                 new Backup {BackupId = 2, ScheduleId = 1, Status = Status.Complete, StartTime = today.AddDays(-5), BackupDirectory = "/backups/backup2"},
@@ -99,7 +96,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             await cleanupJob.Execute(CancellationToken.None);
 
             backupDataSet.Received(1).Remove(Arg.Any<Backup>());
-            backupDataSet.Received().Remove(Arg.Is<Backup>(x => x.BackupId == 3));      
+            backupDataSet.Received().Remove(Arg.Is<Backup>(x => x.BackupId == 3));
             await mountPointBackupService.Received(1).DeleteDirectoryAsync("/backups/backup3");
         }
 
@@ -149,7 +146,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
         [Fact]
         public async Task CleanupJobHandlesMulitpleSchedules()
         {
-            var schedules = new[] { 
+            var schedules = new[] {
                 new BackupSchedule { ScheduleId = 1, BackupDefinition = new BackupDefinition { KeepLast = 2 } },
                 new BackupSchedule { ScheduleId = 2, BackupDefinition = new BackupDefinition { KeepLast = 0 } },
                 new BackupSchedule { ScheduleId = 3, BackupDefinition = new BackupDefinition { KeepLast = 1 } },

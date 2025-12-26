@@ -1,9 +1,7 @@
 ﻿using Bogus;
-using Bogus.DataSets;
 using Booth.DockerVolumeBackup.Domain.Models;
 using Booth.DockerVolumeBackup.Infrastructure.Docker;
 using System.Data;
-using System.Net.WebSockets;
 
 
 namespace Booth.DockerVolumeBackup.Infrastructure.Database
@@ -15,7 +13,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
         public async Task SeedDatabase()
         {
             var volumes = await dockerClient.Volumes.ListAsync();
-            var volumeNames = volumes.Select(x => x.Name).ToList(); 
+            var volumeNames = volumes.Select(x => x.Name).ToList();
             var schedules = GenerateSchedules(volumeNames);
             var backups = GenerateBackups(schedules);
 
@@ -109,7 +107,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
                     backups.Add(backup);
 
                     scheduledTime = schedule.GetNextRunTime(scheduledTime);
-                }    
+                }
             }
 
             return backups;

@@ -33,7 +33,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Commands
 
                 return true;
             }
-      
+
         }
     }
 }

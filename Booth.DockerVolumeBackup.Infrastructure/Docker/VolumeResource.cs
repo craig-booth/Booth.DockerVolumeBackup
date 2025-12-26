@@ -1,12 +1,5 @@
-﻿using Bogus;
-using Booth.DockerVolumeBackup.Infrastructure.Docker.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using Booth.DockerVolumeBackup.Infrastructure.Docker.Models;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace Booth.DockerVolumeBackup.Infrastructure.Docker
@@ -34,7 +27,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Docker
         public async Task<Volume?> CreateAsync(string name)
         {
             var volumeConfig = new VolumeConfiguration
-            { 
+            {
                 Name = name,
                 Driver = "local"
             };

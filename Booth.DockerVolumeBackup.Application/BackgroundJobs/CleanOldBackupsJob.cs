@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
 {
 
-     internal class CleanOldBackupsJob(IServiceScopeFactory scopeFactory) : IBackgroundJob
-     {       
+    internal class CleanOldBackupsJob(IServiceScopeFactory scopeFactory) : IBackgroundJob
+    {
         public int Id => -1;
 
         public async Task Execute(CancellationToken cancellationToken)
@@ -52,7 +52,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                             logger.LogInformation("Deleting old backup {BackupId} for schedule {ScheduleId}", backup.BackupId, schedule.ScheduleId);
 
                             // Delete the backup
-                            if (backup.BackupDirectory != null) 
+                            if (backup.BackupDirectory != null)
                                 await mountPointBackupService.DeleteDirectoryAsync(backup.BackupDirectory);
 
                             dataContext.Backups.Remove(backup);
@@ -67,6 +67,6 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                 logger.LogInformation("Cleanup of old backups completed successfully");
             }
         }
- 
+
     }
 }

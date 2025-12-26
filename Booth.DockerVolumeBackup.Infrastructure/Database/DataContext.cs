@@ -1,6 +1,4 @@
-﻿using System.Data;
-using System.Reflection;
-using Microsoft.Data.Sqlite;
+﻿using System.Reflection;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 

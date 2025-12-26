@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json;
-using System.Net.Http.Json;
-using System.Text.Json.Nodes;
+﻿using System.Net.Http.Json;
 using Booth.DockerVolumeBackup.Infrastructure.Docker.Models;
 
 
@@ -27,7 +19,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Docker
             if (response != null)
                 return response;
             else
-                return [];      
+                return [];
         }
     }
 }

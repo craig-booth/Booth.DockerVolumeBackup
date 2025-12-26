@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Booth.DockerVolumeBackup.Application.Interfaces
+﻿namespace Booth.DockerVolumeBackup.Application.Interfaces
 {
 
-    public record BackupDirectoryInfo(string Name, DateTime CreationDate);    
+    public record BackupDirectoryInfo(string Name, DateTime CreationDate);
     public record BackupFileInfo(string Name, long Size, DateTime CreationDate);
 
     public interface IMountPointBackupService

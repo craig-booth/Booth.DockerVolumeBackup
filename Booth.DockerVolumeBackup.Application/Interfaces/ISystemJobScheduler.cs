@@ -1,6 +1,4 @@
-﻿using Booth.DockerVolumeBackup.Domain.Models;
-
-namespace Booth.DockerVolumeBackup.Application.Interfaces
+﻿namespace Booth.DockerVolumeBackup.Application.Interfaces
 {
     public interface ISystemJobScheduler
     {

@@ -17,7 +17,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Commands.RunAdhocBackup
     {
         public RunAdhocBackupCommandValidator()
         {
-             RuleFor(x => x.Volumes).NotEmpty().WithMessage("Atleast one volume must be selected.");
+            RuleFor(x => x.Volumes).NotEmpty().WithMessage("Atleast one volume must be selected.");
         }
     }
 
@@ -37,7 +37,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Commands.RunAdhocBackup
             var backupJob = new BackupJob(backup.BackupId, serviceScopeFactory);
             scheduler.QueueJob(backupJob);
 
-            return backup.BackupId; 
+            return backup.BackupId;
         }
     }
 }

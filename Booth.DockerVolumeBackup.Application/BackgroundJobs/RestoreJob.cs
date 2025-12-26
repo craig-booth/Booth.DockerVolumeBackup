@@ -1,6 +1,5 @@
 ﻿using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Domain.Models;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,8 +8,8 @@ using Microsoft.Extensions.Logging;
 namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
 {
 
-     internal class RestoreJob(int volumeBackupId, string volumeName, IServiceScopeFactory scopeFactory) : IBackgroundJob
-     {       
+    internal class RestoreJob(int volumeBackupId, string volumeName, IServiceScopeFactory scopeFactory) : IBackgroundJob
+    {
         public int Id => volumeBackupId;
 
         public async Task Execute(CancellationToken cancellationToken)

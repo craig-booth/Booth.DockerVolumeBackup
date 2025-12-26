@@ -4,13 +4,12 @@ using ErrorOr;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.IO;
 
 namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetVolumeBackupContents
 {
     public record GetVolumeBackupContentsQuery(int VolumeBackupId) : IRequest<ErrorOr<BackupFile>>;
 
-    public record BackupFile (Stream Content, string FileName);
+    public record BackupFile(Stream Content, string FileName);
 
     internal class GetVolumeBackupContentsQueryHandler(IDataContext dataContext, IMountPointBackupService mountPointBackupService) : IRequestHandler<GetVolumeBackupContentsQuery, ErrorOr<BackupFile>>
     {
@@ -19,7 +18,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetVolumeBackupCo
             var query = dataContext.Backups
                 .Include(x => x.Volumes)
                 .Where(x => x.Volumes.Any(v => v.BackupVolumeId == request.VolumeBackupId));
-                
+
             var backup = await query.FirstOrDefaultAsync(cancellationToken);
             if (backup == null)
                 return Error.NotFound();

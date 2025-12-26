@@ -8,9 +8,6 @@ using Booth.DockerVolumeBackup.Application.Volumes.Queries.GetAllVolumes;
 using Booth.DockerVolumeBackup.Application.Volumes.Queries.GetVolumeBackups;
 using Booth.DockerVolumeBackup.Test.Fixtures;
 using Booth.DockerVolumeBackup.Application.Backups.Common;
-using System.Net;
-using Bogus.DataSets;
-using System.Net.Http;
 
 
 namespace Booth.DockerVolumeBackup.Test.EndPoints

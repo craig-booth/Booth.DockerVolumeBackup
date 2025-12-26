@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-
-namespace Booth.DockerVolumeBackup.Domain.Models
+﻿namespace Booth.DockerVolumeBackup.Domain.Models
 {
     public class BackupSchedule
     {

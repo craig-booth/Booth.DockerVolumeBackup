@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Booth.DockerVolumeBackup.Application.Interfaces;
-using Booth.DockerVolumeBackup.Domain.Events;
+﻿using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Infrastructure.Docker;
 
 namespace Booth.DockerVolumeBackup.Infrastructure.Services
@@ -38,7 +32,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
                         foreach (var mount in service.Spec.TaskTemplate.ContainerSpec.Mounts)
                         {
                             if (volumes.Any(x => x.Name == mount.Source))
-                            {  
+                            {
                                 services.Add(new Service { Id = serviceId, Replicas = replicas ?? 0 });
                                 break;
                             }
@@ -75,7 +69,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
         public async Task<List<string>> GetDependentVolumes()
         {
             if (_DependentVolumes == null)
-            { 
+            {
                 var containers = await dockerClient.Containers.ListAsync();
                 if (containers == null)
                     return new List<string>();

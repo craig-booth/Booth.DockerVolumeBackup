@@ -1,6 +1,4 @@
 ﻿using Xunit;
-using FluentAssertions;
-using FluentAssertions.Execution;
 using NSubstitute;
 
 using Booth.DockerVolumeBackup.Application.BackgroundJobs;
@@ -15,7 +13,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
 {
     public class ScheduledBackupJobTests
     {
-       
+
         [Fact]
         public async Task JobQueuesBackupWhenExecuted()
         {
@@ -37,7 +35,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             var scopeFactory = new ServiceScopeFactoryMock();
             scopeFactory.RegisterService<IDataContext>(dataContext);
             scopeFactory.RegisterService<IScheduleUtils>(scheduleUtils);
-            scopeFactory.RegisterService<IBackupScheduler>(scheduler);       
+            scopeFactory.RegisterService<IBackupScheduler>(scheduler);
 
             var job = new ScheduledBackupJob(scheduleId, scopeFactory);
             await job.Execute(CancellationToken.None);

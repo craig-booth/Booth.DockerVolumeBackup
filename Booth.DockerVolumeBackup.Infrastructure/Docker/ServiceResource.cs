@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json;
+﻿using System.Text;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
 using Booth.DockerVolumeBackup.Infrastructure.Docker.Models;
@@ -27,7 +21,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Docker
             if (response != null)
                 return response;
             else
-                return [];      
+                return [];
         }
 
         public async Task ScaleAsync(string id, int scale)
@@ -41,15 +35,15 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Docker
                 return;
 
             var version = serviceConfig["Version"]?["Index"];
-            if (version == null) 
+            if (version == null)
                 return;
 
             var specJson = serviceConfig["Spec"];
-            if (specJson == null) 
+            if (specJson == null)
                 return;
 
             var replicasNode = specJson["Mode"]?["Replicated"]?["Replicas"];
-            if (replicasNode == null) 
+            if (replicasNode == null)
                 return;
             replicasNode.ReplaceWith(scale);
 

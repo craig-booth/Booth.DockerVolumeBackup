@@ -29,7 +29,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Queries.GetAllSchedules
                     Enabled = x.Enabled
                 });
 
-            var schedules = await query.ToListAsync();        
+            var schedules = await query.ToListAsync();
 
             return schedules;
 

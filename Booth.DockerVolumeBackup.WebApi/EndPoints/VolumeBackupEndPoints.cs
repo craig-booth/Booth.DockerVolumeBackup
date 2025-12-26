@@ -1,7 +1,4 @@
-﻿using System.Text.Json;
-using Microsoft.Extensions.Options;
-
-using MediatR;
+﻿using MediatR;
 
 using Booth.DockerVolumeBackup.WebApi.Extensions;
 using Booth.DockerVolumeBackup.Application.Backups.Queries.GetVolumeBackupContents;

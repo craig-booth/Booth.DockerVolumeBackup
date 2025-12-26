@@ -22,16 +22,16 @@ namespace Booth.DockerVolumeBackup.Application.Volumes.Queries.GetVolume
         public async Task<ErrorOr<VolumeDto>> Handle(GetVolumeQuery request, CancellationToken cancellationToken)
         {
             var volumes = await dockerService.GetVolumesAsync();
-            
+
             var volume = volumes.FirstOrDefault(x => x.Name == request.Name);
 
-            if (volume == null) 
+            if (volume == null)
                 return Error.NotFound();
 
             return new VolumeDto { Name = volume.Name, Size = volume.Size };
         }
 
-        
+
     }
 
 }

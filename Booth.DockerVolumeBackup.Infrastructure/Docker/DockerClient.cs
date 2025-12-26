@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
-using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Booth.DockerVolumeBackup.Infrastructure.Docker
+﻿namespace Booth.DockerVolumeBackup.Infrastructure.Docker
 {
 
     internal class DockerClient : IDockerClient

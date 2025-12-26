@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using NSubstitute;
+﻿using NSubstitute;
 
 using Booth.DockerVolumeBackup.Infrastructure.Docker;
 using Booth.DockerVolumeBackup.Test.Fixtures.Factories;
 
 namespace Booth.DockerVolumeBackup.Test.Fixtures.Mocks
 {
-    internal class DockerFactoryMock: IDockerClientFactory
+    internal class DockerFactoryMock : IDockerClientFactory
     {
         private IDockerClient _DockerClient;
         public DockerFactoryMock()

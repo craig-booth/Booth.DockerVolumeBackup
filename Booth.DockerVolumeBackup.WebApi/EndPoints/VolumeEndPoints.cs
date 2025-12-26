@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using ErrorOr;
 
 
 using Booth.DockerVolumeBackup.Application.Volumes.Queries.GetVolume;
@@ -13,7 +12,7 @@ namespace Booth.DockerVolumeBackup.WebApi.EndPoints
     public static class VolumeEndPoints
     {
 
-        public static void AddVolumeEndPoints(this WebApplication app) 
+        public static void AddVolumeEndPoints(this WebApplication app)
         {
             app.MapGet("api/volumes", async (IMediator mediator) =>
             {

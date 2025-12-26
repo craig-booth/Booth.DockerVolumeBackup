@@ -1,6 +1,5 @@
 ﻿using Booth.DockerVolumeBackup.Application.Backups.Common;
 using Booth.DockerVolumeBackup.Application.Interfaces;
-using Booth.DockerVolumeBackup.Domain.Models;
 using ErrorOr;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +48,8 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackup
                     EndTime = x.EndTime,
                     Status = (StatusDto)x.Status,
                     BackupDirectory = x.BackupDirectory ?? string.Empty,
-                    Volumes = x.Volumes.Select(x => new BackupVolumeDto() {
+                    Volumes = x.Volumes.Select(x => new BackupVolumeDto()
+                    {
                         BackupVolumeId = x.BackupVolumeId,
                         Volume = x.Volume,
                         Status = (StatusDto)x.Status,

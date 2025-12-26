@@ -17,7 +17,7 @@ namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetAllBackups
         public int? ScheduleId { get; set; }
         public string ScheduleName { get; set; } = string.Empty;
         public StatusDto Status { get; set; }
-        public DateTimeOffset? BackupTime { get; set;}
+        public DateTimeOffset? BackupTime { get; set; }
     }
 
     internal class GetAllBackupsQueryHandler(IDataContext dataContext) : IRequestHandler<GetAllBackupsQuery, ErrorOr<IReadOnlyList<BackupDto>>>

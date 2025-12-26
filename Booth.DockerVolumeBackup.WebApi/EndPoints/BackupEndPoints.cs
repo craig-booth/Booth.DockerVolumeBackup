@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using System.ComponentModel;
 using Microsoft.Extensions.Options;
 
 using MediatR;
@@ -46,7 +45,7 @@ namespace Booth.DockerVolumeBackup.WebApi.EndPoints
                 return result.Match(value => Results.Ok(value), errors => ErrorResult.Error(errors));
             });
 
-            app.MapGet("api/backups/{id:int}/statusevents", async(int id, HttpContext context, CancellationToken cancellationToken, IMediator mediator, IBackupNotificationService notificationService, IOptions<Microsoft.AspNetCore.Http.Json.JsonOptions> serializeOptions) =>
+            app.MapGet("api/backups/{id:int}/statusevents", async (int id, HttpContext context, CancellationToken cancellationToken, IMediator mediator, IBackupNotificationService notificationService, IOptions<Microsoft.AspNetCore.Http.Json.JsonOptions> serializeOptions) =>
             {
                 var result = await mediator.Send(new GetBackupStatusQuery(id));
                 if (result.IsError)

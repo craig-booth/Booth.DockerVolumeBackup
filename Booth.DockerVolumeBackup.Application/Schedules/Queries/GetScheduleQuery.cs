@@ -62,7 +62,7 @@ namespace Booth.DockerVolumeBackup.Application.Schedules.Queries.GetSchedule
 
 
             var scheduleDto = await query.SingleOrDefaultAsync();
-            return scheduleDto != null? scheduleDto: Error.NotFound();
+            return scheduleDto != null ? scheduleDto : Error.NotFound();
         }
     }
 }

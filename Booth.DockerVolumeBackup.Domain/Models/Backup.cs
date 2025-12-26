@@ -1,8 +1,4 @@
 ﻿using Booth.DockerVolumeBackup.Domain.Events;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Diagnostics;
-using System.Net.NetworkInformation;
 
 namespace Booth.DockerVolumeBackup.Domain.Models
 {
@@ -28,7 +24,7 @@ namespace Booth.DockerVolumeBackup.Domain.Models
         {
             Status = Status.Active;
             BackupDirectory = backupDirectory;
-            StartTime = DateTimeOffset.Now;       
+            StartTime = DateTimeOffset.Now;
             EndTime = null;
 
             OnBackupStatusChanged();
@@ -93,7 +89,7 @@ namespace Booth.DockerVolumeBackup.Domain.Models
         public Status Status { get; set; }
         public DateTimeOffset? StartTime { get; set; }
         public DateTimeOffset? EndTime { get; set; }
-        public string? BackupFile { get; set; }    
+        public string? BackupFile { get; set; }
         public long? BackupSize { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace Booth.DockerVolumeBackup.Application.Volumes.Queries.GetAllVolumes
         public async Task<ErrorOr<IReadOnlyList<VolumeDto>>> Handle(GetAllVolumesQuery request, CancellationToken cancellationToken)
         {
             var volumes = await dockerService.GetVolumesAsync();
-            
+
             // Exclude volumes used by this container
             var dependentVolumes = await dockerService.GetDependentVolumes();
             volumes.RemoveAll(x => dependentVolumes.Contains(x.Name));
@@ -57,7 +57,7 @@ namespace Booth.DockerVolumeBackup.Application.Volumes.Queries.GetAllVolumes
             return queryResult;
         }
 
-        
+
     }
 
 }

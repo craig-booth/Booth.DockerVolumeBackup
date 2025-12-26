@@ -6,7 +6,6 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 
 namespace Booth.DockerVolumeBackup.Application.Backups.Commands.RestoreVolumeBackup

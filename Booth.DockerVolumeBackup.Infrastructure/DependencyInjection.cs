@@ -11,7 +11,6 @@ using Booth.DockerVolumeBackup.Infrastructure.Docker;
 using Booth.DockerVolumeBackup.Infrastructure.Database;
 using Booth.DockerVolumeBackup.Infrastructure.Services;
 using Booth.DockerVolumeBackup.Infrastructure.Scheduler;
-using System.Runtime.CompilerServices;
 using Coravel.Scheduling.Schedule.Interfaces;
 using Coravel.Scheduling.Schedule;
 
@@ -30,7 +29,7 @@ namespace Booth.DockerVolumeBackup.Application
     {
 
         public static IHostApplicationBuilder AddInfrastructure(this IHostApplicationBuilder builder)
-        {      
+        {
             builder.Services.AddDbContext<DataContext>();
             builder.Services.AddScoped<IDataContext>(x => x.GetRequiredService<DataContext>());
             builder.Services.AddSingleton<IDockerClientFactory, DockerClientFactory>();

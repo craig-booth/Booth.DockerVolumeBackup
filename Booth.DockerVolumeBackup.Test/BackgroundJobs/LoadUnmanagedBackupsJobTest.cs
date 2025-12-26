@@ -1,13 +1,8 @@
 ﻿using Booth.DockerVolumeBackup.Application.BackgroundJobs;
-using Booth.DockerVolumeBackup.Application.Backups.Queries.GetAllBackups;
 using Booth.DockerVolumeBackup.Application.Interfaces;
 using Booth.DockerVolumeBackup.Domain.Models;
 using Booth.DockerVolumeBackup.Test.Fixtures.Mocks;
-using FluentAssertions;
-using FluentAssertions.Execution;
-using MediatR;
 using Microsoft.Extensions.Logging;
-using MockQueryable;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using Xunit;
@@ -52,9 +47,9 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
 
             dataContext.Backups.Received(2).Add(Arg.Any<Backup>());
             dataContext.Backups.Received(1).Add(Arg.Is<Backup>(x => x.BackupDirectory == "/backup/unmanaged-backup-1"));
-            dataContext.Backups.Received(1).Add(Arg.Is<Backup>(x => x.BackupDirectory == "/backup/unmanaged-backup-2")); 
+            dataContext.Backups.Received(1).Add(Arg.Is<Backup>(x => x.BackupDirectory == "/backup/unmanaged-backup-2"));
             await dataContext.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
-            
+
         }
 
         [Fact]
@@ -134,7 +129,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                     new BackupFileInfo("volume1.tar.gz", 2000, new DateTime(2010, 01, 02)),
                     new BackupFileInfo("volume2.tar.gz", 3000, new DateTime(2010, 01, 03))
                 });
-       
+
             var logger = Substitute.For<ILogger<LoadUnmanagedBackupsJob>>();
 
             var scopeFactory = new ServiceScopeFactoryMock();

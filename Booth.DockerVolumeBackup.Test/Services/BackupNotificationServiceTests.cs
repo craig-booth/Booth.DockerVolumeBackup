@@ -1,7 +1,5 @@
 ﻿using Xunit;
 using FluentAssertions;
-using FluentAssertions.Execution;
-using MediatR;
 
 using Booth.DockerVolumeBackup.Domain.Events;
 using Booth.DockerVolumeBackup.Domain.Models;
@@ -10,7 +8,7 @@ using Booth.DockerVolumeBackup.Application.Services;
 
 namespace Booth.DockerVolumeBackup.Test.Services
 {
-    public  class BackupNotificationServiceTests
+    public class BackupNotificationServiceTests
     {
 
 
@@ -69,7 +67,7 @@ namespace Booth.DockerVolumeBackup.Test.Services
 
         [Fact]
         public void NoNotificationsIfNotSubscribed()
-        {      
+        {
             var notificationService = new BackupNotificationService();
             var handler = new BackupStatusChangedHandler(notificationService);
 

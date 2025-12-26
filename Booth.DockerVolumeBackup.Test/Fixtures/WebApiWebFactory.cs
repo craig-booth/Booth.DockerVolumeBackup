@@ -11,7 +11,6 @@ using Booth.DockerVolumeBackup.Infrastructure.Docker;
 using Booth.DockerVolumeBackup.Test.Fixtures.Mocks;
 using Booth.DockerVolumeBackup.Application;
 using Booth.DockerVolumeBackup.Application.Interfaces;
-using System.Data;
 
 namespace Booth.DockerVolumeBackup.Test.Fixtures
 {
@@ -19,7 +18,7 @@ namespace Booth.DockerVolumeBackup.Test.Fixtures
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
- 
+
             builder.ConfigureTestServices(services =>
             {
                 services.Configure<AppConfig>(x =>

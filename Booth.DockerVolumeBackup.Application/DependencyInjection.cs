@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,7 +51,7 @@ namespace Booth.DockerVolumeBackup.Application
                 {
                     var scheduledJob = new ScheduledBackupJob(schedule.ScheduleId, scopeFactory);
                     scheduler.ScheduleBackup(schedule, scheduledJob);
-                } 
+                }
             }
         }
 

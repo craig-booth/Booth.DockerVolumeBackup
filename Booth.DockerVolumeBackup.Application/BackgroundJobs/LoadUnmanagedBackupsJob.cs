@@ -8,8 +8,8 @@ using Microsoft.Extensions.Logging;
 namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
 {
 
-     internal class LoadUnmanagedBackupsJob(IServiceScopeFactory scopeFactory) : IBackgroundJob
-     {       
+    internal class LoadUnmanagedBackupsJob(IServiceScopeFactory scopeFactory) : IBackgroundJob
+    {
         public int Id => -1;
 
         public async Task Execute(CancellationToken cancellationToken)
@@ -26,7 +26,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                     .ToListAsync(cancellationToken);
 
                 logger.LogInformation("Searching for unmanaged backups");
-            
+
                 cancellationToken.ThrowIfCancellationRequested();
 
                 // Get unmanaged backups
@@ -35,7 +35,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
 
                 foreach (var backupDirectory in backupDirectories)
                 {
-                    var backupPath ="/backup/" + backupDirectory.Name;
+                    var backupPath = "/backup/" + backupDirectory.Name;
 
                     // Only include unmanaged backups that do not have the same name as an existing backup
                     if (!allBackups.Any(x => x.BackupDirectory == backupPath))

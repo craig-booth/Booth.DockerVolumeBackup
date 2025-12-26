@@ -1,7 +1,4 @@
-﻿using System;
-
-using MediatR;
-using ErrorOr;
+﻿using MediatR;
 
 namespace Booth.DockerVolumeBackup.Application.Backups.Queries.GetBackupLog
 {
