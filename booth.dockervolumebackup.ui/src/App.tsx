@@ -4,6 +4,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import './App.css'
 
+import { Toaster } from '@/components/Toaster.tsx';
 import Layout from '@/layout/Layout.tsx';
 import BackupRoutes from '@/pages/backups/BackupRoutes.tsx';
 import VolumeRoutes from '@/pages/volumes/VolumeRoutes.tsx';
@@ -35,6 +36,7 @@ function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <RouterProvider router={router} />
+            <Toaster />
             <ReactQueryDevtools initialIsOpen />
         </QueryClientProvider>
     )

@@ -1,13 +1,13 @@
 import { useState, useMemo } from 'react';
 import { Flex, Box, Button, TextField, Badge } from '@radix-ui/themes';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MagnifyingGlassIcon, Cross2Icon } from '@radix-ui/react-icons';
-import { QueuedBackupToast } from '@/components/QueuedBackupToast';
 import { DataTable, DataTableColumn } from '@/components/DataTable';
 import { Volume } from '@/models/Volume';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useApi } from '@/api/api';
 import { formatStorageSize } from '@/utils/Formatting';
+import { useToast } from '@/utils/Toast';
 
 
 const columns: DataTableColumn<Volume>[] = [
@@ -37,9 +37,8 @@ function Volumes() {
 	const [filter, setFilter] = useState('');
 	const [selection, setSelection] = useState<Set<string|number>>(new Set()); 
 	const [backupRequested, setBackupRequested] = useState(false); 
-	const [backupId, setBackupId] = useState(0); 
-	const [showToast, setShowToast] = useState(false);
-
+	const navigate = useNavigate();
+	const { showToast } = useToast();
 	const { getVolumes, backupVolumes } = useApi();
 
 	const { isPending, isError, data: volumes } = useQuery({
@@ -54,9 +53,10 @@ function Volumes() {
 			return backupVolumes({ volumes: requestedVolumes });
 		},
 		onSuccess: (data: number) => {
+			const backupId = data;
+
 			setBackupRequested(false);
-			setBackupId(data);
-			setShowToast(true);
+			showToast({ type: 'info', title: 'Backup Queued', description: 'Backup has been queued', actions: [{ label: 'View', action: () => { navigate('/backups/' + backupId) } }] });
 		}
 	});
 
@@ -83,7 +83,6 @@ function Volumes() {
 
 	return (
 		<>
-			<QueuedBackupToast backupId={backupId} open={showToast} onOpenChange={setShowToast} />
 			<Flex direction="row" justify="end" gap="5" py="20px">
 				<Box width="300px">
 					<TextField.Root value={filter} onChange={(e) => filterChanged(e.target.value)} placeholder="Search...">
