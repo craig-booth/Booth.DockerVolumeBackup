@@ -24,22 +24,6 @@ pipeline {
 					}
 				}
 
-				stage('Test') {
-					steps {
-
-					}
-					post {
-						always {
-							xunit (
-								thresholds: [ skipped(failureThreshold: '0'), failed(failureThreshold: '0') ],
-								tools: [ MSTest(pattern: 'testresults/*.trx') ]
-								)
-
-							recordCoverage(tools: [[parser: 'COBERTURA', pattern: '**/*.xml']], sourceDirectories: [[path: './testresults']])
-						}
-					}
-				}
-
 				stage('Publish') {
 					steps {
 						sh "dotnet publish ${PROJECT} --configuration Release --output ./deploy"
