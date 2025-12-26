@@ -24,6 +24,10 @@ pipeline {
 					}
 				}
 
+				stage('Test') {
+		
+				}
+
 				stage('Publish') {
 					steps {
 						sh "dotnet publish ${PROJECT} --configuration Release --output ./deploy"
