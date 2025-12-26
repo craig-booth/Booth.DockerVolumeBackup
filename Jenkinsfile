@@ -25,7 +25,9 @@ pipeline {
 				}
 
 				stage('Test') {
-		 
+					steps {
+						sh "dotnet test ${TEST_PROJECT} --configuration Release --logger trx  --collect "XPlat Code Coverage" --results-directory ./testresults"
+					}
 				}
 
 				stage('Publish') {
