@@ -4,7 +4,7 @@ pipeline {
 
 	environment {
 		PROJECT           = './Booth.DockerVolumeBackup.WebApi/Booth.DockerVolumeBackup.WebApi.csproj'
-		TEST_PROJECT      = './Booth.DockerVolumeBackup.WebApi/Booth.DockerVolumeBackup.Test.csproj'
+		TEST_PROJECT      = './Booth.DockerVolumeBackup.Test/Booth.DockerVolumeBackup.Test.csproj'
 		PORTAINER_WEBHOOK = credentials('dockervolumebackup_webhook')
     }
 
