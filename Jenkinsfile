@@ -9,12 +9,6 @@ pipeline {
     }
 
     stages {
-
-		stage('Clear Workspace') {
-			steps {
-				cleanWs()
-			}
-		}
 					
 		stage('Build') {
 			agent { 
@@ -33,6 +27,7 @@ pipeline {
 
 				stage('Test') {
 					steps {
+						sh "rm -rv ./testresults"
 						sh "dotnet test ${TEST_PROJECT} --configuration Release --logger trx  --collect \"XPlat Code Coverage\" --results-directory ./testresults"
 					}
 					post {
