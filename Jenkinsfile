@@ -9,6 +9,11 @@ pipeline {
     }
 
     stages {
+
+		stage('Clear Workspace') {
+			cleanWs()
+			}
+					
 		stage('Build') {
 			agent { 
 				dockerfile { 
