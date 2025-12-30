@@ -51,12 +51,20 @@ pipeline {
 
 		}
 		
-		stage('Deploy') {
+		stage('Create Image') {
 			steps {
 				script {
-					def dockerImage = docker.build("craigbooth/dockervolumebackup")
-					httpRequest httpMode: 'POST', responseHandle: 'NONE', url: "${PORTAINER_WEBHOOK}", wrapAsMultipart: false
+					def dockerImage = docker.build("craigbooth/dockervolumebackup")		
+					docker.withRegistry(credentialsId: 'DockerHub') {
+						dockerImage.push()
+					}
 				}
+            }
+		}
+
+		stage('Deploy') {
+			steps {
+				httpRequest httpMode: 'POST', responseHandle: 'NONE', url: "${PORTAINER_WEBHOOK}", wrapAsMultipart: false
             }
 		}
     }
