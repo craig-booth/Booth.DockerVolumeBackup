@@ -54,8 +54,8 @@ pipeline {
 		stage('Create Image') {
 			steps {
 				script {
-					def dockerImage = docker.build("craigbooth/dockervolumebackup")		
-					docker.withRegistry(credentialsId: 'DockerHub') {
+					def dockerImage = docker.build("craigbooth/dockervolumebackup")			
+					withDockerRegistry(credentialsId: 'DockerHub') {
 						dockerImage.push()
 					}
 				}
