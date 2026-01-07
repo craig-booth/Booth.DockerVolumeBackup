@@ -28,7 +28,7 @@ pipeline {
 				stage('Test') {
 					steps {
 						sh "rm -rf ./testresults"
-						sh "dotnet test ${TEST_PROJECT} --configuration Release --logger trx  --collect \"XPlat Code Coverage\" --results-directory ./testresults"
+						sh "dotnet test ${TEST_PROJECT} --configuration Release --logger trx  --collect \"XPlat Code Coverage\" --settings ./.runsettings --results-directory ./testresults"
 					}
 					post {
 						always {
