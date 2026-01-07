@@ -4,10 +4,10 @@
     {
         Task<List<Volume>> GetVolumesAsync();
         Task<Volume?> CreateVolumeAsync(string name);
-        Task<List<string>> GetDependentVolumes();
-        Task<List<Service>> GetDependentServices(IEnumerable<Volume> volumes);
-        Task StopServices(IEnumerable<Service> services, CancellationToken stoppingToken);
-        Task StartServices(IEnumerable<Service> services, CancellationToken stoppingToken);
+        Task<List<string>> GetDependentVolumesAsync();
+        Task<List<Service>> GetDependentServicesAsync(IEnumerable<Volume> volumes);
+        Task StopServicesAsync(IEnumerable<Service> services, CancellationToken stoppingToken);
+        Task StartServicesAsync(IEnumerable<Service> services, CancellationToken stoppingToken);
     }
 
     public class Volume

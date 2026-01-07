@@ -25,13 +25,38 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             var volumes = await httpClient.GetFromJsonAsync<IReadOnlyList<VolumeDto>>("api/volumes", TestContext.Current.CancellationToken);
 
             volumes.Should().NotBeNull();
-            volumes.Should().HaveCount(10);
+            volumes.Should().HaveCount(6);
             using (var scope = new AssertionScope())
             {
-                volumes?[0].Name.Should().NotBeEmpty();
-                volumes?[0].Size.Should().BeGreaterThan(0);
-                volumes?[0].LastBackup.Should().BeBefore(DateTimeOffset.UtcNow);
+                volumes?[0].Name.Should().Be("service2_volume1");
+                volumes?[0].Size.Should().Be(635295);
+                volumes?[0].LastBackup?.Date.Should().BeWithin(TimeSpan.FromDays(7)).Before(DateTime.UtcNow);
             }
+        }
+
+        [Fact]
+        public async Task GetVolume()
+        {
+            var httpClient = fixture.CreateClient();
+
+            var volume = await httpClient.GetFromJsonAsync<VolumeDto>("api/volumes/service2_volume1", TestContext.Current.CancellationToken);
+
+            volume.Should().NotBeNull();
+            using (var scope = new AssertionScope())
+            {
+                volume.Name.Should().Be("service2_volume1");
+                volume.Size.Should().Be(635295);
+                volume.LastBackup?.Date.Should().BeWithin(TimeSpan.FromDays(7)).Before(DateTime.UtcNow);
+            }
+        }
+
+        [Fact]
+        public async Task GetVolumeNotFound()
+        {
+            var httpClient = fixture.CreateClient();
+
+            var response = await httpClient.GetAsync("api/volumes/xxxxxx", TestContext.Current.CancellationToken);
+            response.Should().Be404NotFound();
         }
 
         [Fact]
@@ -39,7 +64,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
         {
             var httpClient = fixture.CreateClient();
 
-            var volumeName = "Jakob_Schuppe";
+            var volumeName = "service2_volume1";
             var volumeBackups = await httpClient.GetFromJsonAsync<IReadOnlyList<VolumeBackupDto>>($"api/volumes/{volumeName}/backups", fixture.JsonSerializerOptions, TestContext.Current.CancellationToken);
 
             volumeBackups.Should().NotBeNull();

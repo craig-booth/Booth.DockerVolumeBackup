@@ -45,7 +45,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
 
                 if (backup.BackupDirectory == null || volume.BackupFile == null)
                 {
-                    logger.LogError("Cannot restore, the backup was not completed successfully");
+                    logger.LogError("Cannot restore, the backup was not found");
                     return;
                 }
 

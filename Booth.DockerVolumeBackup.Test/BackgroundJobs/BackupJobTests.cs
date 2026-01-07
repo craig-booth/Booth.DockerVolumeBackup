@@ -49,7 +49,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 new Service { Id = "Service2", Replicas = 1 },
                 new Service { Id = "Service3", Replicas = 1 },
             };
-            dockerService.GetDependentServices(Arg.Any<IEnumerable<Volume>>()).Returns(services);
+            dockerService.GetDependentServicesAsync(Arg.Any<IEnumerable<Volume>>()).Returns(services);
 
             var mountPointBackupService = Substitute.For<IMountPointBackupService>();
             mountPointBackupService.CreateDirectoryAsync(Arg.Any<string>()).Returns(true);
@@ -69,13 +69,13 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             await backupJob.Execute(CancellationToken.None);
 
             // Check services are called to perform backup
-            await dockerService.Received().StopServices(Arg.Is<IEnumerable<Service>>(x => x.Count() == 3), Arg.Any<CancellationToken>());
+            await dockerService.Received().StopServicesAsync(Arg.Is<IEnumerable<Service>>(x => x.Count() == 3), Arg.Any<CancellationToken>());
 
             await mountPointBackupService.Received().CreateDirectoryAsync($"/backup/{DateTime.Now.ToString("yyyy-MM-dd")}_{backup.BackupId}");
             await mountPointBackupService.Received().BackupDirectoryAsync(volumes[0].MountPoint, Arg.Any<string>());
             await mountPointBackupService.Received().BackupDirectoryAsync(volumes[1].MountPoint, Arg.Any<string>());
 
-            await dockerService.Received().StartServices(Arg.Is<IEnumerable<Service>>(x => x.Count() == 3), Arg.Any<CancellationToken>());
+            await dockerService.Received().StartServicesAsync(Arg.Is<IEnumerable<Service>>(x => x.Count() == 3), Arg.Any<CancellationToken>());
 
             backup.Status.Should().Be(Status.Complete);
             backup.Volumes.Should().AllSatisfy(x => x.Status.Should().Be(Status.Complete));
@@ -117,7 +117,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 new Service { Id = "Service2", Replicas = 1 },
                 new Service { Id = "Service3", Replicas = 1 },
             };
-            dockerService.GetDependentServices(Arg.Any<IEnumerable<Volume>>()).Returns(services);
+            dockerService.GetDependentServicesAsync(Arg.Any<IEnumerable<Volume>>()).Returns(services);
 
             var mountPointBackupService = Substitute.For<IMountPointBackupService>();
             mountPointBackupService.CreateDirectoryAsync(Arg.Any<string>()).Returns(false); // Simulate failure to create directory
@@ -172,7 +172,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
                 new Service { Id = "Service2", Replicas = 1 },
                 new Service { Id = "Service3", Replicas = 1 },
             };
-            dockerService.GetDependentServices(Arg.Any<IEnumerable<Volume>>()).Returns(services);
+            dockerService.GetDependentServicesAsync(Arg.Any<IEnumerable<Volume>>()).Returns(services);
 
             var mountPointBackupService = Substitute.For<IMountPointBackupService>();
             mountPointBackupService.CreateDirectoryAsync(Arg.Any<string>()).Returns(true);
@@ -199,7 +199,7 @@ namespace Booth.DockerVolumeBackup.Test.BackgroundJobs
             backup.Volumes[1].BackupSize.Should().Be(0);
 
             // Check services are restarted
-            await dockerService.Received().StartServices(Arg.Is<IEnumerable<Service>>(x => x.Count() == 3), Arg.Any<CancellationToken>());
+            await dockerService.Received().StartServicesAsync(Arg.Is<IEnumerable<Service>>(x => x.Count() == 3), Arg.Any<CancellationToken>());
         }
 
     }

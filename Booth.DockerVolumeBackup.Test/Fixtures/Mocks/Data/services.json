@@ -1,0 +1,573 @@
+[
+    {
+        "ID": "1ol06jd41lyrl8auilb947gn7",
+        "Version": {
+            "Index": 6449037
+        },
+        "CreatedAt": "2024-06-23T03:47:51.284226205Z",
+        "UpdatedAt": "2026-01-03T17:32:13.491441368Z",
+        "Spec": {
+            "Name": "service1",
+            "Labels": {
+                "com.docker.stack.image": "app1:latest",
+                "com.docker.stack.namespace": "app1"
+            },
+            "TaskTemplate": {
+                "ContainerSpec": {
+                    "Image": "app1:latest@sha256:67a8aaedcfd6989f3030b937a6a07007310b1dfc7ee8df16d2cbfa48d1c1158c",
+                    "Hostname": "app1",
+                    "Mounts": [ ],
+                    "Isolation": "default"
+                },
+                "Resources": {},
+                "RestartPolicy": {
+                    "Condition": "any",
+                    "MaxAttempts": 0
+                },
+                "Placement": {
+                    "Platforms": [
+                        {
+                            "Architecture": "amd64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "arm64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        }
+                    ]
+                },
+                "Networks": [
+                    {
+                        "Target": "jf19o7gzrvkwh729bp4xaa0re",
+                        "Aliases": [
+                            "app1"
+                        ]
+                    }
+                ],
+                "ForceUpdate": 0,
+                "Runtime": "container"
+            },
+            "Mode": {
+                "Replicated": {
+                    "Replicas": 2
+                }
+            },
+            "EndpointSpec": {
+                "Mode": "vip"
+            }
+        },
+        "Endpoint": {
+            "Spec": {
+                "Mode": "vip"
+            },
+            "VirtualIPs": [
+                {
+                    "NetworkID": "jf19o7gzrvkwh729bp4xaa0re",
+                    "Addr": "10.0.1.59/24"
+                }
+            ]
+        }
+    },
+    {
+        "ID": "9auv05nnkq0avccax9q1kxhrh",
+        "Version": {
+            "Index": 6449040
+        },
+        "CreatedAt": "2024-09-01T02:00:07.650075762Z",
+        "UpdatedAt": "2026-01-03T17:32:13.49672802Z",
+        "Spec": {
+            "Name": "service2",
+            "Labels": {
+                "com.docker.stack.image": "app2:latest",
+                "com.docker.stack.namespace": "app2"
+            },
+            "TaskTemplate": {
+                "ContainerSpec": {
+                    "Image": "app2:latest@sha256:67622638cd88dbfcfba40159bc652ecf0aea0e032f8a3c7e3134ae7c037b9910",
+                    "Labels": {
+                        "com.docker.stack.namespace": "app2"
+                    },
+                    "Hostname": "app2",
+                    "Mounts": [
+                        {
+                            "Type": "volume",
+                            "Source": "service2_volume1",
+                            "Target": "/data"
+                        }
+                    ],
+                    "Isolation": "default"
+                },
+                "Resources": {},
+                "RestartPolicy": {
+                    "Condition": "any",
+                    "MaxAttempts": 0
+                },
+                "Placement": {
+                    "Platforms": [
+                        {
+                            "Architecture": "amd64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "arm64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "ppc64le",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "riscv64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "s390x",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        }
+                    ]
+                },
+                "Networks": [
+                    {
+                        "Target": "jf19o7gzrvkwh729bp4xaa0re",
+                        "Aliases": [
+                            "app2"
+                        ]
+                    }
+                ],
+                "ForceUpdate": 0,
+                "Runtime": "container"
+            },
+            "Mode": {
+                "Replicated": {
+                    "Replicas": 1
+                }
+            },
+            "EndpointSpec": {
+                "Mode": "vip"
+            }
+        }
+    },
+    {
+        "ID": "20l36jd41lyrl8asdlb947jk3gn7",
+        "Version": {
+            "Index": 6449037
+        },
+        "CreatedAt": "2024-06-23T03:47:51.284226205Z",
+        "UpdatedAt": "2026-01-03T17:32:13.491441368Z",
+        "Spec": {
+            "Name": "service3",
+            "Labels": {
+                "com.docker.stack.image": "app3:latest",
+                "com.docker.stack.namespace": "app3"
+            },
+            "TaskTemplate": {
+                "ContainerSpec": {
+                    "Image": "app3:latest@sha256:67a8aaedcfd6989f3030b937a6a07007310b1dfc7ee8df16d2cbfa48d1c1158c",
+                    "Hostname": "app3",
+                    "Mounts": [
+                        {
+                            "Type": "volume",
+                            "Source": "service3_volume1",
+                            "Target": "/data"
+                        },
+						{
+                            "Type": "volume",
+                            "Source": "service3_volume2",
+                            "Target": "/config"
+                        }
+                    ],
+                    "Isolation": "default"
+                },
+                "Resources": {},
+                "RestartPolicy": {
+                    "Condition": "any",
+                    "MaxAttempts": 0
+                },
+                "Placement": {
+                    "Platforms": [
+                        {
+                            "Architecture": "amd64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "arm64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        }
+                    ]
+                },
+                "Networks": [
+                    {
+                        "Target": "jf19o7gzrvkwh729bp4xaa0re",
+                        "Aliases": [
+                            "app3"
+                        ]
+                    }
+                ],
+                "ForceUpdate": 0,
+                "Runtime": "container"
+            },
+            "Mode": {
+                "Replicated": {
+                    "Replicas": 1
+                }
+            },
+            "EndpointSpec": {
+                "Mode": "vip"
+            }
+        },
+        "Endpoint": {
+            "Spec": {
+                "Mode": "vip"
+            },
+            "VirtualIPs": [
+                {
+                    "NetworkID": "jf19o7gzrvkwh729bp4xaa0re",
+                    "Addr": "10.0.1.59/24"
+                }
+            ]
+        }
+    },
+    {
+        "ID": "8ydn05nnkq0aytex9q1kxtst",
+        "Version": {
+            "Index": 6449040
+        },
+        "CreatedAt": "2024-09-01T02:00:07.650075762Z",
+        "UpdatedAt": "2026-01-03T17:32:13.49672802Z",
+        "Spec": {
+            "Name": "service4",
+            "Labels": {
+                "com.docker.stack.image": "app4:latest",
+                "com.docker.stack.namespace": "app4"
+            },
+            "TaskTemplate": {
+                "ContainerSpec": {
+                    "Image": "app4:latest@sha256:67622638cd88dbfcfba40159bc652ecf0aea0e032f8a3c7e3134ae7c037b9910",
+                    "Labels": {
+                        "com.docker.stack.namespace": "app4"
+                    },
+                    "Hostname": "app4",
+                    "Mounts": [
+                        {
+                            "Type": "volume",
+                            "Source": "service4_volume1",
+                            "Target": "/data"
+                        },
+						{
+                            "Type": "volume",
+                            "Source": "shared_volume1",
+                            "Target": "/config"
+                        }
+                    ],
+                    "Isolation": "default"
+                },
+                "Resources": {},
+                "RestartPolicy": {
+                    "Condition": "any",
+                    "MaxAttempts": 0
+                },
+                "Placement": {
+                    "Platforms": [
+                        {
+                            "Architecture": "amd64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "arm64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "ppc64le",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "riscv64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "s390x",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        }
+                    ]
+                },
+                "Networks": [
+                    {
+                        "Target": "jf19o7gzrvkwh729bp4xaa0re",
+                        "Aliases": [
+                            "app4"
+                        ]
+                    }
+                ],
+                "ForceUpdate": 0,
+                "Runtime": "container"
+            },
+            "Mode": {
+                "Replicated": {
+                    "Replicas": 1
+                }
+            },
+            "EndpointSpec": {
+                "Mode": "vip"
+            }
+        }
+    },
+    {
+        "ID": "fhg06jd41lyrl8auilb947hd6",
+        "Version": {
+            "Index": 6449037
+        },
+        "CreatedAt": "2024-06-23T03:47:51.284226205Z",
+        "UpdatedAt": "2026-01-03T17:32:13.491441368Z",
+        "Spec": {
+            "Name": "service5",
+            "Labels": {
+                "com.docker.stack.image": "app5:latest",
+                "com.docker.stack.namespace": "app5"
+            },
+            "TaskTemplate": {
+                "ContainerSpec": {
+                    "Image": "app5:latest@sha256:67a8aaedcfd6989f3030b937a6a07007310b1dfc7ee8df16d2cbfa48d1c1158c",
+                    "Hostname": "app5",
+                    "Mounts": [
+						{
+                            "Type": "volume",
+                            "Source": "shared_volume1",
+                            "Target": "/config"
+                        }
+                    ],
+                    "Isolation": "default"
+                },
+                "Resources": {},
+                "RestartPolicy": {
+                    "Condition": "any",
+                    "MaxAttempts": 0
+                },
+                "Placement": {
+                    "Platforms": [
+                        {
+                            "Architecture": "amd64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "arm64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        }
+                    ]
+                },
+                "Networks": [
+                    {
+                        "Target": "jf19o7gzrvkwh729bp4xaa0re",
+                        "Aliases": [
+                            "app5"
+                        ]
+                    }
+                ],
+                "ForceUpdate": 0,
+                "Runtime": "container"
+            },
+            "Mode": {
+                "Replicated": {
+                    "Replicas": 2
+                }
+            },
+            "EndpointSpec": {
+                "Mode": "vip"
+            }
+        },
+        "Endpoint": {
+            "Spec": {
+                "Mode": "vip"
+            },
+            "VirtualIPs": [
+                {
+                    "NetworkID": "jf19o7gzrvkwh729bp4xaa0re",
+                    "Addr": "10.0.1.59/24"
+                }
+            ]
+        }
+    },
+    {
+        "ID": "8sdfds05nnkq0avccax9q1sddss",
+        "Version": {
+            "Index": 6449040
+        },
+        "CreatedAt": "2024-09-01T02:00:07.650075762Z",
+        "UpdatedAt": "2026-01-03T17:32:13.49672802Z",
+        "Spec": {
+            "Name": "dockervolumebackup",
+            "Labels": {
+                "com.docker.stack.image": "dockervolumebackup:latest",
+                "com.docker.stack.namespace": "dockervolumebackup"
+            },
+            "TaskTemplate": {
+                "ContainerSpec": {
+                    "Image": "dockervolumebackup:latest@sha256:67622638cd88dbfcfba40159bc652ecf0aea0e032f8a3c7e3134ae7c037b9910",
+                    "Labels": {
+                        "com.docker.stack.namespace": "dockervolumebackup"
+                    },
+                    "Hostname": "dockervolumebackup",
+                    "Mounts": [
+                        {
+                            "Type": "volume",
+                            "Source": "dockervolumebackup_database",
+                            "Target": "/data"
+                        }
+                    ],
+                    "Isolation": "default"
+                },
+                "Resources": {},
+                "RestartPolicy": {
+                    "Condition": "any",
+                    "MaxAttempts": 0
+                },
+                "Placement": {
+                    "Platforms": [
+                        {
+                            "Architecture": "amd64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "arm64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "ppc64le",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "riscv64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "s390x",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        }
+                    ]
+                },
+                "Networks": [
+                    {
+                        "Target": "jf19o7gzrvkwh729bp4xaa0re",
+                        "Aliases": [
+                            "dockervolumebackup"
+                        ]
+                    }
+                ],
+                "ForceUpdate": 0,
+                "Runtime": "container"
+            },
+            "Mode": {
+                "Replicated": {
+                    "Replicas": 1
+                }
+            },
+            "EndpointSpec": {
+                "Mode": "vip"
+            }
+        }
+    }	
+]

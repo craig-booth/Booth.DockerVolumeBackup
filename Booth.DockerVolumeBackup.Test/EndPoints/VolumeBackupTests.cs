@@ -1,9 +1,8 @@
-﻿using System.Net;
-
-using Xunit;
+﻿using Booth.DockerVolumeBackup.Test.Fixtures;
+using Booth.DockerVolumeBackup.WebApi.Dtos;
 using FluentAssertions;
-
-using Booth.DockerVolumeBackup.Test.Fixtures;
+using System.Net;
+using Xunit;
 
 
 namespace Booth.DockerVolumeBackup.Test.EndPoints
@@ -32,7 +31,7 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             response.Content.Headers.ContentType?.MediaType.Should().Be("application/octet-stream");
-            response.Content.Headers.ContentDisposition?.FileName.Should().Be("Jakob_Schuppe.tar.gz");
+            response.Content.Headers.ContentDisposition?.FileName.Should().Be("shared_volume1.tar.gz");
 
             var stream = await response.Content.ReadAsStreamAsync(TestContext.Current.CancellationToken);
             var textReader = new StreamReader(stream);
@@ -40,5 +39,33 @@ namespace Booth.DockerVolumeBackup.Test.EndPoints
             content.Should().Be("Test Data");
         }
 
+        [Fact]
+        public async Task RunRestore()
+        {
+            var httpClient = fixture.CreateClient();
+
+            var request = new VolumeRestoreRequestDto()
+            {
+                VolumeName = "NewVolume"
+            };
+
+            var response = await httpClient.PostAsJsonAsync<VolumeRestoreRequestDto>("api/volumebackups/1/restore", request, TestContext.Current.CancellationToken);
+            response.Should().Be200Ok();
+        }
+
+
+        [Fact]
+        public async Task RunRestoreNotExists()
+        {
+            var httpClient = fixture.CreateClient();
+
+            var request = new VolumeRestoreRequestDto()
+            {
+                VolumeName = "NewVolume"
+            };
+
+            var response = await httpClient.PostAsJsonAsync<VolumeRestoreRequestDto>("api/volumebackups/999999/restore", request, TestContext.Current.CancellationToken);
+            response.Should().Be404NotFound();
+        }
     }
 }

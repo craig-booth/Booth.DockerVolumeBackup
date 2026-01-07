@@ -1,0 +1,346 @@
+[
+    {
+        "Id": "992fdd02fab0c797d6b291ae735fe6d7e747e6ab109208e5eeebf11f38026709",
+        "Names": [
+            "/app1.1.q1liymddh0n36opub4gcv5ch5"
+        ],
+        "Image": "app1:latest",
+        "ImageID": "sha256:1073324e23578d61f4159f8122274cc71c6a93d5a100462908a9d34ee4e11239",
+        "Command": "start app",
+        "Created": 1767461536,
+        "Ports": [],
+        "Labels": {
+            "com.docker.stack.namespace": "app1"
+        },
+        "State": "running",
+        "Status": "Up 2 days",
+        "HostConfig": {
+            "NetworkMode": "bridge"
+        },
+        "NetworkSettings": {
+            "Networks": {
+                "reverse-proxy": {
+                    "IPAMConfig": {
+                        "IPv4Address": "10.0.1.34"
+                    },
+                    "Links": null,
+                    "Aliases": null,
+                    "MacAddress": "02:42:0a:00:01:22",
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "jf19o7gzrvkwh729bp4xaa0re",
+                    "EndpointID": "ac0631eaa12e42f2787044d161e23e0a922cd67c6a43bcf0477f93573b375f29",
+                    "Gateway": "",
+                    "IPAddress": "10.0.1.34",
+                    "IPPrefixLen": 24,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        },
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "portfoliomanager_config",
+                "Source": "/var/lib/docker/volumes/portfoliomanager_config/_data",
+                "Destination": "/app/WebAPI/config",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+            }
+        ]
+    },
+	{
+        "Id": "jfe9x202fab0c797d6b291ae735fe6d7e747e6ab109208e5eeebf11f38026709",
+        "Names": [
+            "/app2.1.q1liymddh0n36opub4gcv5ch5"
+        ],
+        "Image": "app2:latest",
+        "ImageID": "sha256:1073324e23578d61f4159f8122274cc71c6a93d5a100462908a9d34ee4e11239",
+        "Command": "start app",
+        "Created": 1767461536,
+        "Ports": [],
+        "Labels": {
+            "com.docker.stack.namespace": "app2"
+        },
+        "State": "running",
+        "Status": "Up 2 days",
+        "HostConfig": {
+            "NetworkMode": "bridge"
+        },
+        "NetworkSettings": {
+            "Networks": {
+                "reverse-proxy": {
+                    "IPAMConfig": {
+                        "IPv4Address": "10.0.1.34"
+                    },
+                    "Links": null,
+                    "Aliases": null,
+                    "MacAddress": "02:42:0a:00:01:22",
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "jf19o7gzrvkwh729bp4xaa0re",
+                    "EndpointID": "ac0631eaa12e42f2787044d161e23e0a922cd67c6a43bcf0477f93573b375f29",
+                    "Gateway": "",
+                    "IPAddress": "10.0.1.34",
+                    "IPPrefixLen": 24,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        },
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "service2_volume1",
+                "Source": "/var/lib/docker/volumes/service2_volume1/_data",
+                "Destination": "/data",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+            }
+        ]
+    },
+	{
+        "Id": "mcjsdkdsfab0c797d6b291ae735fe6d7e747e6ab109208e5eeebf11f38026709",
+        "Names": [
+            "/app3.1.q1liymddh0n36opub4gcv5ch5"
+        ],
+        "Image": "app3:latest",
+        "ImageID": "sha256:1073324e23578d61f4159f8122274cc71c6a93d5a100462908a9d34ee4e11239",
+        "Command": "start app",
+        "Created": 1767461536,
+        "Ports": [],
+        "Labels": {
+            "com.docker.stack.namespace": "app3"
+        },
+        "State": "running",
+        "Status": "Up 2 days",
+        "HostConfig": {
+            "NetworkMode": "bridge"
+        },
+        "NetworkSettings": {
+            "Networks": {
+                "reverse-proxy": {
+                    "IPAMConfig": {
+                        "IPv4Address": "10.0.1.34"
+                    },
+                    "Links": null,
+                    "Aliases": null,
+                    "MacAddress": "02:42:0a:00:01:22",
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "jf19o7gzrvkwh729bp4xaa0re",
+                    "EndpointID": "ac0631eaa12e42f2787044d161e23e0a922cd67c6a43bcf0477f93573b375f29",
+                    "Gateway": "",
+                    "IPAddress": "10.0.1.34",
+                    "IPPrefixLen": 24,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        },
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "service3_volume1",
+                "Source": "/var/lib/docker/volumes/service3_volume1/_data",
+                "Destination": "/data",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+            },
+			{
+                "Type": "volume",
+                "Name": "service3_volume2",
+                "Source": "/var/lib/docker/volumes/service3_volume2/_data",
+                "Destination": "/config",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+            }
+        ]
+    },
+	{
+        "Id": "sdsdsds2fab0c797d6b291ae735fe6d7e747e6ab109208e5eeebf11f38026709",
+        "Names": [
+            "/app4.1.q1liymddh0n36opub4gcv5ch5"
+        ],
+        "Image": "app4:latest",
+        "ImageID": "sha256:1073324e23578d61f4159f8122274cc71c6a93d5a100462908a9d34ee4e11239",
+        "Command": "start app",
+        "Created": 1767461536,
+        "Ports": [],
+        "Labels": {
+            "com.docker.stack.namespace": "app4"
+        },
+        "State": "running",
+        "Status": "Up 2 days",
+        "HostConfig": {
+            "NetworkMode": "bridge"
+        },
+        "NetworkSettings": {
+            "Networks": {
+                "reverse-proxy": {
+                    "IPAMConfig": {
+                        "IPv4Address": "10.0.1.34"
+                    },
+                    "Links": null,
+                    "Aliases": null,
+                    "MacAddress": "02:42:0a:00:01:22",
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "jf19o7gzrvkwh729bp4xaa0re",
+                    "EndpointID": "ac0631eaa12e42f2787044d161e23e0a922cd67c6a43bcf0477f93573b375f29",
+                    "Gateway": "",
+                    "IPAddress": "10.0.1.34",
+                    "IPPrefixLen": 24,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        },
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "service4_volume1",
+                "Source": "/var/lib/docker/volumes/service4_volume1/_data",
+                "Destination": "/data",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+            },
+			{
+                "Type": "volume",
+                "Name": "shared_volume1",
+                "Source": "/var/lib/docker/volumes/shared_volume1/_data",
+                "Destination": "/config",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+            }
+        ]
+    },
+	{
+        "Id": "39vjcie797d6b291ae735fe6d7e747e6ab109208e5eeebf11f38026709",
+        "Names": [
+            "/app5.1.q1liymddh0n36opub4gcv5ch5"
+        ],
+        "Image": "app5:latest",
+        "ImageID": "sha256:1073324e23578d61f4159f8122274cc71c6a93d5a100462908a9d34ee4e11239",
+        "Command": "start app",
+        "Created": 1767461536,
+        "Ports": [],
+        "Labels": {
+            "com.docker.stack.namespace": "app5"
+        },
+        "State": "running",
+        "Status": "Up 2 days",
+        "HostConfig": {
+            "NetworkMode": "bridge"
+        },
+        "NetworkSettings": {
+            "Networks": {
+                "reverse-proxy": {
+                    "IPAMConfig": {
+                        "IPv4Address": "10.0.1.34"
+                    },
+                    "Links": null,
+                    "Aliases": null,
+                    "MacAddress": "02:42:0a:00:01:22",
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "jf19o7gzrvkwh729bp4xaa0re",
+                    "EndpointID": "ac0631eaa12e42f2787044d161e23e0a922cd67c6a43bcf0477f93573b375f29",
+                    "Gateway": "",
+                    "IPAddress": "10.0.1.34",
+                    "IPPrefixLen": 24,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        },
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "shared_volume1",
+                "Source": "/var/lib/docker/volumes/shared_volume1/_data",
+                "Destination": "/config",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+            }
+        ]
+    },
+	{
+        "Id": "jvdfjfjd3dxks91ae735fe6d7e747e6ab109208e5eeebf11f38026709",
+        "Names": [
+            "/dockervolumebackup.1.q1liymddh0n36opub4gcv5ch5"
+        ],
+        "Image": "dockervolumebackup:latest",
+        "ImageID": "sha256:1073324e23578d61f4159f8122274cc71c6a93d5a100462908a9d34ee4e11239",
+        "Command": "dotnet Booth.DockerVolumeBackup.WebApi.dll",
+        "Created": 1767461536,
+        "Ports": [],
+        "Labels": {
+            "com.docker.stack.namespace": "dockervolumebackup"
+        },
+        "State": "running",
+        "Status": "Up 2 days",
+        "HostConfig": {
+            "NetworkMode": "bridge"
+        },
+        "NetworkSettings": {
+            "Networks": {
+                "reverse-proxy": {
+                    "IPAMConfig": {
+                        "IPv4Address": "10.0.1.34"
+                    },
+                    "Links": null,
+                    "Aliases": null,
+                    "MacAddress": "02:42:0a:00:01:22",
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "jf19o7gzrvkwh729bp4xaa0re",
+                    "EndpointID": "ac0631eaa12e42f2787044d161e23e0a922cd67c6a43bcf0477f93573b375f29",
+                    "Gateway": "",
+                    "IPAddress": "10.0.1.34",
+                    "IPPrefixLen": 24,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        },
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "dockervolumebackup_database",
+                "Source": "/var/lib/docker/volumes/dockervolumebackup_database/_data",
+                "Destination": "/data",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+            }
+        ]
+    }
+]
