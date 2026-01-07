@@ -13,7 +13,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Database
         public async Task SeedDatabase()
         {
             var volumes = await dockerClient.Volumes.ListAsync();
-            var volumeNames = volumes.Select(x => x.Name).ToList();
+            var volumeNames = volumes.Where(x => x.Name != "dockervolumebackup_database").Select(x => x.Name).ToList();
             var schedules = GenerateSchedules(volumeNames);
             var backups = GenerateBackups(schedules);
 

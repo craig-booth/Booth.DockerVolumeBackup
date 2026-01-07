@@ -26,7 +26,7 @@ namespace Booth.DockerVolumeBackup.Application.Volumes.Queries.GetAllVolumes
             var volumes = await dockerService.GetVolumesAsync();
 
             // Exclude volumes used by this container
-            var dependentVolumes = await dockerService.GetDependentVolumes();
+            var dependentVolumes = await dockerService.GetDependentVolumesAsync();
             volumes.RemoveAll(x => dependentVolumes.Contains(x.Name));
 
             var queryResult = volumes.Select(x => new VolumeDto { Name = x.Name, Size = x.Size, Active = true }).ToList();

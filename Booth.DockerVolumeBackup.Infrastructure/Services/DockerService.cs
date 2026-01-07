@@ -14,7 +14,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
             return volumes.Select(x => new Volume { Name = x.Name, MountPoint = x.Mountpoint, Size = x.UsageData != null ? x.UsageData.Size : 0 }).ToList();
         }
 
-        public async Task<List<Service>> GetDependentServices(IEnumerable<Volume> volumes)
+        public async Task<List<Service>> GetDependentServicesAsync(IEnumerable<Volume> volumes)
         {
             var services = new List<Service>();
 
@@ -44,7 +44,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
 
             return services;
         }
-        public async Task StopServices(IEnumerable<Service> services, CancellationToken stoppingToken)
+        public async Task StopServicesAsync(IEnumerable<Service> services, CancellationToken stoppingToken)
         {
             foreach (var service in services)
             {
@@ -55,7 +55,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
             }
         }
 
-        public async Task StartServices(IEnumerable<Service> services, CancellationToken stoppingToken)
+        public async Task StartServicesAsync(IEnumerable<Service> services, CancellationToken stoppingToken)
         {
             foreach (var service in services)
             {
@@ -66,7 +66,7 @@ namespace Booth.DockerVolumeBackup.Infrastructure.Services
             }
         }
 
-        public async Task<List<string>> GetDependentVolumes()
+        public async Task<List<string>> GetDependentVolumesAsync()
         {
             if (_DependentVolumes == null)
             {

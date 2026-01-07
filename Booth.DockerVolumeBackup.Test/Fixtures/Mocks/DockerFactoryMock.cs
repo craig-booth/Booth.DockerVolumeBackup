@@ -1,25 +1,21 @@
-﻿using NSubstitute;
-
-using Booth.DockerVolumeBackup.Infrastructure.Docker;
-using Booth.DockerVolumeBackup.Test.Fixtures.Factories;
+﻿using Booth.DockerVolumeBackup.Infrastructure.Docker;
 
 namespace Booth.DockerVolumeBackup.Test.Fixtures.Mocks
 {
     internal class DockerFactoryMock : IDockerClientFactory
     {
-        private IDockerClient _DockerClient;
-        public DockerFactoryMock()
-        {
-            var volumeResource = Substitute.For<IVolumeResource>();
-            volumeResource.ListAsync().Returns(VolumeFactory.Generate(10));
-
-            _DockerClient = Substitute.For<IDockerClient>();
-            _DockerClient.Volumes.Returns(volumeResource);
-        }
-
+        public event EventHandler<DockerHttpHandlerEvent>? OnMessageHandlerEvent;
         public IDockerClient CreateClient()
         {
-            return _DockerClient;
+            var messageHandler = new DockerHttpMessageHandlerMock();
+            messageHandler.OnMessageHandlerEvent += (s, e) => OnMessageHandlerEvent?.Invoke(s, e);
+
+
+            var httpClient = new HttpClient(messageHandler)
+            {
+                BaseAddress = new Uri("http://mock")
+            };
+            return new DockerClient(httpClient);
         }
     }
 }

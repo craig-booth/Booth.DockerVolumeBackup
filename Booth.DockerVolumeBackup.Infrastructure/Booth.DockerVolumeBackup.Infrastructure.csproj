@@ -10,10 +10,10 @@
     <PackageReference Include="Bogus" Version="35.6.5" />
     <PackageReference Include="CliWrap" Version="3.10.0" />
     <PackageReference Include="Coravel" Version="6.0.2" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Booth.DockerVolumeBackup.Domain\Booth.DockerVolumeBackup.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+	<InternalsVisibleTo Include="Booth.DockerVolumeBackup.Test" />
+  </ItemGroup>
+	
 </Project>

@@ -1,0 +1,96 @@
+{
+    "LayersSize": 0,
+    "Images": null,
+    "Containers": null,
+    "Volumes": [
+        {
+            "CreatedAt": "2022-03-25T16:43:48+10:30",
+            "Driver": "local",
+            "Labels": {},
+            "Mountpoint": "/var/lib/docker/volumes/service2_volume1/_data",
+            "Name": "service2_volume1",
+            "Options": {},
+            "Scope": "local",
+            "UsageData": {
+                "RefCount": 2,
+                "Size": 635295
+            }
+        },
+        {
+            "CreatedAt": "2022-03-22T18:10:27+10:30",
+            "Driver": "local",
+            "Labels": {},
+            "Mountpoint": "/var/lib/docker/volumes/service3_volume1/_data",
+            "Name": "service2_volume1",
+            "Options": {},
+            "Scope": "local",
+            "UsageData": {
+                "RefCount": 1,
+                "Size": 2311
+            }
+        },
+        {
+            "CreatedAt": "2022-03-22T18:10:46+10:30",
+            "Driver": "local",
+            "Labels": {},
+            "Mountpoint": "/var/lib/docker/volumes/service3_volume2/_data",
+            "Name": "service3_volume2",
+            "Options": {},
+            "Scope": "local",
+            "UsageData": {
+                "RefCount": 2,
+                "Size": 28925
+            }
+        },
+        {
+            "CreatedAt": "2022-03-31T17:57:12+10:30",
+            "Driver": "local",
+            "Mountpoint": "/var/lib/docker/volumes/service4_volume1/_data",
+            "Name": "service4_volume1",
+            "Options": null,
+            "Scope": "local",
+            "UsageData": {
+                "RefCount": 6,
+                "Size": 2000000038
+            }
+        },
+        {
+            "CreatedAt": "2022-03-25T16:43:38+10:30",
+            "Driver": "local",
+            "Labels": {},
+            "Mountpoint": "/var/lib/docker/volumes/shared_volume1/_data",
+            "Name": "shared_volume1",
+            "Options": {},
+            "Scope": "local",
+            "UsageData": {
+                "RefCount": 2,
+                "Size": 257003712
+            }
+        },
+        {
+            "CreatedAt": "2022-03-22T18:05:50+10:30",
+            "Driver": "local",
+            "Mountpoint": "/var/lib/docker/volumes/dockervolumebackup_database/_data",
+            "Name": "dockervolumebackup_database",
+            "Options": null,
+            "Scope": "local",
+            "UsageData": {
+                "RefCount": 1,
+                "Size": 2257074
+            }
+        },
+        {
+            "CreatedAt": "2024-06-22T15:37:17+09:30",
+            "Driver": "local",
+            "Mountpoint": "/var/lib/docker/volumes/unused_volume/_data",
+            "Name": "unused_volume",
+            "Options": null,
+            "Scope": "local",
+            "UsageData": {
+                "RefCount": 2,
+                "Size": 1409723575
+            }
+        }
+    ],
+    "BuildCache": null
+}

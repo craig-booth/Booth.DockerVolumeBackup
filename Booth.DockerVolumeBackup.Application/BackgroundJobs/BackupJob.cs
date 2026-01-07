@@ -54,7 +54,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                 var allVolumes = await dockerService.GetVolumesAsync();
                 var volumeDefinitions = allVolumes.Where(x => volumeNames.Contains(x.Name));
 
-                var dependentServices = await dockerService.GetDependentServices(volumeDefinitions);
+                var dependentServices = await dockerService.GetDependentServicesAsync(volumeDefinitions);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -74,7 +74,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                     }
 
                     logger.LogInformation("Stopping dependent services");
-                    await dockerService.StopServices(dependentServices, cancellationToken);
+                    await dockerService.StopServicesAsync(dependentServices, cancellationToken);
 
                     cancellationToken.ThrowIfCancellationRequested();
 
@@ -109,7 +109,7 @@ namespace Booth.DockerVolumeBackup.Application.BackgroundJobs
                 finally
                 {
                     logger.LogInformation("Restarting dependent services");
-                    await dockerService.StartServices(dependentServices, cancellationToken);
+                    await dockerService.StartServicesAsync(dependentServices, cancellationToken);
 
                     backup.EndBackup(backupSuccessful);
                     await dataContext.SaveChangesAsync(cancellationToken);

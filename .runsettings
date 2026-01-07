@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RunSettings>
+	<DataCollectionRunSettings>
+		<DataCollectors>
+			<DataCollector friendlyName="XPlat code coverage">
+				<Configuration>
+					<Exclude>[Booth.DockerVolumeBackup.Infrastructure]*.Migrations.*,[Booth.DockerVolumeBackup.Infrastructure]*.Docker.DockerClientFactory,[Booth.DockerVolumeBackup.Infrastructure]*.Docker.Models.*,[Booth.DockerVolumeBackup.Infrastructure]*.Services.MountPointBackupService</Exclude>
+				</Configuration>
+			</DataCollector>
+		</DataCollectors>
+	</DataCollectionRunSettings>
+</RunSettings>
